@@ -64,7 +64,7 @@ public class PlayerCreateSkill : MonoBehaviour
             if (distance <= maxSkillRange)
             {
                 Debug.Log("Summoned");
-                Instantiate(skillPrefab, hit.point, Quaternion.identity);
+                Instantiate(skillPrefab, new Vector3(hit.point.x,(hit.point.y-4.5f),hit.point.z), Quaternion.identity);
             }
 
         }
