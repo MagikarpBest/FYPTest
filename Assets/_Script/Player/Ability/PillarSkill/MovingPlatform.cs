@@ -4,6 +4,7 @@ using UnityEngine;
 public class MovingPlatform : MonoBehaviour
 {
     public Vector3 DeltaMovement { get; private set; }
+    public Collider PlatformCollider;
     private Vector3 lastPosition;
 
     private void Start()
@@ -11,7 +12,7 @@ public class MovingPlatform : MonoBehaviour
         lastPosition = transform.position+new Vector3(0,4.5f,0);
     }
 
-    private void LateUpdate()
+    private void Update()
     {
         DeltaMovement = transform.position+new Vector3(0,4.5f,0) - lastPosition;
         lastPosition = transform.position+new Vector3(0,4.5f,0);

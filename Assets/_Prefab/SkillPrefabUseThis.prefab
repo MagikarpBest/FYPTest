@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 6746744605045669030}
   - component: {fileID: 8012963347071993447}
   m_Layer: 7
-  m_Name: SkillPrefab
+  m_Name: SkillPrefabUseThis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -172,3 +172,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 283a439a2c8c7154682ed400ec118894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovingPlatform
+  PlatformCollider: {fileID: 7651569350869723788}

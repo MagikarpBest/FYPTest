@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerInputManager inputManager;
     
     [Header("Movement settings")]
-    private float moveSpeed = 7f;
+    private float moveSpeed = 9f;
     private float rotationSpeed = 10f;
     [SerializeField]private float gravity = -9.81f*3;
     [SerializeField]private float jumpHeight = 1f;
@@ -16,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
     private Transform cameraTransform;
     private float verticalVelocity;
     private MovingPlatform currentPlatform;
+
+    private bool isJumping;
 
     private void Awake()
     {
@@ -28,9 +30,9 @@ public class PlayerMovement : MonoBehaviour
     {
         Debug.Log(controller.isGrounded);
 
-        //CheckPlatform();
-        HandleMove();
+        //CheckPlatform(); not used for now ignore
         ApplyGravity();
+        HandleMove();
 
     }
 
@@ -49,9 +51,9 @@ public class PlayerMovement : MonoBehaviour
         
         Vector3 moveDirection = forward * moveInput.y + right * moveInput.x;
         
-        // Final movement
+        // Moving platform movement 
         Vector3 finalMovement = Vector3.zero;
-        //if player standing on moving platform
+        // if player standing on moving platform
         if(currentPlatform!=null)
         {
             Debug.Log("Delta: " + currentPlatform.DeltaMovement);
@@ -59,18 +61,18 @@ public class PlayerMovement : MonoBehaviour
             finalMovement += currentPlatform.DeltaMovement;
         }
         
-        // player movement
+        // Player directional movement
         Vector3 velocity = moveDirection * moveSpeed;
         velocity.y = verticalVelocity;
 
         finalMovement += velocity * Time.deltaTime;
+        ResolveMovingPlatformCollision(ref finalMovement);
         controller.Move(finalMovement);
         
         // Rotate towards movement direction
         if (moveInput.sqrMagnitude > 0.01f)
         {
             Quaternion target = Quaternion.LookRotation(moveDirection);
-
             transform.rotation = Quaternion.Slerp(transform.rotation, target, rotationSpeed * Time.deltaTime);
         }
 
@@ -83,6 +85,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Debug.Log("Jump");
             verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            isJumping = true;
         }
     }
     
@@ -91,39 +94,71 @@ public class PlayerMovement : MonoBehaviour
         //Debug.Log("Platform: " + currentPlatform);
         Debug.Log($"{controller.isGrounded}");
         // Gravity
-        if(currentPlatform != null)
-        {
-            verticalVelocity = 0f;
-            return;
-        }
+        // if(currentPlatform != null&&!isJumping)
+        // {
+        //     verticalVelocity = 0f;
+        //     return;
+        // }
         if(controller.isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = -2f;
+            isJumping = false;
         }
         else
         {
-            
             verticalVelocity += gravity * Time.deltaTime;
         }
     }
     
-    private void CheckPlatform()
+    // faking collision
+    private void ResolveMovingPlatformCollision(ref Vector3 movement)
     {
-        currentPlatform = null;
-        if(!controller.isGrounded)
+        if (currentPlatform == null) return;
+
+        Collider pillarCollider = currentPlatform.PlatformCollider;
+        Vector3 direction;
+        float distance;
+
+        // Check if the CharacterController is overlapping with the pillar's trigger collider
+        bool overlap = Physics.ComputePenetration(
+            controller,
+            transform.position + movement, // Check where player be after movement
+            transform.rotation,
+            pillarCollider,
+            pillarCollider.transform.position,
+            pillarCollider.transform.rotation,
+            out direction,
+            out distance
+        );
+
+        if (overlap)
         {
-            return;
-        }
-        
-        // shoot a ray from character feet to platform
-        Ray ray = new Ray(transform.position + Vector3.up * 0.1f, Vector3.down);
-        
-        if (Physics.Raycast(ray,out RaycastHit hit,0.3f))
-        {
-            currentPlatform = hit.collider.GetComponent<MovingPlatform>();
+            // If the push direction is upwards, the player is on top of the pillar
+            if (Vector3.Dot(direction, Vector3.up) > 0.5f)
+            {
+                // Apply separation to stay on top
+                movement += direction * distance;
+
+                // Reset gravity and jumping state as we have "landed"
+                if (verticalVelocity < 0)
+                {
+                    verticalVelocity = -2f; // Small downward force to stay grounded
+                    isJumping = false;
+                }
+            }
+            else
+            {
+                // For side collisions, just remove the movement into the wall
+                float pushAmount = Vector3.Dot(movement, direction);
+                if (pushAmount < 0)
+                {
+                    movement -= direction * pushAmount;
+                }
+            }
         }
     }
 
+    // Moving platform velocity code
     private void OnTriggerStay(Collider other)
     {
         MovingPlatform pillar = other.GetComponentInParent<MovingPlatform>();

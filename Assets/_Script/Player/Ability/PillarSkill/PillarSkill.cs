@@ -4,7 +4,6 @@ using System.Collections;
 
 public class PillarSkill : MonoBehaviour
 {
-    [SerializeField] private Collider pillarCollider;
     [Header("Settings")]
     [SerializeField] private float riseDuration = 1f;
     private float existDuration = 3f;
@@ -17,7 +16,6 @@ public class PillarSkill : MonoBehaviour
     {
         startPosition = transform.position;
         targetPosition = startPosition + Vector3.up * 4.5f;
-        //pillarCollider.enabled = false;
 
         Rise();
     }
@@ -27,9 +25,10 @@ public class PillarSkill : MonoBehaviour
         //rise up
         Sequence sequence = DOTween.Sequence();
         sequence.Append(transform.DOMove(targetPosition, riseDuration).SetEase(Ease.OutCubic));
-        sequence.AppendCallback(() => pillarCollider.enabled = true);
         sequence.AppendInterval(existDuration);
         sequence.Append(transform.DOMove(startPosition, riseDuration).SetEase(Ease.InCubic));
         sequence.OnComplete(() => Destroy(gameObject));
     }
+    
+    
 }
