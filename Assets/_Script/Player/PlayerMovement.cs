@@ -119,10 +119,11 @@ public class PlayerMovement : MonoBehaviour
         Vector3 direction;
         float distance;
 
-        // Check if the CharacterController is overlapping with the pillar's trigger collider
+        // Check if the CharacterController is overlapping with the pillars trigger collider
+        //https://docs.unity3d.com/6000.5/Documentation/ScriptReference/Physics.ComputePenetration.html
         bool overlap = Physics.ComputePenetration(
             controller,
-            transform.position + movement, // Check where player be after movement
+            transform.position + movement, // predict where player be after movement
             transform.rotation,
             pillarCollider,
             pillarCollider.transform.position,
