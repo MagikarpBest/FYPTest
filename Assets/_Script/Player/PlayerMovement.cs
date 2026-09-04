@@ -12,10 +12,10 @@ public class PlayerMovement : MonoBehaviour
     private float rotationSpeed = 10f;
     [SerializeField]private float gravity = -9.81f*3;
     [SerializeField]private float jumpHeight = 1f;
-
     
     private Transform cameraTransform;
     private float verticalVelocity;
+    private MovingPlatform currentPlatform;
 
     private void Awake()
     {
@@ -26,8 +26,12 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        Debug.Log(controller.isGrounded);
+
+        //CheckPlatform();
         HandleMove();
         ApplyGravity();
+
     }
 
 
@@ -46,10 +50,21 @@ public class PlayerMovement : MonoBehaviour
         Vector3 moveDirection = forward * moveInput.y + right * moveInput.x;
         
         // Final movement
+        Vector3 finalMovement = Vector3.zero;
+        //if player standing on moving platform
+        if(currentPlatform!=null)
+        {
+            Debug.Log("Delta: " + currentPlatform.DeltaMovement);
+
+            finalMovement += currentPlatform.DeltaMovement;
+        }
+        
+        // player movement
         Vector3 velocity = moveDirection * moveSpeed;
         velocity.y = verticalVelocity;
-        
-        controller.Move(velocity * Time.deltaTime);
+
+        finalMovement += velocity * Time.deltaTime;
+        controller.Move(finalMovement);
         
         // Rotate towards movement direction
         if (moveInput.sqrMagnitude > 0.01f)
@@ -64,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
     private void HandleJump()
     {
         // Jump
-        if (controller.isGrounded)
+        if (controller.isGrounded||currentPlatform!=null)
         {
             Debug.Log("Jump");
             verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
@@ -73,14 +88,58 @@ public class PlayerMovement : MonoBehaviour
     
     private void ApplyGravity()
     {
+        //Debug.Log("Platform: " + currentPlatform);
+        Debug.Log($"{controller.isGrounded}");
         // Gravity
+        if(currentPlatform != null)
+        {
+            verticalVelocity = 0f;
+            return;
+        }
         if(controller.isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = -2f;
         }
         else
         {
+            
             verticalVelocity += gravity * Time.deltaTime;
+        }
+    }
+    
+    private void CheckPlatform()
+    {
+        currentPlatform = null;
+        if(!controller.isGrounded)
+        {
+            return;
+        }
+        
+        // shoot a ray from character feet to platform
+        Ray ray = new Ray(transform.position + Vector3.up * 0.1f, Vector3.down);
+        
+        if (Physics.Raycast(ray,out RaycastHit hit,0.3f))
+        {
+            currentPlatform = hit.collider.GetComponent<MovingPlatform>();
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        MovingPlatform pillar = other.GetComponentInParent<MovingPlatform>();
+        if(pillar != null)
+        {
+            currentPlatform = pillar;
+        }
+    }
+    
+    private void OnTriggerExit(Collider other)
+    {
+        MovingPlatform pillar = other.GetComponentInParent<MovingPlatform>();
+
+        if(pillar != null && currentPlatform == pillar)
+        {
+            currentPlatform = null;
         }
     }
 
