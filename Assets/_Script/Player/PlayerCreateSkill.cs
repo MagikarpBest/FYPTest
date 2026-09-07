@@ -7,6 +7,7 @@ public class PlayerCreateSkill : MonoBehaviour
     [Header("Reference")]
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private GameObject skillPrefab;
+    [SerializeField] private GameObject skillPrefabLaunch;
     [SerializeField] private PlayerInputManager inputManager;
     [SerializeField] private LayerMask summonLayer;
 
@@ -51,7 +52,7 @@ public class PlayerCreateSkill : MonoBehaviour
     }
 
 
-    private void TrySummon()
+    private void TrySummon(GameObject skillPrefab)
     {
         Debug.Log("Summon Pressed");
         //middle of camera
@@ -70,13 +71,24 @@ public class PlayerCreateSkill : MonoBehaviour
         }
     }
 
+    private void TrySummonSkill1()
+    {
+        TrySummon(skillPrefab);
+    }
+    
+    private void TrySummonSkill2()
+    {
+        TrySummon(skillPrefabLaunch);
+    }
     private void OnEnable()
     {
-        inputManager.OnSkillPressed += TrySummon;
+        inputManager.OnSkillPressed += TrySummonSkill1;
+        inputManager.OnSkill2Pressed += TrySummonSkill2;
     }
 
     private void OnDisable()
     {
-        inputManager.OnSkillPressed -= TrySummon;
+        inputManager.OnSkillPressed -= TrySummonSkill1;
+        inputManager.OnSkill2Pressed -= TrySummonSkill2;
     }
 }

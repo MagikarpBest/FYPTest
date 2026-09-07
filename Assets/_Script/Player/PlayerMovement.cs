@@ -1,18 +1,19 @@
 using System;
+using UnityEditor.Overlays;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, ILaunchable
 {
     [Header("Reference")]
     [SerializeField] private CharacterController controller;
     [SerializeField] private PlayerInputManager inputManager;
-    
+
     [Header("Movement settings")]
     private float moveSpeed = 9f;
     private float rotationSpeed = 10f;
-    [SerializeField]private float gravity = -9.81f*3;
-    [SerializeField]private float jumpHeight = 1f;
-    
+    [SerializeField] private float gravity = -9.81f * 3;
+    [SerializeField] private float jumpHeight = 1f;
+
     private Transform cameraTransform;
     private float verticalVelocity;
     private MovingPlatform currentPlatform;
@@ -25,12 +26,10 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-
     void Update()
     {
         Debug.Log(controller.isGrounded);
 
-        //CheckPlatform(); not used for now ignore
         ApplyGravity();
         HandleMove();
 
@@ -48,19 +47,19 @@ public class PlayerMovement : MonoBehaviour
 
         forward.Normalize();
         right.Normalize();
-        
+
         Vector3 moveDirection = forward * moveInput.y + right * moveInput.x;
-        
+
         // Moving platform movement 
         Vector3 finalMovement = Vector3.zero;
         // if player standing on moving platform
-        if(currentPlatform!=null)
+        if (currentPlatform != null)
         {
             Debug.Log("Delta: " + currentPlatform.DeltaMovement);
 
             finalMovement += currentPlatform.DeltaMovement;
         }
-        
+
         // Player directional movement
         Vector3 velocity = moveDirection * moveSpeed;
         velocity.y = verticalVelocity;
@@ -68,7 +67,7 @@ public class PlayerMovement : MonoBehaviour
         finalMovement += velocity * Time.deltaTime;
         ResolveMovingPlatformCollision(ref finalMovement);
         controller.Move(finalMovement);
-        
+
         // Rotate towards movement direction
         if (moveInput.sqrMagnitude > 0.01f)
         {
@@ -77,18 +76,18 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-    
+
     private void HandleJump()
     {
         // Jump
-        if (controller.isGrounded||currentPlatform!=null)
+        if (controller.isGrounded || currentPlatform != null)
         {
             Debug.Log("Jump");
             verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
             isJumping = true;
         }
     }
-    
+
     private void ApplyGravity()
     {
         //Debug.Log("Platform: " + currentPlatform);
@@ -99,7 +98,7 @@ public class PlayerMovement : MonoBehaviour
         //     verticalVelocity = 0f;
         //     return;
         // }
-        if(controller.isGrounded && verticalVelocity < 0)
+        if (controller.isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = -2f;
             isJumping = false;
@@ -109,7 +108,14 @@ public class PlayerMovement : MonoBehaviour
             verticalVelocity += gravity * Time.deltaTime;
         }
     }
-    
+
+    public void Launch(Vector3 force)
+    {
+        verticalVelocity = force.y+force.z;
+        currentPlatform = null;
+        isJumping = true;
+    }
+
     // faking collision
     private void ResolveMovingPlatformCollision(ref Vector3 movement)
     {
@@ -163,17 +169,17 @@ public class PlayerMovement : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         MovingPlatform pillar = other.GetComponentInParent<MovingPlatform>();
-        if(pillar != null)
+        if (pillar != null)
         {
             currentPlatform = pillar;
         }
     }
-    
+
     private void OnTriggerExit(Collider other)
     {
         MovingPlatform pillar = other.GetComponentInParent<MovingPlatform>();
 
-        if(pillar != null && currentPlatform == pillar)
+        if (pillar != null && currentPlatform == pillar)
         {
             currentPlatform = null;
         }

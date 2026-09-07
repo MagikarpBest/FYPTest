@@ -1,8 +1,8 @@
 using DG.Tweening;
+using System;
 using UnityEngine;
-using System.Collections;
 
-public class PillarSkill : MonoBehaviour
+public class PillarRiseAnimation : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float riseDuration = 1f;
@@ -10,8 +10,11 @@ public class PillarSkill : MonoBehaviour
 
     private Vector3 startPosition;
     private Vector3 targetPosition;
-    
 
+    public event Action OnPillarRising;
+    public event Action OnPillarFalling;
+
+    
     private void Start()
     {
         startPosition = transform.position;
@@ -24,8 +27,10 @@ public class PillarSkill : MonoBehaviour
     {
         //rise up
         Sequence sequence = DOTween.Sequence();
+        sequence.AppendCallback(() => OnPillarRising?.Invoke());
         sequence.Append(transform.DOMove(targetPosition, riseDuration).SetEase(Ease.OutCubic));
         sequence.AppendInterval(existDuration);
+        sequence.AppendCallback(() => OnPillarFalling?.Invoke());
         sequence.Append(transform.DOMove(startPosition, riseDuration).SetEase(Ease.InCubic));
         sequence.OnComplete(() => Destroy(gameObject));
     }

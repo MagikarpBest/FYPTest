@@ -274,8 +274,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.26889783, y: 3.0693265e-10, z: -8.5689573e-11, w: 0.96316874}
-  m_LocalPosition: {x: -3.342, y: 3.9440691, z: -10.091743}
+  m_LocalRotation: {x: 0.2646178, y: 0.0000000079593, z: -0.0000000021840258, w: 0.9643534}
+  m_LocalPosition: {x: -3.342, y: 4.885069, z: -10.175535}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -566,7 +566,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -840,7 +840,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -952,7 +952,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -1147,7 +1147,7 @@ MonoBehaviour:
   TargetOffset: {x: 0, y: 0, z: 0}
   TrackerSettings:
     BindingMode: 4
-    PositionDamping: {x: 1, y: 1, z: 1}
+    PositionDamping: {x: 0, y: 0, z: 0}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
@@ -1155,7 +1155,7 @@ MonoBehaviour:
   Radius: 5
   Orbits:
     Top:
-      Radius: 0.1
+      Radius: 0.5
       Height: 5
     Center:
       Radius: 5
@@ -1246,8 +1246,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1235783224}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2688978, y: 3.069438e-10, z: -8.5729764e-11, w: 0.96316874}
-  m_LocalPosition: {x: -3.342, y: 3.9440691, z: -10.091743}
+  m_LocalRotation: {x: 0.26461777, y: 0.000000007788524, z: -0.000000001561662, w: 0.96435344}
+  m_LocalPosition: {x: -3.342, y: 4.885069, z: -10.175535}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1446,7 +1446,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Height: 2
@@ -1654,7 +1654,7 @@ Transform:
   m_GameObject: {fileID: 2006423853}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.342, y: 0, z: -5.97312}
+  m_LocalPosition: {x: -3.342, y: 0.941, z: -5.97312}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1700,10 +1700,10 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 2
-  m_Radius: 0.5
+  m_Radius: 1
   m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.03
+  m_SkinWidth: 0.05
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2006423858
@@ -1720,6 +1720,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCreateSkill
   lineRenderer: {fileID: 1238242762}
   skillPrefab: {fileID: 3735636886572184386, guid: a5bade558e610de4bb63893b05f02f5a, type: 3}
+  skillPrefabLaunch: {fileID: 3735636886572184386, guid: 9e6b45004aeb91747a86c7bc124bf472, type: 3}
   inputManager: {fileID: 1841097570}
   summonLayer:
     serializedVersion: 2
