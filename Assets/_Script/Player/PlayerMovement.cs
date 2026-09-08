@@ -115,7 +115,7 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
     private void ApplyExternalVelocity()
     {
         // decay
-        externalVelocity = Vector3.Lerp(externalVelocity, Vector3.zero, 5 * Time.deltaTime);
+        externalVelocity = Vector3.Lerp(externalVelocity, Vector3.zero, 3f * Time.deltaTime);
     }
 
     // pillar launch player
