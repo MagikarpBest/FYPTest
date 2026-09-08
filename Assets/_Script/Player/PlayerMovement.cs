@@ -14,8 +14,9 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
     [SerializeField] private float gravity = -9.81f * 3;
     [SerializeField] private float jumpHeight = 1f;
 
-    private Transform cameraTransform;
+    private Transform cameraTransform; // for direction movement
     private float verticalVelocity;
+    private Vector3 externalVelocity;
     private MovingPlatform currentPlatform;
 
     private bool isJumping;
@@ -31,6 +32,7 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
         Debug.Log(controller.isGrounded);
 
         ApplyGravity();
+        ApplyExternalVelocity();
         HandleMove();
 
     }
@@ -64,6 +66,7 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
         Vector3 velocity = moveDirection * moveSpeed;
         velocity.y = verticalVelocity;
 
+        velocity += externalVelocity; // environment force like bomb, launcher etc
         finalMovement += velocity * Time.deltaTime;
         ResolveMovingPlatformCollision(ref finalMovement);
         controller.Move(finalMovement);
@@ -109,9 +112,17 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
         }
     }
 
+    private void ApplyExternalVelocity()
+    {
+        // decay
+        externalVelocity = Vector3.Lerp(externalVelocity, Vector3.zero, 5 * Time.deltaTime);
+    }
+
+    // pillar launch player
     public void Launch(Vector3 force)
     {
-        verticalVelocity = force.y+force.z;
+        externalVelocity = force;
+
         currentPlatform = null;
         isJumping = true;
     }

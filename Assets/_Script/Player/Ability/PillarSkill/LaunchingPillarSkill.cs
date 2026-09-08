@@ -20,12 +20,12 @@ public class LaunchingPillarSkill : MonoBehaviour
         pillarRiseAnimation.OnPillarRising -= HandlePillarRising;
         pillarRiseAnimation.OnPillarFalling -= HandlePillarFalling;
     }
-    
+
     private void HandlePillarRising()
     {
         isRising = true;
     }
-    
+
     private void HandlePillarFalling()
     {
         isRising = false;
@@ -33,8 +33,9 @@ public class LaunchingPillarSkill : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Vector3 playerDirection = other.transform.forward;
         // only launch player if its rising, dont want stasis pillar to launch player
-        if(!isRising)
+        if (!isRising)
         {
             return;
         }
@@ -42,7 +43,7 @@ public class LaunchingPillarSkill : MonoBehaviour
 
         if (launchable != null)
         {
-            launchable.Launch(Vector3.up * launchPower);
+            launchable.Launch(playerDirection * (launchPower*2) + Vector3.up * (launchPower*1.5f));
         }
     }
 }
