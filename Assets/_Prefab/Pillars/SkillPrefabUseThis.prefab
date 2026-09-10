@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 193d1aba1c9df534dbbb6e07106bc48f, type: 2}
+  - {fileID: 2100000, guid: 8432a5f83766da44ba9fcd1002954a83, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -158,7 +158,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b42acf5281132cf429e4b78fbcc5317a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PillarSkill
-  pillarCollider: {fileID: 7651569350869723788}
   riseDuration: 1
 --- !u!114 &8012963347071993447
 MonoBehaviour:
