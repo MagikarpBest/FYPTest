@@ -12,7 +12,7 @@ public class PlayerCreateSkill : MonoBehaviour
     [SerializeField] private LayerMask summonLayer;
 
     [SerializeField] private bool isDebug = false;
-    private float maxSkillRange = 10f;
+    private float maxCreateSkillRange = 10f;
     private Camera camera;
 
     private void Awake()
@@ -46,7 +46,7 @@ public class PlayerCreateSkill : MonoBehaviour
         if (isDebug == true)
         {
             Handles.color = Color.green;
-            Handles.DrawWireDisc(transform.position, Vector3.up, maxSkillRange);
+            Handles.DrawWireDisc(transform.position, Vector3.up, maxCreateSkillRange);
         }
 
     }
@@ -62,7 +62,7 @@ public class PlayerCreateSkill : MonoBehaviour
         {
             float distance = Vector3.Distance(transform.position, hit.point);
 
-            if (distance <= maxSkillRange)
+            if (distance <= maxCreateSkillRange)
             {
                 Debug.Log("Summoned");
                 Instantiate(skillPrefab, new Vector3(hit.point.x,(hit.point.y-4.5f),hit.point.z), Quaternion.identity);
@@ -71,6 +71,7 @@ public class PlayerCreateSkill : MonoBehaviour
         }
     }
 
+    // keep it for now im lazy to do delegate
     private void TrySummonSkill1()
     {
         TrySummon(skillPrefab);
@@ -80,11 +81,14 @@ public class PlayerCreateSkill : MonoBehaviour
     {
         TrySummon(skillPrefabLaunch);
     }
+
     private void OnEnable()
     {
         inputManager.OnSkillPressed += TrySummonSkill1;
         inputManager.OnSkill2Pressed += TrySummonSkill2;
     }
+
+
 
     private void OnDisable()
     {
