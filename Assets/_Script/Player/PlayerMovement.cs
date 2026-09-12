@@ -29,7 +29,7 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
 
     void Update()
     {
-        Debug.Log(controller.isGrounded);
+        //Debug.Log(controller.isGrounded);
 
         ApplyGravity();
         ApplyExternalVelocity();
@@ -93,14 +93,7 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
 
     private void ApplyGravity()
     {
-        //Debug.Log("Platform: " + currentPlatform);
-        Debug.Log($"{controller.isGrounded}");
-        // Gravity
-        // if(currentPlatform != null&&!isJumping)
-        // {
-        //     verticalVelocity = 0f;
-        //     return;
-        // }
+        
         if (controller.isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = -2f;

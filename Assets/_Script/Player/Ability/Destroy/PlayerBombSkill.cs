@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerBombSkill : MonoBehaviour
 {
-    [SerializeField] private GameObject bombPrefab;
+    [SerializeField] private Bomb bombPrefab;
     [SerializeField] private Transform bombHoldPoint;
     [SerializeField] private PlayerInputManager playerInputManager;
 
@@ -12,63 +12,62 @@ public class PlayerBombSkill : MonoBehaviour
     [SerializeField] private float upwardForce = 5f;
 
     private Camera camera;
-    private GameObject currentBomb;
-    private Rigidbody bombRb;
+    private Bomb currentBomb;
+    private bool hasThrown = false;
 
-    private bool isHoldingBomb;
 
     private void Start()
     {
         camera = Camera.main;
     }
+    
 
-    private void Update()
+    private void SummonOrExplode()
     {
-        if (isHoldingBomb != false && currentBomb != null)
+        if (currentBomb == null)
         {
-            currentBomb.transform.position = bombHoldPoint.transform.position;
-        }
-    }
+            
+            // when spawned player is "holding" it
+            currentBomb = Instantiate(bombPrefab, bombHoldPoint.position, Quaternion.identity);
+            currentBomb.Hold(bombHoldPoint);
 
-    private void SummonBomb()
-    {
-        if (isHoldingBomb)
-        {
+            hasThrown = false;
+            Debug.Log("Summoned bomb");
             return;
         }
 
-        // when spawned player is "holding" it
-        currentBomb = Instantiate(bombPrefab, bombHoldPoint.position, Quaternion.identity);
-        bombRb = currentBomb.GetComponent<Rigidbody>();
-
-        bombRb.isKinematic = true;
-        currentBomb.transform.SetParent(bombHoldPoint);
-        isHoldingBomb = true;
+        // bomb exists then explode
+        currentBomb.Explode();
+        Debug.Log("Bomb exploded");
+        currentBomb = null;
     }
 
     private void ThrowBomb()
     {
-        if (!isHoldingBomb)
+        if (currentBomb == null || hasThrown == true)
         {
             return;
         }
-        currentBomb.transform.SetParent(null);
-        bombRb.isKinematic = false;
-        Vector3 throwDirection = camera.transform.forward;
-        Vector3 force = throwDirection * throwForce + Vector3.up * upwardForce;
+        Vector3 direction = camera.transform.forward;
 
-        bombRb.AddForce(force, ForceMode.Impulse);
-
-        currentBomb = null;
-        bombRb = null;
-
-        isHoldingBomb = false;
+        currentBomb.Throw(direction, throwForce, upwardForce);
+        hasThrown = true;
+        Debug.Log("Thrown exploded");
     }
+
 
     private void OnEnable()
     {
-        playerInputManager.OnSkill3Pressed += SummonBomb;
+        playerInputManager.OnSkill3Pressed += SummonOrExplode;
         playerInputManager.OnAttackPressed += ThrowBomb;
+
+    }
+
+    private void OnDisable()
+    {
+        playerInputManager.OnSkill3Pressed -= SummonOrExplode;
+        playerInputManager.OnAttackPressed -= ThrowBomb;
+
     }
 
 
