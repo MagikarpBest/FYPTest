@@ -7,7 +7,7 @@ using UnityEditor;
 using System.Linq;
 using System.Collections.Generic;
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class GrassPaintController : MonoBehaviour
 {
     private const int RT_SIZE = 512;
