@@ -1,0 +1,103 @@
+#pragma kernel InitGrass
+
+#include "UnityCG.cginc"
+#include "Assets/_Shader/Resources/Random.cginc"
+#include "Packages/jp.keijiro.noiseshader/Shader/SimplexNoise2D.hlsl"
+#include "Assets/_Shader/Resources/Quarternion.hlsl"
+#define kMaxHeight (32766.0f/65535.0f) //needed for height map check TerrainTools docs
+
+struct GrassData 
+{
+    float4 position;
+    float3 up;
+    float3 forward;
+    float2 scale;
+    float2 terrainUV;
+    float densityThreshold;
+};
+
+uint _MapSize;
+uint _Resolution;
+uint _ChunkSize;
+uint _ChunkResolution;
+float2 _ChunkID;
+uint _ChunkIndex;
+
+RWStructuredBuffer<GrassData> _GrassDataBuffer;
+
+float3 _TerrainPosition;
+float3 _TerrainSize;
+
+float2 _Scale;
+float2 _ScaleVariationRange;
+
+Texture2D<float4> _HeightMap;
+SamplerState _HeightMapPointClampSampler;
+
+Texture2D<float4> _NormalMap;
+SamplerState _NormalMapPointClampSampler;
+
+int _GrassDensity;
+
+[numthreads(8,8,1)]
+void InitGrass(uint3 id : SV_DispatchThreadID) 
+{
+    //this gets index
+    //check if less than resolution to prevent out of bounds
+    if (id.x >= _ChunkResolution || id.y >= _ChunkResolution) return;
+    uint threadIndex = id.x + id.y * _ChunkResolution;
+    
+    GrassData grass = (GrassData)0;
+    
+    //Terrain UV
+    uint texelIndex = threadIndex / _GrassDensity; //per texel in terrain so each density clump can be centered on the texel
+    uint texelX = id.x / _GrassDensity;
+    uint texelY = id.y / _GrassDensity;
+    
+    float2 uv = float2(texelX + _ChunkID.x * _ChunkSize, texelY + _ChunkID.y * _ChunkSize);
+    uv /= _MapSize- 1; 
+    
+    float2 seed = uv + threadIndex + _ChunkIndex * (_ChunkSize * _ChunkSize);
+    
+    float2 jitter = hash22(seed) * 2.0 - 1.0; //remap to -1 to 1
+    uv += jitter / _MapSize;
+    
+    grass.terrainUV = uv;
+    
+    //PosXZ
+    float3 position = _TerrainPosition;
+    position.xz += uv * _TerrainSize.xz;
+    
+    //Height
+    float4 heightMapValue = _HeightMap.SampleLevel(_HeightMapPointClampSampler, uv, 0);
+    float unpackHeight = UnpackHeightmap(heightMapValue); //needed check TerrainTools docs
+    float height = unpackHeight * (_TerrainSize.y / kMaxHeight);
+    
+    position.y += height;
+    grass.position = float4(position, 1.0);
+    
+    //Forward
+    float angle = hash12(seed) * UNITY_TWO_PI;
+    float3 forward = float3(cos(angle), 0, sin(angle));
+    grass.forward = normalize(forward);
+    
+    //Scale
+    float scaleVariation = lerp(_ScaleVariationRange.x, _ScaleVariationRange.y, hash12(seed));
+    scaleVariation = max(scaleVariation, 0);
+    grass.scale = _Scale * scaleVariation;
+    
+    //Normals
+    float4 normalMapValue = _NormalMap.SampleLevel(_NormalMapPointClampSampler, uv, 0);
+    float3 normal = normalize(normalMapValue.rgb * 2.0 - 1.0);
+    grass.up = normal;
+    
+    //Density
+    float stepSize = 1.0 / _GrassDensity; //gap in between thresholds
+    float jitterAmount = stepSize * 0.4; //how much easier it
+    float variation = -randValue(threadIndex) * jitterAmount;
+    
+    float baseThreshold = (threadIndex % _GrassDensity + 1) / (float)_GrassDensity;
+    grass.densityThreshold = clamp(baseThreshold + variation, 0.0001, 1.0);
+
+    _GrassDataBuffer[threadIndex] = grass;
+}
