@@ -8,6 +8,7 @@ Shader "Basics/Grass"
         _TipHighlightColor("Tip Highlight Color", Color) = (1, 1, 1, 1)
         _TipHighlightPower("Tip Highlight Power", Float) = 1
         _ColorVariation("Color Variation", Color) = (1, 1, 1, 1)
+        _ColorNoiseIntensity("Color Noise Intensity", Float) = 1
         _Roughness("Roughness", Float) = 1
         _SpecularFade("SpecularFade", Float) = 1
         
@@ -71,6 +72,7 @@ Shader "Basics/Grass"
             float4 _TipHighlightColor;
             float _TipHighlightPower;
             float4 _ColorVariation;
+            float _ColorNoiseIntensity;
             float _Roughness;
             float _SpecularFade;
             
@@ -170,9 +172,11 @@ Shader "Basics/Grass"
                 highLights += specular;
                 highLights = smoothstep(0, 1, highLights); //this fixes HDR overexposure
                 
-                 //float  colorNoise = SimplexNoise(i.positionWS.xz * 0.06;
-                //colorNoise = colorNoise * 0.5 + 0.5;
-                //grassGradient *= lerp(0.88, 1, colorNoise);
+                float  colorNoise = SimplexNoise(i.positionWS.xz * 0.06);
+                colorNoise = colorNoise * 0.5 + 0.5;
+                colorNoise *= _ColorNoiseIntensity;
+                grassGradient = lerp(grassGradient, _ColorVariation, colorNoise);
+                
                 float3 finalColor = (ambient + diffuse) * grassGradient + highLights;
       
                 return float4(finalColor, 1);
@@ -247,12 +251,14 @@ Shader "Basics/Grass"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "GrassCommon.hlsl"
 
-            CBUFFER_START(UnityPerMaterial)
+           CBUFFER_START(UnityPerMaterial)
             float4 _TopColor;
             float4 _BottomColor;
             float4 _HighlightColor;
             float4 _TipHighlightColor;
             float _TipHighlightPower;
+            float4 _ColorVariation;
+            float _ColorNoiseIntensity;
             float _Roughness;
             float _SpecularFade;
             
