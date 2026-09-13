@@ -28,7 +28,7 @@ public class Bomb : MonoBehaviour
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         Vector3 force = throwDirection * throwForce + Vector3.up * upwardForce;
 
-        rb.AddForce(force, ForceMode.Force);
+        rb.AddForce(force, ForceMode.VelocityChange);
         Debug.Log("Bomb Thrown");
     }
 

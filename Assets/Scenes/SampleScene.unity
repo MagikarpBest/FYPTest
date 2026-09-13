@@ -4455,8 +4455,8 @@ MonoBehaviour:
   bombPrefab: {fileID: 6375996512068800576, guid: 5f36c46b1d34e07418876dd936ee679f, type: 3}
   bombHoldPoint: {fileID: 695600501}
   playerInputManager: {fileID: 1841097570}
-  throwForce: 40
-  upwardForce: 15
+  throwForce: 10
+  upwardForce: 9
 --- !u!1 &2013151364
 GameObject:
   m_ObjectHideFlags: 0
