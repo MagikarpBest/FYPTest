@@ -41,7 +41,7 @@ public struct GrassChunkData
 
 public enum ChunkState { Culled, FullRes, LOD }
 
-//[ExecuteAlways]
+[ExecuteAlways]
 [RequireComponent(typeof(GrassPaintController))]
 public class GrassGenerator : MonoBehaviour
 {
@@ -113,9 +113,9 @@ public class GrassGenerator : MonoBehaviour
         UpdateData();
         
         #if UNITY_EDITOR
-        // TerrainCallbacks.heightmapChanged += OnHeightmapChanged;
-        // TerrainCallbacks.textureChanged   += OnTextureChanged;
-        // UnityEditor.EditorApplication.focusChanged += OnEditorFocusChanged;
+        TerrainCallbacks.heightmapChanged += OnHeightmapChanged;
+        TerrainCallbacks.textureChanged   += OnTextureChanged;
+        UnityEditor.EditorApplication.focusChanged += OnEditorFocusChanged;
         #endif
     }
     
@@ -124,9 +124,9 @@ public class GrassGenerator : MonoBehaviour
         ClearData();
         
         #if UNITY_EDITOR
-        // TerrainCallbacks.heightmapChanged -= OnHeightmapChanged;
-        // TerrainCallbacks.textureChanged   -= OnTextureChanged;
-        // UnityEditor.EditorApplication.focusChanged -= OnEditorFocusChanged;
+        TerrainCallbacks.heightmapChanged -= OnHeightmapChanged;
+        TerrainCallbacks.textureChanged   -= OnTextureChanged;
+        UnityEditor.EditorApplication.focusChanged -= OnEditorFocusChanged;
         #endif
     }
     
@@ -404,20 +404,20 @@ public class GrassGenerator : MonoBehaviour
             }
         }
     }
-    // private void OnValidate()
-    // {
-    //     if (!enabled || !gameObject.activeInHierarchy) return;
-    //
-    //     #if UNITY_EDITOR
-    //     UnityEditor.EditorApplication.delayCall += () =>
-    //     {
-    //         if (this == null) return; // object may have been destroyed by the time this runs
-    //         ClearData();
-    //         UpdateData();
-    //     };
-    //     #else
-    //     ClearData();
-    //     UpdateData();
-    //     #endif
-    // }
+    private void OnValidate()
+    {
+        if (!enabled || !gameObject.activeInHierarchy) return;
+    
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.delayCall += () =>
+        {
+            if (this == null) return; // object may have been destroyed by the time this runs
+            ClearData();
+            UpdateData();
+        };
+        #else
+        ClearData();
+        UpdateData();
+        #endif
+    }
 }
