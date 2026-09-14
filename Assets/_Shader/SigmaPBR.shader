@@ -182,7 +182,7 @@ Shader "Basics/PBR"
                 //F Fresnel function
                 float3 F_FrenelSchlick(float VdotH, float3 f0)
                 {
-	                
+	                return 1;
                 }
                 
                 float4 frag(v2f i) : SV_Target
