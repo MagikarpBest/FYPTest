@@ -427,7 +427,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.2646178, y: 0.0000000079593, z: -0.0000000021840258, w: 0.9643534}
-  m_LocalPosition: {x: -32.9, y: 7.804069, z: -10.175535}
+  m_LocalPosition: {x: -32.9, y: 18.474068, z: -10.175535}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -779,6 +779,43 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 719504335}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!84 &729125172
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 6
+  m_Width: 512
+  m_Height: 512
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 0
+  m_ColorFormat: 4
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_UseDynamicScaleExplicit: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!1 &747684872
 GameObject:
   m_ObjectHideFlags: 0
@@ -982,6 +1019,8 @@ GameObject:
   - component: {fileID: 1096895932}
   - component: {fileID: 1096895931}
   - component: {fileID: 1096895930}
+  - component: {fileID: 1096895934}
+  - component: {fileID: 1096895933}
   m_Layer: 0
   m_Name: Terrain
   m_TagString: Untagged
@@ -1031,7 +1070,7 @@ Terrain:
   m_HeightmapMaximumLOD: 0
   m_ShadowCastingMode: 2
   m_DrawHeightmap: 1
-  m_DrawInstanced: 0
+  m_DrawInstanced: 1
   m_DrawTreesAndFoliage: 1
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
@@ -1058,12 +1097,50 @@ Transform:
   m_GameObject: {fileID: 1096895929}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -64, y: 0, z: -64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1096895933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1096895929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e87c1b4f574b1647aee2311c3edc00b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrassGenerator
+  models:
+  - {fileID: 11400000, guid: 8f4b83da9f7ff2c499de30912951b92b, type: 2}
+  mapSize: 128
+  grassDensity: 10
+  maxDrawDistance: 100
+  lodCutoff: 5
+  initGrassShader: {fileID: 7200000, guid: 94c8ae39a99be0a498083cee30fcde5d, type: 3}
+  cullGrassShader: {fileID: 7200000, guid: 221bfbd3b4ce2704a9f9280c210e40c3, type: 3}
+--- !u!114 &1096895934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1096895929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ce1e7e124070314892b66201cf6c3dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrassPaintController
+  sourceTextures:
+  - {fileID: -8083966488528402612, guid: 6a54ac773da357f438ebbd44067be64d, type: 2}
+  - {fileID: -3730760076172469710, guid: 6a54ac773da357f438ebbd44067be64d, type: 2}
+  renderTextures:
+  - {fileID: 729125172}
+  - {fileID: 1706033939}
 --- !u!1 &1176685245
 GameObject:
   m_ObjectHideFlags: 0
@@ -1489,7 +1566,7 @@ Transform:
   m_GameObject: {fileID: 1235783224}
   serializedVersion: 2
   m_LocalRotation: {x: 0.26461777, y: 0.000000007788524, z: -0.000000001561662, w: 0.96435344}
-  m_LocalPosition: {x: -32.9, y: 7.804069, z: -10.175535}
+  m_LocalPosition: {x: -32.9, y: 18.474068, z: -10.175535}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1814,6 +1891,43 @@ Transform:
   - {fileID: 1462060895}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!84 &1706033939
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 6
+  m_Width: 512
+  m_Height: 512
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 0
+  m_ColorFormat: 4
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_UseDynamicScaleExplicit: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!1 &1841097567
 GameObject:
   m_ObjectHideFlags: 0
@@ -1901,7 +2015,7 @@ Transform:
   m_GameObject: {fileID: 2006423853}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -32.9, y: 3.86, z: -5.97312}
+  m_LocalPosition: {x: -32.9, y: 14.53, z: -5.97312}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
