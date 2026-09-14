@@ -222,7 +222,7 @@ public class GrassGenerator : MonoBehaviour
         if (chunks != null)
         {
             foreach (var chunk in chunks)
-                chunk.ClearBuffers();
+                chunk?.ClearBuffers();
             chunks = null;
         }
         
