@@ -1,4 +1,4 @@
-using System;
+using DG.Tweening;
 using UnityEngine;
 
 public class PlayerBombSkill : MonoBehaviour
@@ -51,10 +51,26 @@ public class PlayerBombSkill : MonoBehaviour
         Vector3 direction = camera.transform.forward;
 
         currentBomb.Throw(direction, throwForce, upwardForce);
+        
+        RotatePlayer(direction);
+
         hasThrown = true;
         Debug.Log("Thrown exploded");
     }
 
+    private void RotatePlayer(Vector3 direction)
+    {
+        direction.y = 0;
+
+        if (direction.sqrMagnitude < 0.01f)
+            return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+        transform
+            .DORotateQuaternion(targetRotation, 0.2f)
+            .SetEase(Ease.OutSine);
+    }
 
     private void OnEnable()
     {
