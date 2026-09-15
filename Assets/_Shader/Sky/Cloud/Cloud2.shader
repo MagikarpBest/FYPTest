@@ -1,4 +1,4 @@
-Shader "Basics/Cloud2"
+Shader "SigmaShader/Cloud2"
 {
     Properties
     {

@@ -1,4 +1,4 @@
-Shader "Basics/Grass"
+Shader "SigmaShader/Grass"
 {
     Properties
     {
