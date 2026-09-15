@@ -9,13 +9,13 @@ public class MovingPlatform : MonoBehaviour
 
     private void Start()
     {
-        lastPosition = transform.position+new Vector3(0,4.5f,0);
+        lastPosition = transform.position;
     }
 
     private void Update()
     {
-        DeltaMovement = transform.position+new Vector3(0,4.5f,0) - lastPosition;
-        lastPosition = transform.position+new Vector3(0,4.5f,0);
+        DeltaMovement = transform.position - lastPosition;
+        lastPosition = transform.position;
         //Debug.Log($"{DeltaMovement}, {lastPosition}");
     }
 

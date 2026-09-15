@@ -30,10 +30,11 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
     void Update()
     {
         //Debug.Log(controller.isGrounded);
-
+        UpdateCurrentPlatform();
         ApplyGravity();
         ApplyExternalVelocity();
         HandleMove();
+        Debug.Log(currentPlatform != null);
 
     }
 
@@ -57,7 +58,7 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
         // if player standing on moving platform
         if (currentPlatform != null)
         {
-            Debug.Log("Delta: " + currentPlatform.DeltaMovement);
+            //Debug.Log("Delta: " + currentPlatform.DeltaMovement);
 
             finalMovement += currentPlatform.DeltaMovement;
         }
@@ -71,6 +72,7 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
         ResolveMovingPlatformCollision(ref finalMovement);
         controller.Move(finalMovement);
 
+        SnapToGround();
         // Rotate towards movement direction
         if (moveInput.sqrMagnitude > 0.01f)
         {
@@ -78,6 +80,25 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
             transform.rotation = Quaternion.Slerp(transform.rotation, target, rotationSpeed * Time.deltaTime);
         }
 
+    }
+
+    private void SnapToGround()
+    {
+        if (currentPlatform != null) return;
+
+        if (controller.isGrounded && !isJumping)
+        {
+            // Raycast down to find the slope
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, controller.height / 2f + 0.5f))
+            {
+                // Only snap if we aren't already touching the ground (avoid double-move)
+                if (hit.distance > (controller.height / 2f) + 0.05f)
+                {
+                    float snapDistance = hit.distance - (controller.height / 2f);
+                    controller.Move(new Vector3(0, -snapDistance, 0));
+                }
+            }
+        }
     }
 
     private void HandleJump()
@@ -93,10 +114,10 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
 
     private void ApplyGravity()
     {
-        
+
         if (controller.isGrounded && verticalVelocity < 0)
         {
-            verticalVelocity = -2f;
+            verticalVelocity = -10f;
             isJumping = false;
         }
         else
@@ -153,7 +174,7 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
                 // Reset gravity and jumping state as we have "landed"
                 if (verticalVelocity < 0)
                 {
-                    verticalVelocity = -2f; // Small downward force to stay grounded
+                    verticalVelocity = -10f; // Small downward force to stay grounded
                     isJumping = false;
                 }
             }
@@ -169,25 +190,55 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
         }
     }
 
-    // Moving platform velocity code
-    private void OnTriggerStay(Collider other)
+    // this is better as trigger is not stable
+    private void UpdateCurrentPlatform()
     {
-        MovingPlatform pillar = other.GetComponentInParent<MovingPlatform>();
-        if (pillar != null)
+        Ray downRay = new Ray(transform.position, Vector3.down);
+        Ray frontRay = new Ray(transform.position, Vector3.forward);
+
+        RaycastHit hit;
+        if (Physics.Raycast(
+                downRay,
+                out hit,
+                controller.height / 2f + 0.3f,
+                LayerMask.GetMask("Summon"),
+                QueryTriggerInteraction.Collide
+            ) ||
+            Physics.Raycast(
+                frontRay,
+                out hit,
+                controller.height / 2f + 0.3f,
+                LayerMask.GetMask("Summon"),
+                QueryTriggerInteraction.Collide
+            ))
         {
-            currentPlatform = pillar;
+            currentPlatform = hit.collider.GetComponentInParent<MovingPlatform>();
         }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        MovingPlatform pillar = other.GetComponentInParent<MovingPlatform>();
-
-        if (pillar != null && currentPlatform == pillar)
+        else
         {
             currentPlatform = null;
         }
     }
+
+    // Moving platform velocity code 
+    // private void OnTriggerStay(Collider other)
+    // {
+    //     MovingPlatform pillar = other.GetComponentInParent<MovingPlatform>();
+    //     if (pillar != null)
+    //     {
+    //         currentPlatform = pillar;
+    //     }
+    // }
+    //
+    // private void OnTriggerExit(Collider other)
+    // {
+    //     MovingPlatform pillar = other.GetComponentInParent<MovingPlatform>();
+    //
+    //     if (pillar != null && currentPlatform == pillar)
+    //     {
+    //         currentPlatform = null;
+    //     }
+    // }
 
     private void OnEnable()
     {
