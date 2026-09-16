@@ -58,7 +58,12 @@ Shader "SigmaShader/SigmaPBR"
 				#pragma multi_compile_fragment _ _LIGHT_COOKIES
 				#pragma multi_compile _ _ADDITIONAL_LIGHTS
 				#pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
-				#pragma multi_compile _ _CLUSTER_LIGHT_LOOP 
+				#pragma multi_compile _ _CLUSTER_LIGHT_LOOP
+       
+	            #pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING
+				#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION
+				#pragma multi_compile_fragment _ _REFLECTION_PROBE_ATLAS
+	            #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
                 
                 #pragma shader_feature_local _ _CONVERT_FROM_ROUGHNESS
                 #pragma shader_feature_local _ _SPECULAR_SETUP
@@ -66,6 +71,9 @@ Shader "SigmaShader/SigmaPBR"
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 				#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
 				#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+                #include "PBRCommon.hlsl"
+                
+                //#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/BSDF.hlsl"
 
                 CBUFFER_START(UnityPerMaterial)
                 float4 _BaseColor;
@@ -141,66 +149,6 @@ Shader "SigmaShader/SigmaPBR"
                     return o;
                 }
                 
-                //Notes
-                //No negative dot products always saturate to keep within 0 to 1
-                //No divisions by 0 clamp to small episilon like 1e-5 (0.00001) using max
-                
-				//D Normal distribution function
-                float D_DistributionGGX(float3 N, float3 H, float roughness) //GGX/Trowbridge-Reitz
-                {
-                	float a = roughness * roughness; 
-                	float aSqr = a * a;
-	                float NdotH = saturate(dot(N, H));
-                	float NdotHSqr = NdotH * NdotH;
-                	
-                	float denominator = NdotHSqr * (aSqr - 1.0) + 1.0;
-                	denominator = PI * denominator * denominator;
-                	return aSqr / denominator;
-                }
-                
-                //G Geometry shadowing function
-                float G_GeometrySchlickGGX(float NdotX, float roughness) //X can be L or V
-                {
-	                float r = roughness + 1.0;
-                	float k = r * r / 8.0;
-                	
-                	float denominator = NdotX * (1.0 - k) + k;
-                	return NdotX / max(denominator, 1e-5);
-                }
-                
-                float G_GeometrySmith(float3 N, float3 V, float3 L, float roughness)
-                {
-	                float NdotV = saturate(dot(N, V));
-                	float NdotL = saturate(dot(N, L));
-                	
-                	float GGX1 = G_GeometrySchlickGGX(NdotV, roughness);
-                	float GGX2 = G_GeometrySchlickGGX(NdotL, roughness);
-                	
-                	return GGX1 * GGX2;
-                }
-                
-                //F Fresnel function
-                float3 F_FresnelSchlick(float VdotH, float3 F0)
-                {
-	                return F0 + (1.0 - F0) * pow(1.0 - VdotH, 5.0);
-                }
-                
-                float3 Specular_CookTorance(float3 L, float3 N, float3 V, float3 H, float3 F0, float roughness)
-                {
-	                float HdotV = saturate(dot(H, V));
-					float NdotV = saturate(dot(N, V));
-					float NdotL = saturate(dot(N, L));
-                	
-                	float D = D_DistributionGGX(N, H, roughness);
-					float3 F = F_FresnelSchlick(HdotV, F0);
-					float G = G_GeometrySmith(N, V, L, roughness);
-                	
-                	float nominator = D * G * F;
-                	float denominator = 4 * NdotV * NdotL;
-                		
-                	return nominator / max(denominator, 1e-5);
-                }
-                
                 float4 frag(v2f i) : SV_Target
                 {
                 	float3 normalWS = NormalizeNormalPerPixel(i.normalWS);
@@ -247,32 +195,61 @@ Shader "SigmaShader/SigmaPBR"
                 	float smoothness = SAMPLE_TEXTURE2D(_SmoothnessMap, sampler_SmoothnessMap, i.uv).r * _Smoothness;
 #endif
                 	float roughness = 1.0 - smoothness;
-                	roughness = max(roughness, 0.045);
+                	roughness = clamp(roughness, 0.04, 0.99);
                 	
                 	//Main light
                 	Light mainLight = GetMainLight(shadowCoord);
 					float3 lightColor = mainLight.distanceAttenuation * mainLight.shadowAttenuation * mainLight.color;
                 	float3 halfVector = normalize(mainLight.direction + viewDirWS);
                 	
+                	//Direct light
 					//Cook-Torrance BRDF
                 	float HdotV = saturate(dot(halfVector, viewDirWS));
-                	float3 ks = F_FresnelSchlick(HdotV, F0);; //specular coefficient
-					float3 kd = 1 - ks; //diffuse coefficient
+                	float3 ks = F_FresnelSchlick(HdotV, F0); //specular coefficient
+					float3 kd = 1.0 - ks; //diffuse coefficient
+                	kd *= 1.0 - metallic;
                 	
                 	//Specular
                 	float3 specular = Specular_CookTorance(mainLight.direction, normalWS, viewDirWS, halfVector, F0, roughness);
-                	
+           
                 	//Diffuse
-                	float3 diffuse = kd * baseColor.rgb / PI;
+                	float3 diffuse = kd * baseColor.rgb;
                 	
                 	//BRDF = kdfdiffuse + ksfspecular
                 	//Cook torrance u get rid of ks in specular cause it already has fresnel so if u dont remove you doubling
                 	
-                	//Direct light
                 	//Rendering equation
                 	float NdotL = saturate(dot(normalWS, mainLight.direction));
                 	
                 	float3 directLight = (diffuse + specular) * lightColor * NdotL;
+                	
+                	//Indirect light
+                	float NdotV = saturate(dot(normalWS, viewDirWS)); //no single light dir/half vector we can use since its from all angles
+                	float3 ksIndirect = F_FresnelSchlickRoughness(NdotV, F0, roughness);
+                	float3 kdIndirect = 1.0 - ksIndirect; //diffuse coefficient
+                	kdIndirect *= 1.0 - metallic;
+                	half3 R = reflect(-viewDirWS, normalWS); 
+                	
+                	//Indirect specular
+                	//The Split Sum: 1nd Stage
+                	half3 envSpecularPrefilted = GlossyEnvironmentReflection(R, i.positionWS, roughness, 1.0h, GetNormalizedScreenSpaceUV(i.positionCS));
+                	
+                	//The Split Sum: 2nd Stage
+                	float2 envBRDF = EnvBRDFApprox_UE4(roughness, NdotV);
+                	
+                	float specularOcclusion = GetSpecularOcclusionFromAmbientOcclusion(NdotV, occlusion, roughness);
+					float3 specularAO = GTAOMultiBounce(specularOcclusion, F0);
+                	
+                	float3 specularIndirect = envSpecularPrefilted * (ksIndirect * envBRDF.r + envBRDF.g) * specularAO;
+                	
+                	//Indirect diffuse
+                	float3 irradianceSH = SampleSH(normalWS); //irradiance spherical harmonics
+                	
+                	float3 diffuseAO = GTAOMultiBounce(occlusion, baseColor);
+                	
+                	float3 diffuseIndirect = irradianceSH * kdIndirect * baseColor * diffuseAO;
+                	
+                	float3 indirectLight = diffuseIndirect + specularIndirect;
                 	
 #ifdef _ADDITIONAL_LIGHTS
 	                InputData inputData = (InputData)0;
@@ -286,15 +263,16 @@ Shader "SigmaShader/SigmaPBR"
 	                    float3 lightColorAdd = light.distanceAttenuation * light.shadowAttenuation * light.color;
                 		float3 halfVectorAdd = normalize(light.direction + viewDirWS);
                 		
-                		float HdotVAdd = saturate(dot(halfVector, viewDirWS));
-                		float3 ksAdd = F_FresnelSchlick(HdotV, F0);; //specular coefficient
-						float3 kdAdd = 1 - ks; //diffuse coefficient
+                		float HdotVAdd = saturate(dot(halfVectorAdd, viewDirWS));
+                		float3 ksAdd = F_FresnelSchlick(HdotVAdd, F0); //specular coefficient
+						float3 kdAdd = 1.0 - ksAdd; //diffuse coefficient
+                		kdAdd *= 1.0 - metallic;
                 		
                 		//Specular
-                		float3 specularAdd = Specular_CookTorance(light.direction, normalWS, viewDirWS, halfVector, F0, roughness);
+                		float3 specularAdd = Specular_CookTorance(light.direction, normalWS, viewDirWS, halfVectorAdd, F0, roughness);
                 		
                 		//Diffuse
-                		float3 diffuseAdd = kd * baseColor.rgb / PI;
+                		float3 diffuseAdd = kdAdd * baseColor.rgb;
                 		
                 		float NdotLAdd = saturate(dot(normalWS, light.direction));
                 		
@@ -302,7 +280,7 @@ Shader "SigmaShader/SigmaPBR"
 	                LIGHT_LOOP_END
 #endif
                 	
-                	float3 finalColor = directLight + emission;
+                	float3 finalColor = emission + directLight + indirectLight;
 					return float4(finalColor, baseColor.a);
                 }
 

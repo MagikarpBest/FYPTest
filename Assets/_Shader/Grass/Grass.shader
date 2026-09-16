@@ -9,6 +9,7 @@ Shader "SigmaShader/Grass"
         _TipHighlightPower("Tip Highlight Power", Float) = 1
         _ColorVariation("Color Variation", Color) = (1, 1, 1, 1)
         _ColorNoiseIntensity("Color Noise Intensity", Float) = 1
+        _ColorNoiseScale("Color Noise Scale", Float) = 1
         _Roughness("Roughness", Float) = 1
         _SpecularFade("SpecularFade", Float) = 1
         
@@ -73,6 +74,7 @@ Shader "SigmaShader/Grass"
             float _TipHighlightPower;
             float4 _ColorVariation;
             float _ColorNoiseIntensity;
+            float _ColorNoiseScale;
             float _Roughness;
             float _SpecularFade;
             
@@ -110,7 +112,6 @@ Shader "SigmaShader/Grass"
                 o.positionCS = TransformWorldToHClip(o.positionWS);
                 
                 o.normalWS = TransformObjectToWorldNormal(_GrassDataBuffer[instanceID].up);
-                
                 o.viewWS = GetWorldSpaceViewDir(o.positionWS);
                 o.dynamicLightmapUV = v.dynamicLightmapUV.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
                 
@@ -250,22 +251,7 @@ Shader "SigmaShader/Grass"
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "GrassCommon.hlsl"
-
-           CBUFFER_START(UnityPerMaterial)
-            float4 _TopColor;
-            float4 _BottomColor;
-            float4 _HighlightColor;
-            float4 _TipHighlightColor;
-            float _TipHighlightPower;
-            float4 _ColorVariation;
-            float _ColorNoiseIntensity;
-            float _Roughness;
-            float _SpecularFade;
             
-            float _FresnelPower;
-            float _FresnelStrength;
-            CBUFFER_END
-
             struct appdata
             {
                 float4 positionOS : POSITION;
