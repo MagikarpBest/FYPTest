@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.03.00">
 	<object class="Event" id="{e1fd4c72-592e-47dc-9464-27cfa96899eb}">
 		<property name="name">
-			<value>titleScreen_ruinStructure</value>
+			<value>TitleScreen</value>
 		</property>
 		<property name="outputFormat">
 			<value>1</value>
@@ -53,7 +53,7 @@
 			<destination>{c226f548-3d79-4a4d-8f85-e215d6b50321}</destination>
 		</relationship>
 		<relationship name="output">
-			<destination>{d3d64acf-d5af-47af-9cd0-dda503c51056}</destination>
+			<destination>{26563a16-a3f1-4878-91fc-b3118ad19e5e}</destination>
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{da375a04-e2d1-4bb7-a14d-8096d651c0df}" />
