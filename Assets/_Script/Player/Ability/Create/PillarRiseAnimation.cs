@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PillarRiseAnimation : MonoBehaviour
 {
+    [SerializeField] private Rigidbody rigidBody;
     [Header("Settings")]
     [SerializeField] private float riseDuration = 1f;
     private float existDuration = 3f;
@@ -18,7 +19,7 @@ public class PillarRiseAnimation : MonoBehaviour
     private void Start()
     {
         startPosition = transform.position;
-        targetPosition = startPosition + Vector3.up * 4.5f;
+        targetPosition = startPosition + Vector3.up * 6.7f;
 
         Rise();
     }
@@ -28,10 +29,10 @@ public class PillarRiseAnimation : MonoBehaviour
         //rise up
         Sequence sequence = DOTween.Sequence();
         sequence.AppendCallback(() => OnPillarRising?.Invoke());
-        sequence.Append(transform.DOMove(targetPosition, riseDuration).SetEase(Ease.OutCubic));
+        sequence.Append(rigidBody.DOMove(targetPosition, riseDuration).SetEase(Ease.OutCubic).SetUpdate(UpdateType.Fixed));
         sequence.AppendInterval(existDuration);
         sequence.AppendCallback(() => OnPillarFalling?.Invoke());
-        sequence.Append(transform.DOMove(startPosition, riseDuration).SetEase(Ease.InCubic));
+        sequence.Append(rigidBody.DOMove(startPosition, riseDuration).SetEase(Ease.InCubic).SetUpdate(UpdateType.Fixed));
         sequence.OnComplete(() => Destroy(gameObject));
     }
     

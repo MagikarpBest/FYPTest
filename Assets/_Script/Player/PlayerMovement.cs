@@ -34,7 +34,7 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
         ApplyGravity();
         ApplyExternalVelocity();
         HandleMove();
-        Debug.Log(currentPlatform != null);
+        //Debug.Log(currentPlatform != null);
 
     }
 
