@@ -1,24 +1,22 @@
-#ifndef _INCLUDE_PBRCOMMON
-#define _INCLUDE_PBRCOMMON
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+#ifndef _INCLUDE_SIGMAPBRCOMMON
+#define _INCLUDE_SIGMAPBRCOMMON
 
 //Notes
 //No negative dot products always saturate to keep within 0 to 1
 //No divisions by 0 clamp to small episilon like 1e-5 (0.00001) using max
 
+//Standard PBR
 //D Normal distribution function
 float D_DistributionGGX(float3 N, float3 H, float roughness) //GGX/Trowbridge-Reitz
 {
     float a = roughness * roughness; 
-    float aSqr = a * a;
+    float a2 = a * a;
     float NdotH = saturate(dot(N, H));
     float NdotHSqr = NdotH * NdotH;
     
-    float denominator = NdotHSqr * (aSqr - 1.0) + 1.0;
+    float denominator = NdotHSqr * (a2 - 1.0) + 1.0;
     denominator = PI * denominator * denominator;
-    return aSqr / denominator;
+    return a2 / denominator;
 }
 
 //G Geometry shadowing function
@@ -82,4 +80,45 @@ float2 EnvBRDFApprox_UE4(float roughness, float NdotV)
     return AB;
 }
 
+//Closer to unity and UE
+float D_GGX_UE5(float roughness, float NdotH)
+{
+    float a = roughness ; 
+    float a2 = a * a;
+    float d = ( NdotH * a2 - NdotH ) * NdotH + 1;	
+    return a2 / ( PI * d * d );			
+}
+
+// Appoximation of joint Smith term for GGX
+// [Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"]
+float Vis_SmithJointApprox(float roughness, float NdotV, float NdotL)
+{
+    float a = roughness; 
+    float Vis_SmithV = NdotL * ( NdotV * ( 1 - a ) + a );
+    float Vis_SmithL = NdotV * ( NdotL * ( 1 - a ) + a );
+    return 0.5 * rcp( max(Vis_SmithV + Vis_SmithL, 1e-5));
+}
+
+float3 F_Schlick_UE5(float VdotH, float3 F0)
+{
+    float Fc = pow(1.0 - VdotH, 5);
+        
+    // Anything less than 2% is physically impossible and is instead considered to be shadowing
+    return saturate(50.0 * F0.g) * Fc + (1 - Fc) * F0;
+}
+
+float3 SpecularGGX(float3 L, float3 N, float3 V, float3 H, float3 F0, float roughness)
+{
+    float HdotV = saturate(dot(H, V));
+    float NdotV = saturate(dot(N, V));
+    float NdotL = saturate(dot(N, L));
+    float NdotH = saturate(dot(N, H));
+    
+    
+    float D = D_GGX_UE5(roughness, NdotH);
+    float Vis = Vis_SmithJointApprox(roughness, NdotV, NdotL);
+    float3 F = F_Schlick_UE5(HdotV, F0);
+
+    return (D * Vis) * F;
+}
 #endif

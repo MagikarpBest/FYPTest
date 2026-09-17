@@ -56,8 +56,7 @@ Shader "SigmaShader/GrassPBR"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 			#include "GrassCommon.hlsl"
-			#include "Assets/_Shader/PBRCommon.hlsl"
-            #include "LightingCommon.hlsl"
+			#include "Assets/_Shader/SigmaPBRCommon.hlsl"
             
             CBUFFER_START(UnityPerMaterial)
 			float4 _TopColor;
