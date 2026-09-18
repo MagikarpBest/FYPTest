@@ -117,7 +117,6 @@ Shader "SigmaShader/GrassPBR"
             		if (!isFrontFace)
 					meshNormal = -meshNormal;
             	
-            	
                 	float3 viewDirWS = normalize(i.viewWS);
                 	float3 viewDirTS = GetViewDirectionTangentSpace(i.tangentWS, i.normalWS, viewDirWS);
                 	float4 shadowCoord = TransformWorldToShadowCoord(i.positionWS);
@@ -129,41 +128,36 @@ Shader "SigmaShader/GrassPBR"
 	                colorNoise *= _ColorNoiseIntensity;
 	                baseColor = lerp(baseColor, _ColorVariation, colorNoise);
             	
-            		float roughness = clamp(_Roughness, 0.04, 0.99);
+            		float roughness = max(_Roughness, 0.04);
             		float metallic = 0;
-            		float3 F0 = lerp(0.04, baseColor.rgb, metallic);
+            		float3 F0 = lerp(0.04, baseColor, metallic);
+					half oneMinusReflectivity = OneMinusReflectivityMetallic(metallic); 
             	
                 	//Main light
                 	Light mainLight = GetMainLight(shadowCoord);
 					float3 lightColor = mainLight.distanceAttenuation * mainLight.shadowAttenuation * mainLight.color;
+            	
+            		#if defined(_SCREEN_SPACE_OCCLUSION)
+		                AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(GetNormalizedScreenSpaceUV(i.positionCS));
+		                lightColor *= aoFactor.directAmbientOcclusion;
+		            #endif
+                		
                 	float3 halfVector = normalize(mainLight.direction + viewDirWS);
                 	
                 	//Direct light
 					//Cook-Torrance BRDF
-                	float HdotV = saturate(dot(halfVector, viewDirWS));
-                	float3 ks = F_FresnelSchlick(HdotV, F0); //specular coefficient
-					float3 kd = 1.0 - ks; //diffuse coefficient
-                	kd *= 1.0 - metallic;
-                	
+            	
                 	//Specular
-                	float3 specular = Specular_CookTorance(mainLight.direction, meshNormal, viewDirWS, halfVector, F0, roughness);
+                	float3 specular = SpecularGGX(mainLight.direction, normalWS, viewDirWS, halfVector, F0, roughness);
            
                 	//Diffuse
-                	float3 diffuse = kd * baseColor.rgb;
-                	
-                	//BRDF = kdfdiffuse + ksfspecular
-                	//Cook torrance u get rid of ks in specular cause it already has fresnel so if u dont remove you doubling
-                	
-                	//Rendering equation
+                	float3 diffuse = baseColor * oneMinusReflectivity;
+            	
                 	float NdotL = saturate(dot(normalWS, mainLight.direction));
-                	
                 	float3 directLight = (diffuse + specular) * lightColor * NdotL;
                 	
                 	//Indirect light
                 	float NdotV = saturate(dot(normalWS, viewDirWS)); //no single light dir/half vector we can use since its from all angles
-                	float3 ksIndirect = F_FresnelSchlickRoughness(NdotV, F0, roughness);
-                	float3 kdIndirect = 1.0 - ksIndirect; //diffuse coefficient
-                	kdIndirect *= 1.0 - metallic;
                 	half3 R = reflect(-viewDirWS, normalWS); 
                 	
                 	//Indirect specular
@@ -173,11 +167,19 @@ Shader "SigmaShader/GrassPBR"
                 	//The Split Sum: 2nd Stage
                 	float2 envBRDF = EnvBRDFApprox_UE4(roughness, NdotV);
                 	
-                	float3 specularIndirect = envSpecularPrefilted * (ksIndirect * envBRDF.r + envBRDF.g);
+            		#if defined(_SCREEN_SPACE_OCCLUSION)
+            			float specularOcclusion = GetSpecularOcclusionFromAmbientOcclusion(NdotV, aoFactor.indirectAmbientOcclusion, roughness);
+						float3 specularAO = GTAOMultiBounce(specularOcclusion, F0);
+            			float3 diffuseAO = GTAOMultiBounce(aoFactor.indirectAmbientOcclusion, surface.albedo);
+					#endif
+            		float3 specularAO = 1.0;
+            		float3 diffuseAO = 1.0;
+            	
+                	float3 specularIndirect = envSpecularPrefilted * (F0 * envBRDF.r + envBRDF.g) * specularAO;
                 	
                 	//Indirect diffuse
                 	float3 irradianceSH = SampleSH(normalWS); //irradiance spherical harmonics
-                	float3 diffuseIndirect = irradianceSH * kdIndirect * baseColor;
+                	float3 diffuseIndirect = irradianceSH * baseColor * oneMinusReflectivity * diffuseAO;
                 	
                 	float3 indirectLight = diffuseIndirect + specularIndirect;
             	
@@ -191,20 +193,21 @@ Shader "SigmaShader/GrassPBR"
 	                LIGHT_LOOP_BEGIN(lightCount)
 
 	                    Light light = GetAdditionalLight(lightIndex, i.positionWS, shadowMask);
-	                    float3 lightColorAdd = light.distanceAttenuation * light.shadowAttenuation * light.color;
+            			float3 lightColorAdd = light.distanceAttenuation * light.shadowAttenuation * light.color;
+            	
+            			#if defined(_SCREEN_SPACE_OCCLUSION)
+            				AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(GetNormalizedScreenSpaceUV(i.positionCS));
+				            lightColorAdd *= aoFactor.directAmbientOcclusion;
+                		#endif
+            	
                 		float3 halfVectorAdd = normalize(light.direction + viewDirWS);
-                		
-                		float HdotVAdd = saturate(dot(halfVectorAdd, viewDirWS));
-                		float3 ksAdd = F_FresnelSchlick(HdotVAdd, F0); //specular coefficient
-						float3 kdAdd = 1.0 - ksAdd; //diffuse coefficient
-                		kdAdd *= 1.0 - metallic;
-                		
+                	
                 		//Specular
-                		float3 specularAdd = Specular_CookTorance(light.direction, meshNormal, viewDirWS, halfVectorAdd, F0, roughness);
-                		
+                		float3 specularAdd = SpecularGGX(light.direction, normalWS, viewDirWS, halfVectorAdd, F0, roughness);
+       
                 		//Diffuse
-                		float3 diffuseAdd = kdAdd * baseColor.rgb;
-                		
+                		float3 diffuseAdd = baseColor * oneMinusReflectivity;
+                
                 		float NdotLAdd = saturate(dot(normalWS, light.direction));
                 		
                 		directLight += (diffuseAdd + specularAdd) * lightColorAdd * NdotLAdd;

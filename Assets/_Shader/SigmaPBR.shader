@@ -76,11 +76,9 @@ Shader "SigmaShader/SigmaPBR"
 	            #pragma multi_compile _ DOTS_INSTANCING_ON
                 
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-				#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
 				#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
                 #include "SigmaPBRCommon.hlsl"
                 #include "SigmaSurfaceData.hlsl"
-                
                 //#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/BSDF.hlsl"
 
                 struct appdata
@@ -166,7 +164,7 @@ Shader "SigmaShader/SigmaPBR"
 					float4 shadowMask = SAMPLE_SHADOWMASK(i.dynamicLightmapUV);
                 	
                 	float roughness = 1.0 - surface.smoothness;
-                	roughness = clamp(roughness, 0.04, 1.0);
+                	roughness = max(roughness, 0.04);
                 	
                 	#ifdef _SPECULAR_SETUP
                 		float3 F0 = surface.specular;
@@ -180,7 +178,7 @@ Shader "SigmaShader/SigmaPBR"
                 	Light mainLight = GetMainLight(shadowCoord);
 					float3 lightColor = mainLight.distanceAttenuation * mainLight.shadowAttenuation * mainLight.color;
                 	
-                	 #if defined(_SCREEN_SPACE_OCCLUSION)
+                	#if defined(_SCREEN_SPACE_OCCLUSION)
 		                AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(GetNormalizedScreenSpaceUV(i.positionCS));
 		                lightColor *= aoFactor.directAmbientOcclusion;
 		            #endif
@@ -249,19 +247,20 @@ Shader "SigmaShader/SigmaPBR"
 
 		                    Light light = GetAdditionalLight(lightIndex, i.positionWS, shadowMask);
 		                    float3 lightColorAdd = light.distanceAttenuation * light.shadowAttenuation * light.color;
+                	
+                			#if defined(_SCREEN_SPACE_OCCLUSION)
+				                AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(GetNormalizedScreenSpaceUV(i.positionCS));
+				                lightColorAdd *= aoFactor.directAmbientOcclusion;
+                			#endif
+                	
                 			float3 halfVectorAdd = normalize(light.direction + viewDirWS);
                 	
-                			// float HdotVAdd = saturate(dot(halfVectorAdd, viewDirWS));
-					        //  float3 ksAdd = F_FresnelSchlick(HdotVAdd, F0); //specular coefficient
-					        // float3 kdAdd = 1.0 - ksAdd; //diffuse coefficient
-					        // kdAdd *= 1.0 - surface.metallic;
-                			
                 			//Specular
-                			float3 specularAdd = Specular_CookTorance(light.direction, normalWS, viewDirWS, halfVectorAdd, F0, roughness);
-                			
+                			float3 specularAdd = SpecularGGX(light.direction, normalWS, viewDirWS, halfVectorAdd, F0, roughness);
+           
                 			//Diffuse
                 			float3 diffuseAdd = surface.albedo * oneMinusReflectivity;
-                			
+                	
                 			float NdotLAdd = saturate(dot(normalWS, light.direction));
                 			
                 			directLight += (diffuseAdd + specularAdd) * lightColorAdd * NdotLAdd;
