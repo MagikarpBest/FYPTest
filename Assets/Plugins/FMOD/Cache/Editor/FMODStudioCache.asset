@@ -18,33 +18,6 @@ MonoBehaviour:
   lastModified: 639249101421052115
   FileSizes: []
   Exists: 1
---- !u!114 &-6600742890992440015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/Music/titleScreen_ruinStructure
-  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
-  Path: event:/Music/titleScreen_ruinStructure
-  Guid:
-    Data1: -503493518
-    Data2: 1205623086
-    Data3: -819501932
-    Data4: -342267735
-  Banks:
-  - {fileID: 1360884333927620937}
-  IsStream: 1
-  Is3D: 0
-  IsOneShot: 0
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 81818
 --- !u!114 &-4880881576874316606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,7 +33,7 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Ambience.bank
   Name: Ambience
   StudioPath: bank:/Ambience
-  lastModified: 639249280971049551
+  lastModified: 639252760006044563
   FileSizes:
   - Name: Desktop
     Value: 187200
@@ -80,10 +53,10 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639249309703561624
+  lastModified: 639252760006127014
   FileSizes:
   - Name: Desktop
-    Value: 890
+    Value: 1118
   Exists: 1
 --- !u!114 &-1276155510993669310
 MonoBehaviour:
@@ -121,21 +94,52 @@ MonoBehaviour:
   - {fileID: -2533342218966105822}
   - {fileID: -4880881576874316606}
   - {fileID: 1360884333927620937}
+  - {fileID: 6933850107988641065}
   EditorEvents:
-  - {fileID: 1557610681048056212}
-  - {fileID: -6600742890992440015}
+  - {fileID: 1258482082395714992}
+  - {fileID: 8135482517250090326}
+  - {fileID: 7749406193640874931}
   EditorParameters: []
   MasterBanks:
   - {fileID: 1360884333927620937}
   StringsBanks:
   - {fileID: -2533342218966105822}
   cacheVersion: 131860
-  cacheTime: 639249309703561624
+  cacheTime: 639252760006132144
   SerializableEventsDict:
-  - key: event:/wind
+  - key: event:/Ambient/Wind
     index: 0
-  - key: event:/Music/titleScreen_ruinStructure
+  - key: event:/Music/TitleScreen
     index: 1
+  - key: event:/SFX/Rock_Clash
+    index: 2
+--- !u!114 &1258482082395714992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Ambient/Wind
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Ambient/Wind
+  Guid:
+    Data1: 262779742
+    Data2: 1182322217
+    Data3: -2027848269
+    Data4: 609835390
+  Banks:
+  - {fileID: -4880881576874316606}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &1360884333927620937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,38 +155,11 @@ MonoBehaviour:
   Path: FMOD/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639249309703546531
+  lastModified: 639252760006121820
   FileSizes:
   - Name: Desktop
-    Value: 1045664
+    Value: 1046272
   Exists: 1
---- !u!114 &1557610681048056212
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/wind
-  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
-  Path: event:/wind
-  Guid:
-    Data1: 262779742
-    Data2: 1182322217
-    Data3: -2027848269
-    Data4: 609835390
-  Banks:
-  - {fileID: -4880881576874316606}
-  IsStream: 1
-  Is3D: 0
-  IsOneShot: 1
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 0
 --- !u!114 &2170450641120327329
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,3 +205,77 @@ MonoBehaviour:
   lastModified: 639249101427257101
   FileSizes: []
   Exists: 1
+--- !u!114 &6933850107988641065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/SFX.bank
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorBankRef
+  Path: FMOD/Build/Desktop/SFX.bank
+  Name: SFX
+  StudioPath: bank:/SFX
+  lastModified: 639252760006132144
+  FileSizes:
+  - Name: Desktop
+    Value: 66176
+  Exists: 1
+--- !u!114 &7749406193640874931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/SFX/Rock_Clash
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/SFX/Rock_Clash
+  Guid:
+    Data1: -1301583146
+    Data2: 1257858291
+    Data3: 1636510389
+    Data4: -7595912
+  Banks:
+  - {fileID: 6933850107988641065}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 4160
+--- !u!114 &8135482517250090326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Music/TitleScreen
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Music/TitleScreen
+  Guid:
+    Data1: -503493518
+    Data2: 1205623086
+    Data3: -819501932
+    Data4: -342267735
+  Banks:
+  - {fileID: 1360884333927620937}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 81818
