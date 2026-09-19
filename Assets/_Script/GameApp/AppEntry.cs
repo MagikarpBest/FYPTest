@@ -1,17 +1,23 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public static class AppEntry
 {
-    static AppEntry() { }
-
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    // want this function to be called when Unity engine starts!
-    private static void Init()
+    private static async void Init()
     {
-        FMODAudioManager audioManagerObject = new GameObject("FMODAudioManager").AddComponent<FMODAudioManager>();
-        AudioService.SetAudioService(audioManagerObject);
+        if (IsSceneLoaded("AppBootstrap"))
+        {
+            Debug.Log("AppEntry: AppBootstrap is already loaded.");
+            return;
+        }
 
-        // audioManagerInstance.SetVolume(volume);
-        // audioManagerInstance.SetPitch(pitch);
+        await SceneManager.LoadSceneAsync("AppBootstrap", LoadSceneMode.Additive);
+    }
+
+    private static bool IsSceneLoaded(string sceneName)
+    {
+        Scene scene = SceneManager.GetSceneByName(sceneName);
+        return scene.IsValid() && scene.isLoaded;
     }
 }

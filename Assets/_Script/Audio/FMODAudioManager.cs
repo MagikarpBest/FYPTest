@@ -20,7 +20,8 @@ public class FMODAudioManager : MonoBehaviour, IAudioService
     // Used to track the currently playing music and allow modifying its parameters. For adaptive music purpose.
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        AudioService.SetAudioService(this);
+        // DontDestroyOnLoad(gameObject);
     }
 
     private void Update()
