@@ -3748,6 +3748,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8519038383117848178, guid: c8373ec79c28b2941a2ad7e25ee17b5c, type: 3}
   m_PrefabInstance: {fileID: 6983341728767768301}
   m_PrefabAsset: {fileID: 0}
+--- !u!54 &2006423856 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 6302705421622611153, guid: c8373ec79c28b2941a2ad7e25ee17b5c, type: 3}
+  m_PrefabInstance: {fileID: 6983341728767768301}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2013151364
 GameObject:
   m_ObjectHideFlags: 0
@@ -4111,8 +4116,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1851613879085870441, guid: c8373ec79c28b2941a2ad7e25ee17b5c, type: 3}
+      propertyPath: gravity
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1851613879085870441, guid: c8373ec79c28b2941a2ad7e25ee17b5c, type: 3}
+      propertyPath: rigidBody
+      value: 
+      objectReference: {fileID: 2006423856}
+    - target: {fileID: 1851613879085870441, guid: c8373ec79c28b2941a2ad7e25ee17b5c, type: 3}
       propertyPath: jumpHeight
-      value: 5
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1851613879085870441, guid: c8373ec79c28b2941a2ad7e25ee17b5c, type: 3}
+      propertyPath: externalDecay
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1851613879085870441, guid: c8373ec79c28b2941a2ad7e25ee17b5c, type: 3}
       propertyPath: groundLayer.m_Bits
@@ -4123,8 +4140,12 @@ PrefabInstance:
       value: PlayerChracter
       objectReference: {fileID: 0}
     - target: {fileID: 6302705421622611153, guid: c8373ec79c28b2941a2ad7e25ee17b5c, type: 3}
+      propertyPath: m_Mass
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 6302705421622611153, guid: c8373ec79c28b2941a2ad7e25ee17b5c, type: 3}
       propertyPath: m_UseGravity
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6302705421622611153, guid: c8373ec79c28b2941a2ad7e25ee17b5c, type: 3}
       propertyPath: m_Constraints

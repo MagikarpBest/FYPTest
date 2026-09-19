@@ -38,17 +38,17 @@ public class Bomb : MonoBehaviour
         foreach (var col in objects)
         {
             Rigidbody targetRb = col.GetComponent<Rigidbody>();
+            ILaunchable launchable = col.GetComponent<ILaunchable>();
 
-            if (col.gameObject.layer == LayerMask.NameToLayer("Player"))
+            if (launchable!=null)
             {
-                ILaunchable launchable = col.GetComponent<ILaunchable>();
-                Vector3 direction = col.transform.position - transform.position;
-                launchable.Launch(direction * explosionForce + Vector3.up * (explosionForce));
+                Vector3 direction = (col.transform.position - transform.position).normalized;
+                launchable.Launch(direction * explosionForce );
             }
-            // else if (targetRb != null)
-            // {
-            //     targetRb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 2f, ForceMode.Impulse);
-            // }
+            else if (targetRb != null)
+            {
+                targetRb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 2f, ForceMode.Impulse);
+            }
         }
         Destroy(gameObject);
         Debug.Log("Bomb exploded");

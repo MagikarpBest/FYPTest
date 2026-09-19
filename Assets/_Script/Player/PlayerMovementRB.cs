@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerMovementRB : MonoBehaviour, ILaunchable
 {
     [Header("Reference")]
-    [SerializeField] private Rigidbody rb;
+    [SerializeField] private Rigidbody rigidBody;
 
     [SerializeField] private Transform model;
     [SerializeField] private float rotationSpeed = 720f;
@@ -12,19 +12,19 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
 
 
     [Header("Movement settings")]
-    [SerializeField] private float gravity = 9.81f * 2;
-    [SerializeField] private float jumpHeight = 1f;
-    [SerializeField] private float moveSpeed = 9f;
-    [SerializeField] private float externalDecay = 5f;
+    [SerializeField] private float gravityMultiply = 2;
+    [SerializeField] private float jumpHeight = 3f;
+    [SerializeField] private float moveSpeed = 11f;
+    [SerializeField] private float externalDecaySpeed = 2f;
 
     // for direction movement
     private Transform cameraTransform;
-    private bool grounded;
+    private bool isGrounded;
+    private bool isLaunched;
     private Vector3 currentNormal;
     private Vector3 currentMoveDirection;
     private Vector3 moveVelocity;
-    private Vector3 externalVelocity;
-
+    private Vector3 externalVelocity; // knockback XZ
 
     private Vector3 groundNormal;
 
@@ -40,19 +40,33 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         cameraTransform = Camera.main.transform;
         inputManager = FindFirstObjectByType<PlayerInputManager>();
     }
-    
+
     private void FixedUpdate()
     {
+        LaunchCheck();
         CheckGround();
         ApplyExternalVelocity();
         HandleMovement();
-        //HandleGravity();
+        HandleGravity();
         ApplyVelocity();
+        
+    }
+    private void LaunchCheck()
+    {
+        if(!isLaunched)
+        {
+            return;
+        }
+        
+        if(isGrounded&&rigidBody.linearVelocity.y<=0)
+        {
+            isLaunched = false;
+        }
     }
 
     private void CheckGround()
     {
-        grounded = false;
+        isGrounded = false;
 
         if (Physics.Raycast(
                 transform.position,
@@ -62,28 +76,33 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
                 groundLayer
             ))
         {
-            grounded = true;
+            isGrounded = true;
             groundNormal = hit.normal;
         }
     }
-    
+
     // decay
     private void ApplyExternalVelocity()
     {
         // decay only horizontal velocity
         Vector3 horizontal = new Vector3(externalVelocity.x, 0, externalVelocity.z);
 
-        horizontal = Vector3.Lerp(horizontal, Vector3.zero, externalDecay * Time.fixedDeltaTime);
+        horizontal = Vector3.Lerp(horizontal, Vector3.zero, externalDecaySpeed * Time.fixedDeltaTime);
 
         externalVelocity.x = horizontal.x;
         externalVelocity.z = horizontal.z;
     }
     
-    
+
     private void HandleMovement()
     {
+        if(isLaunched)
+        {
+            moveVelocity = Vector3.zero;
+            return;
+        }
         Vector2 moveInput = inputManager.MoveInput;
-        
+
         Vector3 forward = cameraTransform.transform.forward;
         Vector3 right = cameraTransform.transform.right;
 
@@ -112,15 +131,16 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
 
     private void HandleJump()
     {
-        if (!grounded)
+        if (!isGrounded)
         {
             return;
         }
 
-        Vector3 velocity = rb.linearVelocity;
-        velocity.y = Mathf.Sqrt(2f * gravity * jumpHeight);
-        rb.linearVelocity = velocity;
+        Vector3 velocity = rigidBody.linearVelocity;
+        velocity.y = Mathf.Sqrt(2f * (Physics.gravity.magnitude * gravityMultiply) * jumpHeight);
+        rigidBody.linearVelocity = velocity;
     }
+
     // Visual rotation when moving
     private void HandleRotation()
     {
@@ -128,9 +148,9 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         {
             return;
         }
-        
+
         Quaternion target = Quaternion.LookRotation(currentMoveDirection);
-        
+
         model.rotation =
             Quaternion.RotateTowards(
                 model.rotation,
@@ -142,23 +162,37 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
     private void HandleGravity()
     {
         //externalVelocity.y += gravity;
-        rb.AddForce(Physics.gravity * gravity, ForceMode.Acceleration);
+        rigidBody.AddForce(Physics.gravity * gravityMultiply, ForceMode.Acceleration);
+        Debug.Log($"linear velocity ={rigidBody.linearVelocity}");
     }
-    
+
     // External force
     public void Launch(Vector3 force)
     {
-        externalVelocity += force;
-        grounded = false;
+        //externalVelocity += force;
+        isGrounded = false;
+        isLaunched = true;
+        externalVelocity += new Vector3(force.x, 0, force.z);
+
+        rigidBody.linearVelocity = new Vector3(rigidBody.linearVelocity.x, force.y, rigidBody.linearVelocity.z);
     }
-    
+
     private void ApplyVelocity()
     {
-        Vector3 finalVelocity = moveVelocity + externalVelocity;
+        
+        // Only control horizontal movement
+        Vector3 velocity = rigidBody.linearVelocity;
+        velocity.x =
+            moveVelocity.x +
+            externalVelocity.x;
 
-        finalVelocity.y = rb.linearVelocity.y + externalVelocity.y;
-        rb.linearVelocity = finalVelocity;
-        externalVelocity.y = 0;
+
+        velocity.z =
+            moveVelocity.z +
+            externalVelocity.z;
+
+
+        rigidBody.linearVelocity = velocity;
     }
 
     // Ground check
@@ -168,7 +202,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         {
             if (Vector3.Dot(contact.normal, Vector3.up) > 0.5f)
             {
-                grounded = true;
+                isGrounded = true;
                 return;
             }
             else
@@ -180,7 +214,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
 
     private void OnCollisionExit(Collision collision)
     {
-        grounded = false;
+        isGrounded = false;
     }
 
     private void OnEnable()
