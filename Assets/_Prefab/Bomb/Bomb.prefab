@@ -155,4 +155,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bomb
   rb: {fileID: 304092597822084607}
   explosionRadius: 5
-  explosionForce: 30
+  explosionForce: 15

@@ -347,8 +347,6 @@ GameObject:
   - component: {fileID: 8519038383117848178}
   - component: {fileID: 6617471651056936237}
   - component: {fileID: 6581842497327294503}
-  - component: {fileID: 6933756838860875836}
-  - component: {fileID: 6610424247320914132}
   - component: {fileID: 8727233040536577569}
   - component: {fileID: 1851613879085870441}
   - component: {fileID: 6302705421622611153}
@@ -390,8 +388,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9340dd6757f164f4a82851648a656e70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  controller: {fileID: 6610424247320914132}
-  inputManager: {fileID: 0}
+  controller: {fileID: 0}
   gravity: -29.43
   jumpHeight: 1
 --- !u!114 &6581842497327294503
@@ -412,47 +409,8 @@ MonoBehaviour:
   inputManager: {fileID: 0}
   summonLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 16
   isDebug: 0
---- !u!114 &6933756838860875836
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4977154059962969276}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9ab788a1b87c5e4ab3ac9931dbbb471, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerObjectPhysic
-  characterController: {fileID: 6610424247320914132}
-  pushForce: 3
---- !u!143 &6610424247320914132
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4977154059962969276}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Height: 2
-  m_Radius: 1
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.05
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8727233040536577569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,7 +425,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerBombSkill
   bombPrefab: {fileID: 6375996512068800576, guid: 5f36c46b1d34e07418876dd936ee679f, type: 3}
   bombHoldPoint: {fileID: 6449246561278365250}
-  playerInputManager: {fileID: 0}
   throwForce: 10
   upwardForce: 9
 --- !u!114 &1851613879085870441
@@ -483,15 +440,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementRB
   rb: {fileID: 6302705421622611153}
-  inputManager: {fileID: 0}
   model: {fileID: 8161590914092208951}
   rotationSpeed: 720
-  groundCheckDistance: 0.2
+  groundCheckDistance: 0.7
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 144
   gravity: 3
-  jumpHeight: 10
+  jumpHeight: 15
   moveSpeed: 9
 --- !u!54 &6302705421622611153
 Rigidbody:
@@ -501,7 +457,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4977154059962969276}
   serializedVersion: 5
-  m_Mass: 70
+  m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -527,7 +483,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4977154059962969276}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 24382e0ab0fd13a49bb59fcc33e8c0b1, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -572,7 +528,7 @@ Transform:
   m_GameObject: {fileID: 7120429217053670592}
   serializedVersion: 2
   m_LocalRotation: {x: 0.2646178, y: 0.0000000079593, z: -0.0000000021840258, w: 0.9643534}
-  m_LocalPosition: {x: -32.9, y: 18.474068, z: -10.175535}
+  m_LocalPosition: {x: 0, y: 3.944069, z: -4.202415}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

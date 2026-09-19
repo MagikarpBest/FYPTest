@@ -1,11 +1,13 @@
 using DG.Tweening;
+using System;
 using UnityEngine;
 
 public class PlayerBombSkill : MonoBehaviour
 {
     [SerializeField] private Bomb bombPrefab;
     [SerializeField] private Transform bombHoldPoint;
-    [SerializeField] private PlayerInputManager playerInputManager;
+    [SerializeField] private Transform playerVisual;
+     private PlayerInputManager inputManager;
 
     [Header("Throw Settings")]
     [SerializeField] private float throwForce = 15f;
@@ -15,6 +17,11 @@ public class PlayerBombSkill : MonoBehaviour
     private Bomb currentBomb;
     private bool hasThrown = false;
 
+
+    private void Awake()
+    {
+        inputManager = FindFirstObjectByType<PlayerInputManager>();
+    }
 
     private void Start()
     {
@@ -63,26 +70,27 @@ public class PlayerBombSkill : MonoBehaviour
         direction.y = 0;
 
         if (direction.sqrMagnitude < 0.01f)
+        {
             return;
-
+        }
         Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-        transform
+        playerVisual
             .DORotateQuaternion(targetRotation, 0.2f)
             .SetEase(Ease.OutSine);
     }
 
     private void OnEnable()
     {
-        playerInputManager.OnSkill3Pressed += SummonOrExplode;
-        playerInputManager.OnAttackPressed += ThrowBomb;
+        inputManager.OnSkill3Pressed += SummonOrExplode;
+        inputManager.OnAttackPressed += ThrowBomb;
 
     }
 
     private void OnDisable()
     {
-        playerInputManager.OnSkill3Pressed -= SummonOrExplode;
-        playerInputManager.OnAttackPressed -= ThrowBomb;
+        inputManager.OnSkill3Pressed -= SummonOrExplode;
+        inputManager.OnAttackPressed -= ThrowBomb;
 
     }
 

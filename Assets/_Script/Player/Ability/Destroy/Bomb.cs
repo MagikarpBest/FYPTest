@@ -13,7 +13,6 @@ public class Bomb : MonoBehaviour
     {
         rb.isKinematic = true;
         transform.SetParent(bombHoldPoint);
-        rb.interpolation = RigidbodyInterpolation.None;
         
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
@@ -46,10 +45,10 @@ public class Bomb : MonoBehaviour
                 Vector3 direction = col.transform.position - transform.position;
                 launchable.Launch(direction * explosionForce + Vector3.up * (explosionForce));
             }
-            if (targetRb != null)
-            {
-                targetRb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 2f, ForceMode.Impulse);
-            }
+            // else if (targetRb != null)
+            // {
+            //     targetRb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 2f, ForceMode.Impulse);
+            // }
         }
         Destroy(gameObject);
         Debug.Log("Bomb exploded");

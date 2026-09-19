@@ -6,7 +6,8 @@ public class PlayerMovement : MonoBehaviour, ILaunchable
 {
     [Header("Reference")]
     [SerializeField] private CharacterController controller;
-    [SerializeField] private PlayerInputManager inputManager;
+    private PlayerInputManager inputManager => GetComponent<PlayerInputManager>();
+
 
     [Header("Movement settings")]
     private float moveSpeed = 9f;
