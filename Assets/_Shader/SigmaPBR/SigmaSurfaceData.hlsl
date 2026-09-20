@@ -3,9 +3,12 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
 CBUFFER_START(UnityPerMaterial)
+float _Surface;
+float _Cutoff;
 float4 _BaseColor;
 float4 _BaseTexture_ST;
-float _TriplanarScale;
+float _TriplanarTile;
+float _TriplanarBlend;
 float _NormalStrength;
 float _Metallic;
 float3 _SpecularColor;
@@ -63,15 +66,46 @@ struct SigmaSurfaceData
     float3 emission;
 };
 
+struct appdata
+{
+    float2 uv : TEXCOORD0;
+    float4 positionOS : POSITION;
+    float3 normalOS : NORMAL;
+    float4 tangentOS : TANGENT;
+    float2 dynamicLightmapUV : TEXCOORD1;
+};
+
+struct v2f
+{
+    float4 positionCS : SV_Position;
+    float2 uv : TEXCOORD0;
+    float3 positionWS : TEXCOORD1;
+    float3 normalWS : TEXCOORD2;
+    float4 tangentWS : TEXCOORD3;
+    float3 viewWS : TEXCOORD4;
+    float2 dynamicLightmapUV : TEXCOORD5;
+};
+
+void InitSurfaceParameters(v2f i, out SigmaSurfaceParameters sp)
+{
+    sp.uv = i.uv;  
+    sp.positionWS = i.positionWS;
+    sp.normalWS = NormalizeNormalPerPixel(i.normalWS);
+    sp.tangentWS = float4(normalize(i.tangentWS.xyz), i.tangentWS.w);
+    sp.viewDirWS = normalize(i.viewWS);
+    sp.screenUV = GetNormalizedScreenSpaceUV(i.positionCS);
+}
+
 struct TriplanarUV 
 {
     float2 x, y, z;
 };
 
+
 TriplanarUV GetTriplanarUV (SigmaSurfaceParameters sp) 
 {
     TriplanarUV triUV;
-    float3 p = sp.positionWS * _TriplanarScale;
+    float3 p = sp.positionWS * _TriplanarTile;
     triUV.x = p.zy;
     triUV.y = p.xz;
     triUV.z = p.xy;
@@ -273,4 +307,27 @@ float3 GetEmissive(SigmaSurfaceParameters sp)
     return emission * _EmissionColor;
 }
 
+void InitSurfaceData(SigmaSurfaceParameters sp, out SigmaSurfaceData surface)
+{
+    float4 baseColor = GetBaseColor(sp);
+    surface.albedo = baseColor.rgb;
+    surface.alpha = baseColor.a;
+    surface.normal = GetNormal(sp);
+    #ifdef _SPECULAR_SETUP
+    surface.specular = GetSpecular(sp);
+    surface.metallic = 0;
+    #else
+    surface.metallic = GetMetallic(sp);
+    surface.specular = 0;
+    #endif
+    surface.smoothness = GetSmoothness(sp);
+    surface.occlusion = GetOcclusion(sp);
+                	
+    #if defined(_SCREEN_SPACE_OCCLUSION)
+    AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(sp.screenUV);
+    surface.occlusion = min(surface.occlusion, aoFactor.indirectAmbientOcclusion);
+    #endif
+                	
+    surface.emission = GetEmissive(sp);
+}
 #endif

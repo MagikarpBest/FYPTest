@@ -7,7 +7,7 @@ Shader "SigmaShader/GrassPBR"
         _ColorVariation("Color Variation", Color) = (1, 1, 1, 1)
         _ColorNoiseIntensity("Color Noise Intensity", Float) = 1
     	_ColorNoiseScale("Color Noise Scale", Float) = 1
-        _Roughness("Roughness", Float) = 1
+        _Roughness("Roughness", Range(0.0, 1.0)) = 1
         _WindTexture("Wind Texture", 2D) = "white" {}
         _WindDirection("Wind Direction", Vector) = (1, 0 ,0)
         _WindStrength("Wind Strength", Float) = 0.5
@@ -33,6 +33,7 @@ Shader "SigmaShader/GrassPBR"
             }
             
             Cull Off
+            ZTest LEqual
             Zwrite On
             
             HLSLPROGRAM
@@ -56,7 +57,7 @@ Shader "SigmaShader/GrassPBR"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 			#include "GrassCommon.hlsl"
-			#include "Assets/_Shader/SigmaPBRCommon.hlsl"
+			#include "Assets/_Shader/SigmaPBR/SigmaPBRCommon.hlsl"
             
             CBUFFER_START(UnityPerMaterial)
 			float4 _TopColor;
@@ -148,7 +149,8 @@ Shader "SigmaShader/GrassPBR"
 					//Cook-Torrance BRDF
             	
                 	//Specular
-                	float3 specular = SpecularGGX(mainLight.direction, normalWS, viewDirWS, halfVector, F0, roughness);
+            		float heightMask = pow(saturate(i.uv.y), 2.0);
+                	float3 specular = SpecularGGX(mainLight.direction, normalWS, viewDirWS, halfVector, F0, roughness) * heightMask;
            
                 	//Diffuse
                 	float3 diffuse = baseColor * oneMinusReflectivity;
@@ -175,7 +177,7 @@ Shader "SigmaShader/GrassPBR"
             		float3 specularAO = 1.0;
             		float3 diffuseAO = 1.0;
             	
-                	float3 specularIndirect = envSpecularPrefilted * (F0 * envBRDF.r + envBRDF.g) * specularAO;
+                	float3 specularIndirect = envSpecularPrefilted * (F0 * envBRDF.r + envBRDF.g) * specularAO * heightMask;
                 	
                 	//Indirect diffuse
                 	float3 irradianceSH = SampleSH(normalWS); //irradiance spherical harmonics

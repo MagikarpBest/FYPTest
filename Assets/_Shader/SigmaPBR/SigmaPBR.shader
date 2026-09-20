@@ -5,7 +5,8 @@ Shader "SigmaShader/SigmaPBR"
         _BaseColor("Base Color", Color) = (1, 1, 1, 1)
         _BaseTexture("Base Texture", 2D) = "white" {}
     	[Toggle(_TRIPLANAR_MAPPING)] _UseTriplanarMapping("Use Triplanar Mapping", Integer) = 0
-    	_TriplanarScale("Triplanar Scale", Float) = 0.1
+    	_TriplanarTile("Triplanar Tile", Float) = 0.1
+    	_TriplanarBlend("Triplanar Blend", Float) = 1
     	
     	[Toggle(_SPECULAR_SETUP)] _UseSpecularSetup("Use Specular Setup", Integer) = 0
 
@@ -30,6 +31,25 @@ Shader "SigmaShader/SigmaPBR"
 
 		[NoScaleOffset] _EmissionMap("Emission Map", 2D) = "white" {}
 		[HDR] _EmissionColor("Emission Color", Color) = (0.0, 0.0, 0.0, 1.0)
+    	
+    	[HideInInspector] _Surface("_Surface", Float) = 0
+		[HideInInspector] _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
+		[HideInInspector] _SrcBlend("_SrcBlend", Float) = 1
+		[HideInInspector] _DstBlend("_DstBlend", Float) = 0
+		[HideInInspector] _SrcBlendAlpha("_SrcBlendAlpha", Float) = 1
+		[HideInInspector] _DstBlendAlpha("_DstBlendAlpha", Float) = 0
+		[HideInInspector] _ZWrite("_ZWrite", Float) = 1
+		[HideInInspector] _ZTest("_ZTest", Float) = 4
+		[HideInInspector] _Cull("_Cull", Float) = 2
+		[HideInInspector] _AlphaToMask("_AlphaToMask", Float) = 0
+    	
+    	[HideInInspector] _CastShadows("_CastShadows", Float) = 1
+		[HideInInspector] _ReceiveShadows("Receive Shadows", Float) = 1.0
+		[HideInInspector] _Blend("_Blend", Float) = 0
+		[HideInInspector] _AlphaClip("_AlphaClip", Float) = 0
+		[HideInInspector] _ZWriteControl("_ZWriteControl", Float) = 0
+		[HideInInspector] _QueueOffset("_QueueOffset", Float) = 0
+		[HideInInspector] _QueueControl("_QueueControl", Float) = 0
     }
     SubShader
     {
@@ -47,10 +67,12 @@ Shader "SigmaShader/SigmaPBR"
                 "LightMode" = "UniversalForward"
             }
 
-            ZWrite On
-            
-            ZTest LEqual
-
+            Cull [_Cull]
+			ZWrite [_ZWrite]
+			ZTest [_ZTest]
+			Blend [_SrcBlend] [_DstBlend], [_SrcBlendAlpha] [_DstBlendAlpha]
+			AlphaToMask [_AlphaToMask]
+			
             HLSLPROGRAM
                 #pragma vertex vert
                 #pragma fragment frag
@@ -70,6 +92,8 @@ Shader "SigmaShader/SigmaPBR"
                 #pragma shader_feature_local _ _CONVERT_FROM_ROUGHNESS
                 #pragma shader_feature_local _ _SPECULAR_SETUP
                 #pragma shader_feature_local _ _TRIPLANAR_MAPPING
+                #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
+                #pragma shader_feature_local _ _ALPHATEST_ON
                 
                 #pragma multi_compile_instancing
 	            #pragma instancing_options renderinglayer
@@ -80,27 +104,7 @@ Shader "SigmaShader/SigmaPBR"
                 #include "SigmaPBRCommon.hlsl"
                 #include "SigmaSurfaceData.hlsl"
                 //#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/BSDF.hlsl"
-
-                struct appdata
-                {
-                	float2 uv : TEXCOORD0;
-                    float4 positionOS : POSITION;
-                    float3 normalOS : NORMAL;
-					float4 tangentOS : TANGENT;
-					float2 dynamicLightmapUV : TEXCOORD1;
-                };
-
-                struct v2f
-                {
-                	float4 positionCS : SV_Position;
-                	float2 uv : TEXCOORD0;
-                	float3 positionWS : TEXCOORD1;
-                    float3 normalWS : TEXCOORD2;
-                	float4 tangentWS : TEXCOORD3;
-                    float3 viewWS : TEXCOORD4;
-					float2 dynamicLightmapUV : TEXCOORD5;
-                };
-
+                
                 v2f vert(appdata v)
                 {
                     v2f o = (v2f)0;
@@ -116,40 +120,6 @@ Shader "SigmaShader/SigmaPBR"
                     return o;
                 }
                 
-                void InitSurfaceParameters(v2f i, out SigmaSurfaceParameters sp)
-				{
-				    sp.uv = i.uv;  
-				    sp.positionWS = i.positionWS;
-				    sp.normalWS = NormalizeNormalPerPixel(i.normalWS);
-				    sp.tangentWS = float4(normalize(i.tangentWS.xyz), i.tangentWS.w);
-				    sp.viewDirWS = normalize(i.viewWS);
-                	sp.screenUV = GetNormalizedScreenSpaceUV(i.positionCS);
-				}
-                
-                void InitSurfaceData(SigmaSurfaceParameters sp, out SigmaSurfaceData surface)
-				{
-                	float4 baseColor = GetBaseColor(sp);
-				    surface.albedo = baseColor.rgb;
-                	surface.alpha = baseColor.a;
-                	surface.normal = GetNormal(sp);
-                	#ifdef _SPECULAR_SETUP
-                		surface.specular = GetSpecular(sp);
-                		surface.metallic = 0;
-                	#else
-                		surface.metallic = GetMetallic(sp);
-                		surface.specular = 0;
-                	#endif
-                	surface.smoothness = GetSmoothness(sp);
-                	surface.occlusion = GetOcclusion(sp);
-                	
-                	#if defined(_SCREEN_SPACE_OCCLUSION)
-					    AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(sp.screenUV);
-					    surface.occlusion = min(surface.occlusion, aoFactor.indirectAmbientOcclusion);
-					#endif
-                	
-                	surface.emission = GetEmissive(sp);
-				}
-                
                 float4 frag(v2f i) : SV_Target
                 {
                 	SigmaSurfaceParameters sp;
@@ -158,18 +128,26 @@ Shader "SigmaShader/SigmaPBR"
                 	SigmaSurfaceData surface;
                 	InitSurfaceData(sp, surface);
                 	
+                	#ifdef _ALPHATEST_ON
+                		if (surface.alpha < _Cutoff)
+                		{
+                			discard;
+                		}
+                	#endif
+                	
                 	float3 normalWS = surface.normal;
                 	float3 viewDirWS = normalize(i.viewWS);
                 	float4 shadowCoord = TransformWorldToShadowCoord(i.positionWS);
 					float4 shadowMask = SAMPLE_SHADOWMASK(i.dynamicLightmapUV);
                 	
                 	float roughness = 1.0 - surface.smoothness;
-                	roughness = max(roughness, 0.04);
+                	roughness = max(roughness, 0.085);
                 	
                 	#ifdef _SPECULAR_SETUP
                 		float3 F0 = surface.specular;
 						half oneMinusReflectivity = 1.0;
                 	#else
+                		//0.04 is kDieletricSpec.a
                 		float3 F0 = lerp(0.04, surface.albedo, surface.metallic);
 					    half oneMinusReflectivity = OneMinusReflectivityMetallic(surface.metallic); 
                 	#endif
@@ -198,7 +176,7 @@ Shader "SigmaShader/SigmaPBR"
                 	// kd *= 1.0 - surface.metallic;
                 	
                 	//Specular
-                	float3 specular = SpecularGGX(mainLight.direction, normalWS, viewDirWS, halfVector, F0, roughness);
+                	float3 specular = SpecularGGX(mainLight.direction, normalWS, viewDirWS, halfVector, F0, roughness) * PI;
            
                 	//Diffuse
                 	//float3 diffuse = kd * albedo / PI 
@@ -232,7 +210,7 @@ Shader "SigmaShader/SigmaPBR"
                 	float3 irradianceSH = SampleSH(normalWS); //irradiance spherical harmonics
                 	
                 	float3 diffuseAO = GTAOMultiBounce(surface.occlusion, surface.albedo);
-                	
+     
                 	float3 diffuseIndirect = irradianceSH * surface.albedo * oneMinusReflectivity * diffuseAO;
                 	
                 	float3 indirectLight = diffuseIndirect + specularIndirect;
@@ -256,8 +234,8 @@ Shader "SigmaShader/SigmaPBR"
                 			float3 halfVectorAdd = normalize(light.direction + viewDirWS);
                 	
                 			//Specular
-                			float3 specularAdd = SpecularGGX(light.direction, normalWS, viewDirWS, halfVectorAdd, F0, roughness);
-           
+                			float3 specularAdd = SpecularGGX(light.direction, normalWS, viewDirWS, halfVectorAdd, F0, roughness) * PI;
+
                 			//Diffuse
                 			float3 diffuseAdd = surface.albedo * oneMinusReflectivity;
                 	
@@ -268,7 +246,9 @@ Shader "SigmaShader/SigmaPBR"
 					#endif
                 	
                 	float3 finalColor = surface.emission + directLight + indirectLight;
-					return float4(finalColor, surface.alpha);
+                	float alpha = OutputAlpha(surface.alpha, IsSurfaceTypeTransparent(_Surface));
+                	
+					return float4(finalColor, alpha);
                 }
 
             ENDHLSL
@@ -281,6 +261,8 @@ Shader "SigmaShader/SigmaPBR"
                 "LightMode" = "ShadowCaster"
             }
 
+			Cull [_Cull]
+			ZTest LEqual
 			ZWrite On
 			ColorMask 0
 
@@ -291,22 +273,13 @@ Shader "SigmaShader/SigmaPBR"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
+            #include "SigmaSurfaceData.hlsl"
 
+			#pragma shader_feature_local _ _ALPHATEST_ON
 			#pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
 
 			float3 _LightDirection;
 			float3 _LightPosition;
-
-			struct appdata
-			{
-				float4 positionOS : POSITION;
-				float3 normalOS : NORMAL;
-			};
-
-			struct v2f
-			{
-				float4 positionCS : SV_POSITION;
-			};
 
 			float4 GetShadowPositionHClip(float3 positionOS, float3 normalOS)
 			{
@@ -330,12 +303,18 @@ Shader "SigmaShader/SigmaPBR"
 				v2f o = (v2f)0;
 
 				o.positionCS = GetShadowPositionHClip(v.positionOS, v.normalOS);
+				o.uv = TRANSFORM_TEX(v.uv, _BaseTexture);
 
 				return o;
 			}
 
 			float4 shadowPassFrag(v2f i) : SV_TARGET
 			{
+				SigmaSurfaceParameters sp;
+                InitSurfaceParameters(i, sp);
+				
+				float4 baseColor = GetBaseColor(sp);
+				AlphaDiscard(baseColor.a, _Cutoff);
 				return 0;
 			}
 			ENDHLSL
@@ -348,6 +327,8 @@ Shader "SigmaShader/SigmaPBR"
                 "LightMode" = "DepthOnly"
             }
 
+            Cull [_Cull]
+            ZTest LEqual
             ZWrite On
             ColorMask R
 
@@ -356,28 +337,27 @@ Shader "SigmaShader/SigmaPBR"
                 #pragma fragment depthOnlyFrag
 
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
-                struct appdata
-                {
-                    float4 positionOS : POSITION;
-                };
-
-                struct v2f
-                {
-                    float4 positionCS : SV_Position;
-                };
+                #include "SigmaSurfaceData.hlsl"
+				#pragma shader_feature_local _ _ALPHATEST_ON
 
                 v2f depthOnlyVert(appdata v)
                 {
                     v2f o = (v2f)0;
 
                     o.positionCS = TransformObjectToHClip(v.positionOS.xyz);
+					o.uv = TRANSFORM_TEX(v.uv, _BaseTexture);
 
                     return o;
                 }
 
                 float depthOnlyFrag(v2f i) : SV_Target
                 {
+					SigmaSurfaceParameters sp;
+	                InitSurfaceParameters(i, sp);
+					
+					float4 baseColor = GetBaseColor(sp);
+					AlphaDiscard(baseColor.a, _Cutoff);
+				
                     return i.positionCS.z;
                 }
 
@@ -400,25 +380,7 @@ Shader "SigmaShader/SigmaPBR"
 
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
                 #include "SigmaSurfaceData.hlsl"
-
-                struct appdata
-                {
-                    float4 positionOS : POSITION;
-					float2 uv : TEXCOORD0;
-                    float3 normalOS : NORMAL;
-					float4 tangentOS : TANGENT;
-                };
-
-                struct v2f
-                {
-                    float4 positionCS : SV_Position;
-                	float2 uv : TEXCOORD0;
-                	float3 positionWS : TEXCOORD1;
-                    float3 normalWS : TEXCOORD2;
-                	float4 tangentWS : TEXCOORD3;
-                    float3 viewWS : TEXCOORD4;
-                };
-
+                
                 v2f depthNormalVert(appdata v)
                 {
                     v2f o = (v2f)0;
@@ -432,22 +394,15 @@ Shader "SigmaShader/SigmaPBR"
 
                     return o;
                 }
-
-                void InitSurfaceParameters(v2f i, out SigmaSurfaceParameters sp)
-				{
-				    sp.uv = i.uv;  
-				    sp.positionWS = i.positionWS;
-				    sp.normalWS = NormalizeNormalPerPixel(i.normalWS);
-				    sp.tangentWS = float4(normalize(i.tangentWS.xyz), i.tangentWS.w);
-				    sp.viewDirWS = normalize(i.viewWS);
-                	sp.screenUV = GetNormalizedScreenSpaceUV(i.positionCS);
-				}
                 
                 float4 depthNormalFrag(v2f i) : SV_Target
                 {
                     SigmaSurfaceParameters sp;
                 	InitSurfaceParameters(i, sp);
                 	
+					float4 baseColor = GetBaseColor(sp);
+					AlphaDiscard(baseColor.a, _Cutoff);
+				
                 	//get surface normal
                 	float3 normalWS = GetNormal(sp);
 					return float4(normalWS, 0.0);
@@ -456,4 +411,5 @@ Shader "SigmaShader/SigmaPBR"
             ENDHLSL
         }
     }
+	CustomEditor "SigmaPBRGUI"
 }

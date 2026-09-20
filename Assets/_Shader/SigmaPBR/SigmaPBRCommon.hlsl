@@ -5,7 +5,7 @@
 //No negative dot products always saturate to keep within 0 to 1
 //No divisions by 0 clamp to small episilon like 1e-5 (0.00001) using max
 
-//Standard PBR
+//https://talkartist.cn/article/1936746818916368384 PBR implementation
 //D Normal distribution function
 float D_DistributionGGX(float3 N, float3 H, float roughness) //GGX/Trowbridge-Reitz
 {
@@ -80,10 +80,10 @@ float2 EnvBRDFApprox_UE4(float roughness, float NdotV)
     return AB;
 }
 
-//Closer to unity and UE
+//https://github.com/Nuomi-Chobits/Unity-URP-PBR/blob/main/Assets/Shaders/CustomLighting.hlsl implementation
 float D_GGX_UE5(float roughness, float NdotH)
 {
-    float a = roughness ; 
+    float a = roughness * roughness; 
     float a2 = a * a;
     float d = ( NdotH * a2 - NdotH ) * NdotH + 1;	
     return a2 / ( PI * d * d );			
@@ -93,7 +93,7 @@ float D_GGX_UE5(float roughness, float NdotH)
 // [Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"]
 float Vis_SmithJointApprox(float roughness, float NdotV, float NdotL)
 {
-    float a = roughness; 
+    float a = roughness * roughness; 
     float Vis_SmithV = NdotL * ( NdotV * ( 1 - a ) + a );
     float Vis_SmithL = NdotV * ( NdotL * ( 1 - a ) + a );
     return 0.5 * rcp( max(Vis_SmithV + Vis_SmithL, 1e-5));
@@ -107,18 +107,27 @@ float3 F_Schlick_UE5(float VdotH, float3 F0)
     return saturate(50.0 * F0.g) * Fc + (1 - Fc) * F0;
 }
 
+// Unity's combined V*F term, same math as DirectBRDFSpecular
+float Vis_Unity(float roughness, float LdotH)
+{
+    float a = max(roughness * roughness, 0.0078125);
+    float normalizationTerm = a * 4.0 + 2.0;
+    return 1.0 / (max(0.1, LdotH * LdotH) * normalizationTerm);
+}
+
 float3 SpecularGGX(float3 L, float3 N, float3 V, float3 H, float3 F0, float roughness)
 {
     float HdotV = saturate(dot(H, V));
-    float NdotV = saturate(dot(N, V));
-    float NdotL = saturate(dot(N, L));
+    // float NdotV = saturate(dot(N, V));
+    // float NdotL = saturate(dot(N, L));
     float NdotH = saturate(dot(N, H));
-    
+    float LdotH = saturate(dot(L, H));
     
     float D = D_GGX_UE5(roughness, NdotH);
-    float Vis = Vis_SmithJointApprox(roughness, NdotV, NdotL);
-    float3 F = F_Schlick_UE5(HdotV, F0);
+    //float Vis = Vis_SmithJointApprox(roughness, NdotV, NdotL); //Vis is just the denom (4 · NoL · NoV) built in Vis = G / (4 · NoL · NoV)
+    float Vis = Vis_Unity(roughness, LdotH);
+    float3 F = F_Schlick_UE5(HdotV, F0); //Unity seems to drop this?
 
-    return (D * Vis) * F;
+    return (D * Vis) * F0;
 }
 #endif

@@ -34,7 +34,7 @@ Material:
     - _FresnelPower: 4
     - _FresnelStrength: 0.15
     - _GrassBend: 0.3
-    - _Roughness: 0.85
+    - _Roughness: 0.713
     - _SpecularFade: 1
     - _TipHighlightPower: 1
     - _WindScale: 1
