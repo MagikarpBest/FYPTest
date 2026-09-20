@@ -7,19 +7,38 @@ public class PillarRiseAnimation : MonoBehaviour
     [SerializeField] private Rigidbody rigidBody;
     [Header("Settings")]
     [SerializeField] private float riseDuration = 1f;
+    [SerializeField] private float pillarHeight = 4.5f;
+    [SerializeField] private LayerMask groundLayer;
     private float existDuration = 3f;
 
     private Vector3 startPosition;
     private Vector3 targetPosition;
 
+    private Vector3 surfaceNormal = Vector3.up;
+    private bool initialized;
+
     public event Action OnPillarRising;
     public event Action OnPillarFalling;
 
-    
-    private void Start()
+
+
+
+    public void SetSpawnSurface(Vector3 surfacePoint, Vector3 normal)
     {
-        startPosition = transform.position;
-        targetPosition = startPosition + Vector3.up * 6.7f;
+        surfaceNormal = normal;
+
+        startPosition = rigidBody.position;
+
+        rigidBody.rotation =
+            Quaternion.FromToRotation(
+                Vector3.up,
+                normal
+            );
+
+        targetPosition =
+            startPosition + normal * pillarHeight;
+
+        initialized = true;
 
         Rise();
     }
@@ -29,12 +48,21 @@ public class PillarRiseAnimation : MonoBehaviour
         //rise up
         Sequence sequence = DOTween.Sequence();
         sequence.AppendCallback(() => OnPillarRising?.Invoke());
-        sequence.Append(rigidBody.DOMove(targetPosition, riseDuration).SetEase(Ease.OutCubic).SetUpdate(UpdateType.Fixed));
+
+        sequence.Append(
+            rigidBody.DOMove(targetPosition, riseDuration)
+                .SetEase(Ease.OutCubic).SetUpdate(UpdateType.Fixed)
+        );
         sequence.AppendInterval(existDuration);
+
         sequence.AppendCallback(() => OnPillarFalling?.Invoke());
-        sequence.Append(rigidBody.DOMove(startPosition, riseDuration).SetEase(Ease.InCubic).SetUpdate(UpdateType.Fixed));
+        sequence.Append(
+            rigidBody.DOMove(startPosition, riseDuration)
+                .SetEase(Ease.InCubic)
+                .SetUpdate(UpdateType.Fixed)
+        );
         sequence.OnComplete(() => Destroy(gameObject));
     }
-    
-    
+
+
 }

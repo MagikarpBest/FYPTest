@@ -37,7 +37,7 @@ public class EnemyAI : MonoBehaviour, ILaunchable
         }
         HandleMovement();
 
-        Debug.Log(launchTimer);
+        //Debug.Log(launchTimer);
     }
 
     private void CheckGround()

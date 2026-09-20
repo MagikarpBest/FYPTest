@@ -51,6 +51,8 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         HandleMovement();
         HandleGravity();
         ApplyVelocity();
+        currentNormal = Vector3.zero;
+
         
     }
     private void LaunchCheck()
@@ -95,9 +97,10 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         externalVelocity.z = horizontal.z;
     }
     
-
+    
     private void HandleMovement()
     {
+        
         if(isLaunched)
         {
             moveVelocity = Vector3.zero;
@@ -128,7 +131,6 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
 
         moveVelocity = direction * moveSpeed;
         animator.SetFloat("Speed",direction.magnitude);
-        currentNormal = Vector3.zero;
     }
 
     private void HandleJump()
@@ -165,7 +167,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
     {
         //externalVelocity.y += gravity;
         rigidBody.AddForce(Physics.gravity * gravityMultiply, ForceMode.Acceleration);
-        Debug.Log($"linear velocity ={rigidBody.linearVelocity}");
+        //Debug.Log($"linear velocity ={rigidBody.linearVelocity}");
     }
 
     // External force
@@ -181,20 +183,31 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
 
     private void ApplyVelocity()
     {
-        
-        // Only control horizontal movement
         Vector3 velocity = rigidBody.linearVelocity;
-        velocity.x =
-            moveVelocity.x +
-            externalVelocity.x;
+        Vector3 targetHorizontalVelocity = moveVelocity + externalVelocity;
+        
 
+        if (currentNormal != Vector3.zero)
+        {
+            // Project our target movement so it doesn't push into the wall
+            targetHorizontalVelocity = Vector3.ProjectOnPlane(targetHorizontalVelocity, currentNormal);
+        
+            // If the current physics velocity is already pushing AWAY from the wall,
+            // keep that extra push-out velocity.
+            float currentPushOut = Vector3.Dot(velocity, currentNormal);
+            if (currentPushOut > 0)
+            {
+                targetHorizontalVelocity += currentNormal * currentPushOut;
+            }
+        }
 
-        velocity.z =
-            moveVelocity.z +
-            externalVelocity.z;
+        velocity.x = targetHorizontalVelocity.x;
+        velocity.z = targetHorizontalVelocity.z;
 
 
         rigidBody.linearVelocity = velocity;
+        
+        
     }
 
     // Ground check
@@ -202,22 +215,26 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
     {
         foreach (ContactPoint contact in collision.contacts)
         {
-            if (Vector3.Dot(contact.normal, Vector3.up) > 0.5f)
+            float dot = Vector3.Dot(contact.normal, Vector3.up);
+
+            if (dot > 0.5f)
             {
                 isGrounded = true;
-                return;
             }
             else
             {
+                
                 currentNormal = contact.normal;
+            
+                // If the physics engine says we are overlapping (separation < 0), 
+                if (contact.separation < 0)
+                {
+                    rigidBody.position += contact.normal * -contact.separation;
+                }
             }
         }
     }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        isGrounded = false;
-    }
+    
 
     private void OnEnable()
     {

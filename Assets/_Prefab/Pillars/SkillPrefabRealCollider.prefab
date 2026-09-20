@@ -186,8 +186,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b42acf5281132cf429e4b78fbcc5317a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PillarSkill
+  rigidBody: {fileID: 0}
   riseDuration: 2
-  rb: {fileID: 3856294471494781239}
+  riseDistance: 1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &8012963347071993447
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -39,16 +39,22 @@ public class Bomb : MonoBehaviour
         {
             Rigidbody targetRb = col.GetComponent<Rigidbody>();
             ILaunchable launchable = col.GetComponent<ILaunchable>();
+            IDestroyable destroyable = col.GetComponent<IDestroyable>();
 
-            if (launchable!=null)
+            if (launchable != null)
             {
                 Vector3 direction = (col.transform.position - transform.position).normalized;
-                launchable.Launch(direction * explosionForce );
+                launchable.Launch(direction * explosionForce);
+            }
+            else if(destroyable !=null)
+            {
+                destroyable.DestroySelf();
             }
             else if (targetRb != null)
             {
                 targetRb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 2f, ForceMode.Impulse);
             }
+            
         }
         Destroy(gameObject);
         Debug.Log("Bomb exploded");
