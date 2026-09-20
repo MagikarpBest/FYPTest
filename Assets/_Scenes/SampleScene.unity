@@ -1524,7 +1524,7 @@ Transform:
   m_GameObject: {fileID: 771960108}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.3, z: 0}
+  m_LocalPosition: {x: 0, y: 2.997, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3763,31 +3763,33 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 396907225012107327, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
   m_PrefabInstance: {fileID: 9161450351080194460}
   m_PrefabAsset: {fileID: 0}
---- !u!143 &1514179690
-CharacterController:
+--- !u!54 &1514179697
+Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1514179676}
-  m_Material: {fileID: 0}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 2
-  m_Radius: 1
-  m_SlopeLimit: 45
-  m_StepOffset: 0
-  m_SkinWidth: 0.05
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 112
+  m_CollisionDetection: 0
 --- !u!1 &1564449127
 GameObject:
   m_ObjectHideFlags: 0
@@ -5087,11 +5089,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1643923865047742623 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5855703588037515221, guid: c8373ec79c28b2941a2ad7e25ee17b5c, type: 3}
-  m_PrefabInstance: {fileID: 6194955144606735076}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3261248265219266493
 Transform:
   m_ObjectHideFlags: 0
@@ -5515,22 +5512,34 @@ PrefabInstance:
     - target: {fileID: 477466468322070506, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 1643923865047742623}
+      objectReference: {fileID: 3261248265219266493}
     - target: {fileID: 477466468322070506, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 477466468322070506, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
+      propertyPath: rigidBody
+      value: 
+      objectReference: {fileID: 1514179697}
+    - target: {fileID: 477466468322070506, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
+      propertyPath: recoverDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 477466468322070506, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
+      propertyPath: groundLayer.m_Bits
+      value: 384
       objectReference: {fileID: 0}
     - target: {fileID: 477466468322070506, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
       propertyPath: characterController
       value: 
-      objectReference: {fileID: 1514179690}
+      objectReference: {fileID: 0}
     - target: {fileID: 8380829158805114627, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.04021
       objectReference: {fileID: 0}
     - target: {fileID: 8380829158805114627, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.41
+      value: 1.874
       objectReference: {fileID: 0}
     - target: {fileID: 8380829158805114627, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5570,7 +5579,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 396907225012107327, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1514179690}
+      addedObject: {fileID: 1514179697}
   m_SourcePrefab: {fileID: 100100000, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
