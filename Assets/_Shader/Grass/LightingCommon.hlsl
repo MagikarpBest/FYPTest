@@ -1,7 +1,5 @@
 #ifndef _INCLUDE_LIGHTINGCOMMON
 #define _INCLUDE_LIGHTINGCOMMON
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/BSDF.hlsl"
 
 float BlinnPhong(float3 normal, float3 viewDir, float3 lightDir, float glossiness)

@@ -75,9 +75,9 @@ public class GrassGenerator : MonoBehaviour
     
     private int numThreadGroups; //scan and compact uses numThreadGroups
     private int numVoteThreadGroups;
-    private int numGroupScanThreadGroups; 
-    
-    private int numChunkPerEdge = 4;
+    private int numGroupScanThreadGroups;
+
+    private int numChunkPerEdge;
     private int chunkSize;
     private int chunkResolution;
     private GrassChunk[] chunks; 
@@ -167,7 +167,8 @@ public class GrassGenerator : MonoBehaviour
         }
         distanceBands = new float[] { lodCutoff, maxDrawDistance };
         
-        numChunkPerEdge = (int)mapSize / 32;
+        // numChunkPerEdge = (int)mapSize / 32;
+        numChunkPerEdge = (int)mapSize / 64;
         terrain.terrainData.size = Vector3.one * (int)mapSize;
         chunkSize = (int)mapSize / numChunkPerEdge;
         resolution = (int)mapSize * grassDensity;
