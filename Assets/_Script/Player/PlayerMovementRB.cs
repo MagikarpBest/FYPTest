@@ -30,6 +30,8 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
 
     private PlayerInputManager inputManager;
 
+    [SerializeField] private Animator animator;
+
     private void Update()
     {
         HandleRotation();
@@ -125,7 +127,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         }
 
         moveVelocity = direction * moveSpeed;
-
+        animator.SetFloat("Speed",direction.magnitude);
         currentNormal = Vector3.zero;
     }
 
