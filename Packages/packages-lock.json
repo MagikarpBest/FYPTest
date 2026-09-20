@@ -8,14 +8,13 @@
       "hash": "354ebc5b6ed3c2c40dc9797c813b56d5da213c4e"
     },
     "com.eflatun.scenereference": {
-      "version": "5.0.0",
+      "version": "file:com.eflatun.scenereference",
       "depth": 0,
-      "source": "registry",
+      "source": "embedded",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.0.2",
         "com.unity.settings-manager": "2.0.1"
-      },
-      "url": "https://package.openupm.com"
+      }
     },
     "com.singularitygroup.hotreload": {
       "version": "file:com.singularitygroup.hotreload",

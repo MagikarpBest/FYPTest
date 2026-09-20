@@ -1,0 +1,33 @@
+{
+  "name": "com.eflatun.scenereference",
+  "version": "5.0.0",
+  "displayName": "Eflatun.SceneReference",
+  "description": "Scene References for Runtime and Editor. Strongly typed, robust, and reliable. Provides Asset GUID, Scene Path, Build Index, and Scene Name.\nhttps://github.com/starikcetin/Eflatun.SceneReference",
+  "documentationUrl": "https://github.com/starikcetin/Eflatun.SceneReference/blob/main/README.md",
+  "changelogUrl": "https://github.com/starikcetin/Eflatun.SceneReference/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/starikcetin/Eflatun.SceneReference/blob/main/LICENSE.md",
+  "keywords": [
+    "eflatun",
+    "scene",
+    "reference",
+    "scenereference",
+    "inspector",
+    "editor",
+    "starikcetin"
+  ],
+  "author": {
+    "name": "starikcetin",
+    "email": "cetinsamedtarik@gmail.com",
+    "url": "https://github.com/starikcetin"
+  },
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.0.2",
+    "com.unity.settings-manager": "2.0.1"
+  },
+  "unity": "2020.3",
+  "unityRelease": "48f1",
+  "publishConfig": {
+    "registry": "https://package.openupm.com"
+  },
+  "_fingerprint": "586311eddd2917503cc973dbf1487e3e7e0be6ae"
+}
