@@ -89,11 +89,13 @@ Shader "SigmaShader/SigmaPBR"
 				#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION
 	            #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
                 
-                #pragma shader_feature_local _ _CONVERT_FROM_ROUGHNESS
-                #pragma shader_feature_local _ _SPECULAR_SETUP
-                #pragma shader_feature_local _ _TRIPLANAR_MAPPING
+                #pragma shader_feature_local_fragment _ _CONVERT_FROM_ROUGHNESS
+                #pragma shader_feature_local_fragment _ _SPECULAR_SETUP
+                #pragma shader_feature_local_fragment _ _TRIPLANAR_MAPPING
                 #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
-                #pragma shader_feature_local _ _ALPHATEST_ON
+                #pragma shader_feature_local_fragment _ _ALPHATEST_ON
+                #pragma shader_feature_local_fragment _ _ALPHAPREMULTIPLY_ON
+				#pragma shader_feature_local_fragment _ _ALPHAMODULATE_ON
                 
                 #pragma multi_compile_instancing
 	            #pragma instancing_options renderinglayer
@@ -128,12 +130,8 @@ Shader "SigmaShader/SigmaPBR"
                 	SigmaSurfaceData surface;
                 	InitSurfaceData(sp, surface);
                 	
-                	#ifdef _ALPHATEST_ON
-                		if (surface.alpha < _Cutoff)
-                		{
-                			discard;
-                		}
-                	#endif
+                	AlphaDiscard(surface.alpha, _Cutoff);
+                	surface.albedo = AlphaModulate(surface.albedo, surface.alpha);
                 	
                 	float3 normalWS = surface.normal;
                 	float3 viewDirWS = normalize(i.viewWS);
@@ -143,14 +141,18 @@ Shader "SigmaShader/SigmaPBR"
                 	float roughness = 1.0 - surface.smoothness;
                 	roughness = max(roughness, 0.085);
                 	
-                	#ifdef _SPECULAR_SETUP
+                	#ifdef _SPECULAR_SETUP 
                 		float3 F0 = surface.specular;
-						half oneMinusReflectivity = 1.0;
+                		half oneMinusReflectivity = 1.0 - ReflectivitySpecular(F0);
                 	#else
                 		//0.04 is kDieletricSpec.a
                 		float3 F0 = lerp(0.04, surface.albedo, surface.metallic);
 					    half oneMinusReflectivity = OneMinusReflectivityMetallic(surface.metallic); 
                 	#endif
+                	
+                	//Base Color
+                	float3 diffuseColor = surface.albedo * oneMinusReflectivity;
+					diffuseColor = AlphaPremultiply(diffuseColor, surface.alpha);
                 	
                 	//Main light
                 	Light mainLight = GetMainLight(shadowCoord);
@@ -180,7 +182,7 @@ Shader "SigmaShader/SigmaPBR"
            
                 	//Diffuse
                 	//float3 diffuse = kd * albedo / PI 
-                	float3 diffuse = surface.albedo * oneMinusReflectivity;
+                	float3 diffuse = diffuseColor;
                 	
                 	//BRDF = kdfdiffuse + ksfspecular
                 	//Cook torrance u get rid of ks in specular cause it already has fresnel so if u dont remove you doubling
@@ -211,7 +213,7 @@ Shader "SigmaShader/SigmaPBR"
                 	
                 	float3 diffuseAO = GTAOMultiBounce(surface.occlusion, surface.albedo);
      
-                	float3 diffuseIndirect = irradianceSH * surface.albedo * oneMinusReflectivity * diffuseAO;
+                	float3 diffuseIndirect = irradianceSH * diffuseColor * diffuseAO;
                 	
                 	float3 indirectLight = diffuseIndirect + specularIndirect;
                 	
@@ -237,7 +239,7 @@ Shader "SigmaShader/SigmaPBR"
                 			float3 specularAdd = SpecularGGX(light.direction, normalWS, viewDirWS, halfVectorAdd, F0, roughness) * PI;
 
                 			//Diffuse
-                			float3 diffuseAdd = surface.albedo * oneMinusReflectivity;
+                			float3 diffuseAdd = diffuseColor;
                 	
                 			float NdotLAdd = saturate(dot(normalWS, light.direction));
                 			
@@ -247,7 +249,6 @@ Shader "SigmaShader/SigmaPBR"
                 	
                 	float3 finalColor = surface.emission + directLight + indirectLight;
                 	float alpha = OutputAlpha(surface.alpha, IsSurfaceTypeTransparent(_Surface));
-                	
 					return float4(finalColor, alpha);
                 }
 

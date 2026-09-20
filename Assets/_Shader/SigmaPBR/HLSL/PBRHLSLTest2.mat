@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SigmaShader_SigmaPBR
+  m_Name: PBRHLSLTest2
   m_Shader: {fileID: 4800000, guid: f44216a48f5555d42ad97d47ff1d4572, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0

@@ -236,6 +236,9 @@ public class SigmaPBRGUI : ShaderGUI
         var srcBlendA = BlendMode.One;
         var dstBlendA = BlendMode.Zero;
 
+        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        material.DisableKeyword("_ALPHAMODULATE_ON");
+        
         if (surfaceType == SurfaceType.Transparent)
         {
             switch (blendFunction)
@@ -254,6 +257,7 @@ public class SigmaPBRGUI : ShaderGUI
                     dstBlendRGB = BlendMode.OneMinusSrcAlpha;
                     srcBlendA = BlendMode.One;
                     dstBlendA = BlendMode.OneMinusSrcAlpha;
+                    material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
                     break;
                 }
                 case BlendFunction.Additive:
@@ -270,6 +274,7 @@ public class SigmaPBRGUI : ShaderGUI
                     dstBlendRGB = BlendMode.Zero;
                     srcBlendA = BlendMode.Zero;
                     dstBlendA = BlendMode.One;
+                    material.EnableKeyword("_ALPHAMODULATE_ON");
                     break;
                 }
             }
