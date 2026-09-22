@@ -85,7 +85,12 @@ public class SigmaPBRGUI : ShaderGUI
         "Should the shader use Triplanar Mapping prevents visible texture stretching and seams on surfaces with complex geometry or insufficient UVs?");
     private PBRShaderProperty triplanarTile = new("_TriplanarTile", "Triplanar Tile", 
         "Controls the scale of the triplanar texture mapping, determining how frequently the texture tiles across the surface.");
+    private PBRShaderProperty triplanarBlendOffset = new("_TriplanarBlendOffset", "Triplanar Blend Offset", 
+        "Subtracts from each axis's blend weight and clamps to zero, eliminating weakly-aligned projection axes (X, Y, Z) before sharpening to widen the transition dead zone.");
+    private PBRShaderProperty triplanarBlendExponent = new("_TriplanarBlendExponent", "Triplanar Blend Exponent", 
+        "Raises each axis's blend weight to this power after the offset is applied. Higher values give tighter transitions with less texture smearing on angled surfaces.");
     
+    //Base map
     private PBRShaderProperty baseColor = new("_BaseColor", "Base Color", 
     "Albedo color of the object.");
     private PBRShaderProperty baseTexture = new("_BaseTexture", "Base Texture", 
@@ -123,6 +128,46 @@ public class SigmaPBRGUI : ShaderGUI
     private PBRShaderProperty emissionColor = new("_EmissionColor", "Emission Color", 
         "The color of emissive (self-illuminated) light on the surface.");
 
+    //Top map
+    private PBRShaderProperty useSeparateTopMap = new("_SeparateTopMap", "Use Top Map",
+    "Should the shader use a separate set of maps for top-facing surfaces (triplanar Y axis)?");
+
+    private PBRShaderProperty topBaseColor = new("_TopBaseColor", "Base Color",
+    "Albedo color of the top-facing surface.");
+    private PBRShaderProperty topBaseTexture = new("_TopBaseTexture", "Base Texture",
+        "Albedo color of the top-facing surface.");
+    private PBRShaderProperty topMetallicMap = new("_TopMetallicMap", "Metallic Map",
+        "How metallic the top-facing surface is (only used in metallic workflow mode).");
+    private PBRShaderProperty topMetallic = new("_TopMetallic", "Metallic",
+        "How metallic the top-facing surface is (only used in metallic workflow mode).");
+    private PBRShaderProperty topSpecularMap = new("_TopSpecularMap", "Specular Map",
+        "The color of the top-facing surface's specular highlights (only used in specular workflow mode).");
+    private PBRShaderProperty topSpecularColor = new("_TopSpecularColor", "Specular Color",
+        "The color of the top-facing surface's specular highlights (only used in specular workflow mode).");
+    private PBRShaderProperty topSmoothnessMap = new("_TopSmoothnessMap", "Smoothness Map",
+        "How smooth (or rough) the microscopic top-facing surface is.");
+    private PBRShaderProperty topSmoothness = new("_TopSmoothness", "Smoothness",
+        "How smooth (or rough) the microscopic top-facing surface is.");
+    private PBRShaderProperty topConvertFromRoughness = new("_TopConvertFromRoughness", "Convert From Roughness", 
+        "Should the shader treat the smoothness texture as a roughness texture instead?");
+    private PBRShaderProperty topNormalTexture = new("_TopNormalTexture", "Normal Texture",
+        "A texture encoding normal vector offsets at each point on the top-facing surface.");
+    private PBRShaderProperty topNormalStrength = new("_TopNormalStrength", "Normal Strength",
+        "How strongly the top normal texture is applied to the existing surface normals.");
+    private PBRShaderProperty topHeightMap = new("_TopHeightMap", "Height Map",
+        "The physical height offset of each part of the top-facing surface.");
+    private PBRShaderProperty topHeightMapStrength = new("_TopHeightMapStrength", "Height Map Strength",
+        "How strongly the top height map values are applied as UV offsets to create a surface height illusion.");
+    private PBRShaderProperty topOcclusionMap = new("_TopOcclusionMap", "Occlusion Map",
+        "The strength of ambient occlusion at each point on the top-facing surface.");
+    private PBRShaderProperty topOcclusionStrength = new("_TopOcclusionStrength", "Occlusion Strength",
+        "How strongly the top occlusion map values are applied to the surface.");
+    private PBRShaderProperty topEmissionMap = new("_TopEmissionMap", "Emission Map",
+        "The color of emissive (self-illuminated) light on the top-facing surface.");
+    private PBRShaderProperty topEmissionColor = new("_TopEmissionColor", "Emission Color",
+        "The color of emissive (self-illuminated) light on the top-facing surface.");
+    
+    
     private PBRShaderProperty surface = new("_Surface", "Surface Type", 
         "Choose whether to use opaque or transparent rendering mode.");
     private PBRShaderProperty cutoff = new("_Cutoff", "Alpha Cutoff", 
@@ -166,7 +211,10 @@ public class SigmaPBRGUI : ShaderGUI
         
         useTriplanarMapping.prop = FindProperty(useTriplanarMapping.name, props, true);
         triplanarTile.prop = FindProperty(triplanarTile.name, props, true);
+        triplanarBlendOffset.prop = FindProperty(triplanarBlendOffset.name, props, true);
+        triplanarBlendExponent.prop = FindProperty(triplanarBlendExponent.name, props, true);
         
+        //Base map
         useSpecularSetup.prop = FindProperty(useSpecularSetup.name, props, true);
         metallicMap.prop = FindProperty(metallicMap.name, props, true);
         metallic.prop = FindProperty(metallic.name, props, true);
@@ -183,6 +231,27 @@ public class SigmaPBRGUI : ShaderGUI
         occlusionStrength.prop = FindProperty(occlusionStrength.name, props, true);
         emissionMap.prop = FindProperty(emissionMap.name, props, true);
         emissionColor.prop = FindProperty(emissionColor.name, props, true);
+        
+        //Top map
+        useSeparateTopMap.prop = FindProperty(useSeparateTopMap.name, props, true);
+        topBaseColor.prop = FindProperty(topBaseColor.name, props, true);
+        topBaseTexture.prop = FindProperty(topBaseTexture.name, props, true);
+        topMetallicMap.prop = FindProperty(topMetallicMap.name, props, true);
+        topMetallic.prop = FindProperty(topMetallic.name, props, true);
+        topSpecularMap.prop = FindProperty(topSpecularMap.name, props, true);
+        topSpecularColor.prop = FindProperty(topSpecularColor.name, props, true);
+        topSmoothnessMap.prop = FindProperty(topSmoothnessMap.name, props, true);
+        topSmoothness.prop = FindProperty(topSmoothness.name, props, true);
+        topConvertFromRoughness.prop = FindProperty(topConvertFromRoughness.name, props, true);
+        topNormalTexture.prop = FindProperty(topNormalTexture.name, props, true);
+        topNormalStrength.prop = FindProperty(topNormalStrength.name, props, true);
+        topHeightMap.prop = FindProperty(topHeightMap.name, props, true);
+        topHeightMapStrength.prop = FindProperty(topHeightMapStrength.name, props, true);
+        topOcclusionMap.prop = FindProperty(topOcclusionMap.name, props, true);
+        topOcclusionStrength.prop = FindProperty(topOcclusionStrength.name, props, true);
+        topEmissionMap.prop = FindProperty(topEmissionMap.name, props, true);
+        topEmissionColor.prop = FindProperty(topEmissionColor.name, props, true);
+        
         
         surface.prop = FindProperty(surface.name, props, true);
         cutoff.prop = FindProperty(cutoff.name, props, true);
@@ -426,14 +495,31 @@ public class SigmaPBRGUI : ShaderGUI
 
     private void DrawPBRProperties(Material material)
     {
+        DrawBaseMapPBRProperties(material);
+        
+        EditorGUILayout.Separator();
         materialEditor.ShaderProperty(useTriplanarMapping.prop, useTriplanarMapping.info);
         if (useTriplanarMapping.prop.intValue > 0)
         {
             EditorGUI.indentLevel++;
             materialEditor.ShaderProperty(triplanarTile.prop, triplanarTile.info);
+            materialEditor.ShaderProperty(triplanarBlendOffset.prop, triplanarBlendOffset.info);
+            materialEditor.ShaderProperty(triplanarBlendExponent.prop, triplanarBlendExponent.info);
+            
+            EditorGUILayout.Separator();
+            materialEditor.ShaderProperty(useSeparateTopMap.prop, useSeparateTopMap.info);
+
+            if (useSeparateTopMap.prop.intValue > 0)
+            {
+                DrawTopMapPBRProperties(material);
+            }
+
             EditorGUI.indentLevel--;
         }
-        
+    }
+
+    private void DrawBaseMapPBRProperties(Material material)
+    {
         materialEditor.TexturePropertySingleLine(baseTexture.info, baseTexture.prop, baseColor.prop);
         materialEditor.TextureScaleOffsetProperty(baseTexture.prop);
         materialEditor.ShaderProperty(useSpecularSetup.prop, useSpecularSetup.info);
@@ -454,7 +540,29 @@ public class SigmaPBRGUI : ShaderGUI
         materialEditor.TexturePropertySingleLine(occlusionMap.info, occlusionMap.prop, occlusionStrength.prop);
         materialEditor.TexturePropertySingleLine(emissionMap.info,  emissionMap.prop, emissionColor.prop);
     }
+    
+    private void DrawTopMapPBRProperties(Material material)
+    {
+        materialEditor.TexturePropertySingleLine(topBaseTexture.info, topBaseTexture.prop, topBaseColor.prop);
+        materialEditor.TextureScaleOffsetProperty(topBaseTexture.prop);
 
+        if (useSpecularSetup.prop.intValue > 0)
+        {
+            materialEditor.TexturePropertySingleLine(topSpecularMap.info, topSpecularMap.prop, topSpecularColor.prop);
+        }
+        else
+        {
+            materialEditor.TexturePropertySingleLine(topMetallicMap.info, topMetallicMap.prop, topMetallic.prop);
+        }
+
+        materialEditor.TexturePropertySingleLine(topSmoothnessMap.info, topSmoothnessMap.prop, topSmoothness.prop);
+        materialEditor.ShaderProperty(topConvertFromRoughness.prop, topConvertFromRoughness.info);
+        materialEditor.TexturePropertySingleLine(topNormalTexture.info, topNormalTexture.prop, topNormalStrength.prop);
+        materialEditor.TexturePropertySingleLine(topHeightMap.info, topHeightMap.prop, topHeightMapStrength.prop);
+        materialEditor.TexturePropertySingleLine(topOcclusionMap.info, topOcclusionMap.prop, topOcclusionStrength.prop);
+        materialEditor.TexturePropertySingleLine(topEmissionMap.info, topEmissionMap.prop, topEmissionColor.prop);
+    }
+    
     private void DrawAdvancedSettings(Material material)
     {
         // If auto queue is used, then use sorting priority field. Otherwise, let user set render queue freely.
