@@ -1,5 +1,5 @@
-#ifndef _INCLUDE_SIGMASURFACEDATA
-#define _INCLUDE_SIGMASURFACEDATA
+#ifndef _INCLUDE_OLDSIGMASURFACEDATA
+#define _INCLUDE_OLDSIGMASURFACEDATA
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
 CBUFFER_START(UnityPerMaterial)
@@ -47,6 +47,7 @@ TEXTURE2D(_HeightMap);
 TEXTURE2D(_OcclusionMap);
 TEXTURE2D(_EmissionMap);
 
+
 #ifdef _SEPARATE_TOP_MAP
     TEXTURE2D(_TopBaseTexture);
 
@@ -64,14 +65,27 @@ TEXTURE2D(_EmissionMap);
 #endif
 
 #if defined(_TEXTUREFILTER_LINEAR) && defined(_TEXTUREWRAP_REPEAT)
+
     #define SIGMA_SAMPLER sampler_LinearRepeat
+
 #elif defined(_TEXTUREFILTER_LINEAR) && defined(_TEXTUREWRAP_CLAMP)
+
     #define SIGMA_SAMPLER sampler_LinearClamp
+
 #elif defined(_TEXTUREFILTER_POINT) && defined(_TEXTUREWRAP_REPEAT)
+
     #define SIGMA_SAMPLER sampler_PointRepeat
+
 #elif defined(_TEXTUREFILTER_POINT) && defined(_TEXTUREWRAP_CLAMP)
+
     #define SIGMA_SAMPLER sampler_PointClamp
+
 #endif
+
+
+
+#define SIGMA_SAMPLER sampler_LinearRepeat
+
 
 struct SigmaSurfaceParameters
 {
@@ -237,7 +251,6 @@ float3 GetTriplanarWeights(SigmaSurfaceParameters sp)
     float3 triW = abs(sp.normalWS);
     triW = saturate(triW - _TriplanarBlendOffset);
     triW = pow(triW, _TriplanarBlendExponent);
-    
     float sum = triW.x + triW.y + triW.z;
     return triW / max(sum, 1e-5);
 }

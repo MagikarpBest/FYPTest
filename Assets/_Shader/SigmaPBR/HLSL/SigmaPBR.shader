@@ -2,10 +2,16 @@ Shader "SigmaShader/SigmaPBR"
 {
     Properties
     {
+    	[KeywordEnum(Linear, Point)]
+	    _TextureFilter ("Texture Filter", Float) = 0
+
+	    [KeywordEnum(Repeat, Clamp)]
+	    _TextureWrap ("Texture Wrap", Float) = 0
+    	
     	[Toggle(_TRIPLANAR_MAPPING)] _UseTriplanarMapping("Use Triplanar Mapping", Integer) = 0
     	_TriplanarTile("Triplanar Tile", Float) = 0.1
-    	_TriplanarBlendOffset ("Triplanar Blend Offset", Range(0, 0.5)) = 0.25
-		_TriplanarBlendExponent ("Triplanar Blend Exponent", Range(1, 8)) = 2
+    	_TriplanarBlendOffset ("Triplanar Blend Offset", Range(0, 0.5)) = 0
+		_TriplanarBlendExponent ("Triplanar Blend Exponent", Range(1, 8)) = 1
     	
     	//Base map
 	    _BaseColor("Base Color", Color) = (1, 1, 1, 1)
@@ -37,7 +43,7 @@ Shader "SigmaShader/SigmaPBR"
     	
     	//Top map
 	    [Toggle(_SEPARATE_TOP_MAP)] _SeparateTopMap("Use Separate Top Map", Integer) = 0
-    	
+
     	_TopBaseColor("Top Base Color", Color) = (1, 1, 1, 1)
         _TopBaseTexture("Top Base Texture", 2D) = "white" {}
 
@@ -132,9 +138,12 @@ Shader "SigmaShader/SigmaPBR"
                 #pragma shader_feature_local _ _SEPARATE_TOP_MAP
                 #pragma shader_feature_local _ _TOP_CONVERT_FROM_ROUGHNESS
                 
+                #pragma shader_feature_local _TEXTUREFILTER_LINEAR _TEXTUREFILTER_POINT
+				#pragma shader_feature_local _TEXTUREWRAP_REPEAT _TEXTUREWRAP_CLAMP
+                
                 #pragma multi_compile_instancing
 	            #pragma instancing_options renderinglayer
-	            #pragma multi_compile _ DOTS_INSTANCING_ON
+	            //#pragma multi_compile _ DOTS_INSTANCING_ON
                 
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 				#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -307,6 +316,11 @@ Shader "SigmaShader/SigmaPBR"
             #pragma shader_feature_local _ _SEPARATE_TOP_MAP
             #pragma shader_feature_local _ _TOP_CONVERT_FROM_ROUGHNESS
 			
+			#pragma shader_feature_local _TEXTUREFILTER_LINEAR _TEXTUREFILTER_POINT
+			#pragma shader_feature_local _TEXTUREWRAP_REPEAT _TEXTUREWRAP_CLAMP
+			
+			#pragma multi_compile_instancing
+			
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
@@ -378,6 +392,11 @@ Shader "SigmaShader/SigmaPBR"
                 #pragma shader_feature_local _ _SEPARATE_TOP_MAP
                 #pragma shader_feature_local _ _TOP_CONVERT_FROM_ROUGHNESS
                 
+                #pragma shader_feature_local _TEXTUREFILTER_LINEAR _TEXTUREFILTER_POINT
+				#pragma shader_feature_local _TEXTUREWRAP_REPEAT _TEXTUREWRAP_CLAMP
+                
+                #pragma multi_compile_instancing
+                
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
                 #include "SigmaSurfaceData.hlsl"
 				
@@ -425,6 +444,11 @@ Shader "SigmaShader/SigmaPBR"
                 #pragma shader_feature_local _ _TRIPLANAR_MAPPING
                 #pragma shader_feature_local _ _SEPARATE_TOP_MAP
                 #pragma shader_feature_local _ _TOP_CONVERT_FROM_ROUGHNESS
+                
+                #pragma shader_feature_local _TEXTUREFILTER_LINEAR _TEXTUREFILTER_POINT
+				#pragma shader_feature_local _TEXTUREWRAP_REPEAT _TEXTUREWRAP_CLAMP
+                
+                #pragma multi_compile_instancing
                 
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
                 #include "SigmaSurfaceData.hlsl"

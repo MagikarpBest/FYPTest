@@ -13,9 +13,11 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _CONVERT_FROM_ROUGHNESS
+  - _TEXTUREFILTER_LINEAR
+  - _TEXTUREWRAP_REPEAT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 2000
   stringTagMap:
@@ -57,8 +59,42 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _TopBaseTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TopEmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TopHeightMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TopMetallicMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TopNormalTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TopOcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TopSmoothnessMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TopSpecularMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints:
     - _ConvertFromRoughness: 1
+    - _SeparateTopMap: 0
+    - _TopConvertFromRoughness: 0
     - _UseSpecularSetup: 0
     - _UseTriplanarMapping: 0
     m_Floats:
@@ -81,7 +117,18 @@ Material:
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
+    - _TextureFilter: 0
+    - _TextureWrap: 0
+    - _TopBlendExponent: 1
+    - _TopBlendOffset: 0
+    - _TopHeightMapStrength: 0
+    - _TopMetallic: 0
+    - _TopNormalStrength: 1
+    - _TopOcclusionStrength: 1
+    - _TopSmoothness: 0.5
     - _TriplanarBlend: 1
+    - _TriplanarBlendExponent: 1
+    - _TriplanarBlendOffset: 0
     - _TriplanarScale: 0.1
     - _TriplanarTile: 0.1
     - _Triplanar_Scale: 1
@@ -92,5 +139,8 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _TopBaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _TopEmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _TopSpecularColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

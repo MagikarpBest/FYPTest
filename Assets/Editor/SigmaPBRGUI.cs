@@ -81,6 +81,11 @@ public class SigmaPBRGUI : ShaderGUI
     private string[] queueControlNames =  Enum.GetNames(typeof(QueueControl));
     private string[] compareFunctionNames = Enum.GetNames(typeof(CompareFunction));
     
+    private PBRShaderProperty textureFilter = new("_TextureFilter", "Texture Filter",
+        "Controls how textures are sampled");
+    private PBRShaderProperty textureWrap = new("_TextureWrap", "Texture Wrap",
+        "Controls how textures behave outside their UV range");
+        
     private PBRShaderProperty useTriplanarMapping = new("_UseTriplanarMapping", "Use Triplanar Mapping", 
         "Should the shader use Triplanar Mapping prevents visible texture stretching and seams on surfaces with complex geometry or insufficient UVs?");
     private PBRShaderProperty triplanarTile = new("_TriplanarTile", "Triplanar Tile", 
@@ -131,7 +136,7 @@ public class SigmaPBRGUI : ShaderGUI
     //Top map
     private PBRShaderProperty useSeparateTopMap = new("_SeparateTopMap", "Use Top Map",
     "Should the shader use a separate set of maps for top-facing surfaces (triplanar Y axis)?");
-
+    
     private PBRShaderProperty topBaseColor = new("_TopBaseColor", "Base Color",
     "Albedo color of the top-facing surface.");
     private PBRShaderProperty topBaseTexture = new("_TopBaseTexture", "Base Texture",
@@ -206,6 +211,9 @@ public class SigmaPBRGUI : ShaderGUI
 
     private void FindProperties(MaterialProperty[] props)
     {
+        textureFilter.prop = FindProperty(textureFilter.name, props, true);
+        textureWrap.prop = FindProperty(textureWrap.name, props, true);
+        
         baseColor.prop = FindProperty(baseColor.name, props, true);
         baseTexture.prop = FindProperty(baseTexture.name, props, true);
         
@@ -234,6 +242,7 @@ public class SigmaPBRGUI : ShaderGUI
         
         //Top map
         useSeparateTopMap.prop = FindProperty(useSeparateTopMap.name, props, true);
+        
         topBaseColor.prop = FindProperty(topBaseColor.name, props, true);
         topBaseTexture.prop = FindProperty(topBaseTexture.name, props, true);
         topMetallicMap.prop = FindProperty(topMetallicMap.name, props, true);
@@ -495,6 +504,9 @@ public class SigmaPBRGUI : ShaderGUI
 
     private void DrawPBRProperties(Material material)
     {
+        materialEditor.ShaderProperty(textureFilter.prop, textureFilter.info);
+        materialEditor.ShaderProperty(textureWrap.prop, textureWrap.info);
+        
         DrawBaseMapPBRProperties(material);
         
         EditorGUILayout.Separator();
@@ -576,5 +588,7 @@ public class SigmaPBRGUI : ShaderGUI
         {
             materialEditor.IntSliderShaderProperty(queueOffset.prop, -queueOffsetRange, queueOffsetRange, queueOffset.info);
         }
+        
+        materialEditor.EnableInstancingField();
     }
 }

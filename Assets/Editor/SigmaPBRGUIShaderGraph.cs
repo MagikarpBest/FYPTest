@@ -169,8 +169,7 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
         
         useTriplanarMapping.prop = FindProperty(useTriplanarMapping.name, props, true);
         triplanarTile.prop = FindProperty(triplanarTile.name, props, true);
-        triplanarBlend.prop = FindProperty(triplanarBlend.name, props, true);
-        
+         
         workflowMode.prop = FindProperty(workflowMode.name, props, true);
         metallicMap.prop = FindProperty(metallicMap.name, props, true);
         metallic.prop = FindProperty(metallic.name, props, true);
