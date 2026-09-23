@@ -14019,6 +14019,7 @@ GameObject:
   - component: {fileID: 8666492726894155440}
   - component: {fileID: 8666492726894155439}
   - component: {fileID: 8666492726894155442}
+  - component: {fileID: 8666492726894155443}
   m_Layer: 6
   m_Name: PlayerCharacterWithVIsual
   m_TagString: Untagged
@@ -14414,6 +14415,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 2, z: 1}
   m_Center: {x: 0, y: 1.49, z: 0}
+--- !u!114 &8666492726894155443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3973430530322709239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 654adf90d17af184fb10a5ee77509ed7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStateMachine
 --- !u!1001 &9161450351080194460
 PrefabInstance:
   m_ObjectHideFlags: 0

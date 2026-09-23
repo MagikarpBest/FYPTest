@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FallState : CompositeState
+public class FallState : PlayerState
 {
     public FallState(PlayerStateMachine stateMachine) : base(stateMachine) { }
     

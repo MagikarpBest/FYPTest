@@ -5,7 +5,6 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
 {
     [Header("Reference")]
     [SerializeField] private Rigidbody rigidBody;
-
     [SerializeField] private Transform model;
     [SerializeField] private float rotationSpeed = 720f;
     [SerializeField] private float groundCheckDistance = 0.2f;
@@ -28,8 +27,8 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
     private Vector3 externalVelocity; // knockback XZ
 
     public bool IsGrounded => isGrounded;
-    private PlayerInputManager inputManager;
-
+    public bool IsLaunched => isLaunched;
+    public Action<Vector3> OnLaunched;
     [SerializeField] private Animator animator;
 
     private void Start()
@@ -39,19 +38,18 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
 
     private void Update()
     {
-        LaunchCheck();
+        //LaunchCheck();
         CheckGround();
         ApplyExternalVelocity();
-        HandleMovement();
+        //HandleMovement();
         
         currentNormal = Vector3.zero;
-        HandleRotation();
+        //RotateTowardsMovement();
     }
 
     private void Awake()
     {
         cameraTransform = Camera.main.transform;
-        inputManager = FindFirstObjectByType<PlayerInputManager>();
     }
     
     private void FixedUpdate()
@@ -89,7 +87,6 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
             ))
         {
             isGrounded = true;
-            groundNormal = hit.normal;
         }
     }
 
@@ -106,16 +103,8 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
     }
     
     
-    private void HandleMovement(Vector2 moveInput)
+    public void Move(Vector2 moveInput)
     {
-        
-        if(isLaunched)
-        {
-            moveVelocity = Vector3.zero;
-            return;
-        }
-        Vector2 moveInput = inputManager.MoveInput;
-
         Vector3 forward = cameraTransform.transform.forward;
         Vector3 right = cameraTransform.transform.right;
 
@@ -138,23 +127,25 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         // }
 
         moveVelocity = direction * moveSpeed;
+        
         animator.SetFloat("Speed",direction.magnitude);
     }
-
-    private void HandleJump()
+    
+    public void StopMove()
     {
-        if (!isGrounded)
-        {
-            return;
-        }
+        moveVelocity = Vector3.zero;
+        animator.SetFloat("Speed", 0);
+    }
 
+    public void HandleJump()
+    {
         Vector3 velocity = rigidBody.linearVelocity;
         velocity.y = Mathf.Sqrt(2f * (Physics.gravity.magnitude * gravityMultiply) * jumpHeight);
         rigidBody.linearVelocity = velocity;
     }
 
     // Visual rotation when moving
-    private void HandleRotation()
+    public void RotateTowardsMovement()
     {
         if (currentMoveDirection.sqrMagnitude < 0.01f)
         {
@@ -243,16 +234,5 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
             }
         }
     }
-    
 
-    private void OnEnable()
-    {
-        inputManager.OnJumpPressed += HandleJump;
-    }
-
-
-    private void OnDisable()
-    {
-        inputManager.OnJumpPressed -= HandleJump;
-    }
 }
