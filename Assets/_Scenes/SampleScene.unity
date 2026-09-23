@@ -14389,9 +14389,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 384
+  moveSpeed: 11
   gravityMultiply: 2
   jumpHeight: 3
-  moveSpeed: 11
   externalDecaySpeed: 2
   animator: {fileID: 7931355478203372783}
 --- !u!65 &8666492726894155442

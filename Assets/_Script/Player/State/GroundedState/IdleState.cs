@@ -2,9 +2,13 @@ using UnityEngine;
 
 public class IdleState : PlayerState
 {
-    public IdleState(PlayerStateMachine stateMachine) : base(stateMachine)
+    private GroundedState parent;
+
+    public IdleState(PlayerStateMachine stateMachine,GroundedState parent) : base(stateMachine)
     {
+        this.parent = parent;
     }
+    
 
     public override void Enter()
     {
@@ -16,7 +20,7 @@ public class IdleState : PlayerState
         // if wasd is pressed change to run state
         if (Input.MoveInput != Vector2.zero)
         {
-            stateMachine.Grounded.ChangeChild(stateMachine.Run);
+            parent.ChangeChild(parent.Run);
         }
     }
 }

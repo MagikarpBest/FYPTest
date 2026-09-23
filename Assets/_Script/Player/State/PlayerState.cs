@@ -1,7 +1,6 @@
 
 public abstract class PlayerState
 {
-    protected CompositeState parent;
     protected PlayerStateMachine stateMachine;
     protected PlayerInputManager Input => stateMachine.Input;
     protected PlayerMovementRB Movement => stateMachine.Movement;
@@ -10,7 +9,7 @@ public abstract class PlayerState
     {
         this.stateMachine = stateMachine;
     }
-    
+
     public virtual void Enter() { }
     
     public virtual void Exit() { }
@@ -21,5 +20,6 @@ public abstract class PlayerState
     
     // Input handlers
     public virtual void HandleJump() {}
+    public virtual void HandleLaunch(){}
     public virtual void HandleAttack() {}
 }

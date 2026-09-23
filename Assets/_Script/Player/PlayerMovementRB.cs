@@ -11,56 +11,57 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
     [SerializeField] private LayerMask groundLayer;
 
 
-    [Header("Movement settings")]
+    [Header("Movement ")]
+    [SerializeField] private float moveSpeed = 11f;
+
+    [Header("Jump")]
     [SerializeField] private float gravityMultiply = 2;
     [SerializeField] private float jumpHeight = 3f;
-    [SerializeField] private float moveSpeed = 11f;
     [SerializeField] private float externalDecaySpeed = 2f;
 
     // for direction movement
     private Transform cameraTransform;
     private bool isGrounded;
     private bool isLaunched;
-    private Vector3 currentNormal;
+    
     private Vector3 currentMoveDirection;
     private Vector3 moveVelocity;
     private Vector3 externalVelocity; // knockback XZ
 
+    // state machine test
     public bool IsGrounded => isGrounded;
     public bool IsLaunched => isLaunched;
-    public Action<Vector3> OnLaunched;
+    public Action OnLaunched;   
     [SerializeField] private Animator animator;
 
     private void Start()
     {
-        Application.targetFrameRate = 60;
+        //Application.targetFrameRate = 60;
     }
-
-    private void Update()
-    {
-        //LaunchCheck();
-        CheckGround();
-        ApplyExternalVelocity();
-        //HandleMovement();
-        
-        currentNormal = Vector3.zero;
-        //RotateTowardsMovement();
-    }
-
     private void Awake()
     {
         cameraTransform = Camera.main.transform;
     }
+
+    private void Update()
+    {
+        LaunchCheck();
+        CheckGround();
+        ApplyExternalVelocity();
+    }
+    
     
     private void FixedUpdate()
     {
         
         HandleGravity();
         ApplyVelocity();
-        currentNormal = Vector3.zero;
-
-        
     }
+    
+
+    // ==========================
+    // Ground
+    // ==========================
     private void LaunchCheck()
     {
         if(!isLaunched)
@@ -90,6 +91,13 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         }
     }
 
+    // ==========================
+    // Physics
+    // ==========================
+    private void HandleGravity()
+    {
+        rigidBody.AddForce(Physics.gravity * gravityMultiply, ForceMode.Acceleration);
+    }
     // decay
     private void ApplyExternalVelocity()
     {
@@ -101,8 +109,22 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         externalVelocity.x = horizontal.x;
         externalVelocity.z = horizontal.z;
     }
+    private void ApplyVelocity()
+    {
+        Vector3 velocity = rigidBody.linearVelocity;
+        Vector3 targetHorizontalVelocity = moveVelocity + externalVelocity;
+        
+        velocity.x = targetHorizontalVelocity.x;
+        velocity.z = targetHorizontalVelocity.z;
+        
+        rigidBody.linearVelocity = velocity;
+        
+    }
+
     
-    
+    // ==========================
+    // Movement
+    // ==========================
     public void Move(Vector2 moveInput)
     {
         Vector3 forward = cameraTransform.transform.forward;
@@ -120,11 +142,6 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
             right * moveInput.x;
 
         currentMoveDirection = direction;
-        // // remove movement into wall
-        // if (currentNormal != Vector3.zero)
-        // {
-        //     direction = Vector3.ProjectOnPlane(direction, currentNormal);
-        // }
 
         moveVelocity = direction * moveSpeed;
         
@@ -137,13 +154,14 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         animator.SetFloat("Speed", 0);
     }
 
-    public void HandleJump()
+    public void Jump()
     {
         Vector3 velocity = rigidBody.linearVelocity;
         velocity.y = Mathf.Sqrt(2f * (Physics.gravity.magnitude * gravityMultiply) * jumpHeight);
         rigidBody.linearVelocity = velocity;
     }
 
+    // MOVE TO ANIMATION
     // Visual rotation when moving
     public void RotateTowardsMovement()
     {
@@ -161,15 +179,10 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
                 rotationSpeed * Time.deltaTime
             );
     }
-
-    private void HandleGravity()
-    {
-        //externalVelocity.y += (Physics.gravity.y * gravityMultiply);
-        rigidBody.AddForce(Physics.gravity * gravityMultiply, ForceMode.Acceleration);
-        
-        //Debug.Log($"linear velocity ={rigidBody.linearVelocity}");
-    }
-
+    
+    // ==========================
+    // Launch
+    // ==========================
     // External force
     public void Launch(Vector3 force)
     {
@@ -179,35 +192,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         externalVelocity += new Vector3(force.x, 0, force.z);
 
         rigidBody.linearVelocity = new Vector3(rigidBody.linearVelocity.x, force.y, rigidBody.linearVelocity.z);
-    }
-
-    private void ApplyVelocity()
-    {
-        Vector3 velocity = rigidBody.linearVelocity;
-        Vector3 targetHorizontalVelocity = moveVelocity + externalVelocity;
-        
-
-        if (currentNormal != Vector3.zero)
-        {
-            // Project our target movement so it doesn't push into the wall
-            targetHorizontalVelocity = Vector3.ProjectOnPlane(targetHorizontalVelocity, currentNormal);
-        
-            // If the current physics velocity is already pushing AWAY from the wall,
-            // keep that extra push-out velocity.
-            float currentPushOut = Vector3.Dot(velocity, currentNormal);
-            // if (currentPushOut > 0)
-            // {
-            //     targetHorizontalVelocity += currentNormal * currentPushOut;
-            // }
-        }
-
-        velocity.x = targetHorizontalVelocity.x;
-        velocity.z = targetHorizontalVelocity.z;
-
-
-        rigidBody.linearVelocity = velocity;
-        
-        
+        OnLaunched?.Invoke();
     }
 
     // Ground check
@@ -223,14 +208,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
             }
             else
             {
-                
-                currentNormal = contact.normal;
-            
-                // If the physics engine says we are overlapping (separation < 0), 
-                // if (contact.separation < 0)
-                // {
-                //     rigidBody.position += contact.normal * -contact.separation;
-                // }
+
             }
         }
     }

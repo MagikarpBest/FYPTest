@@ -8,6 +8,7 @@ public abstract class CompositeState : PlayerState
 
     }
 
+    
     public void ChangeChild(PlayerState newChild)
     {
         Debug.Log($"<color=red>Child change: {currentChild} -> {newChild}<color=red>");

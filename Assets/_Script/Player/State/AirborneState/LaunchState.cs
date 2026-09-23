@@ -2,16 +2,24 @@ using UnityEngine;
 
 public class LaunchState : CompositeState
 {
+    private AirborneState parent;
 
-    public LaunchState(PlayerStateMachine stateMachine) : base(stateMachine)
+    public LaunchState(PlayerStateMachine stateMachine, AirborneState parent) : base(stateMachine)
     {
+        this.parent = parent;
+    }
+
+    public override void Enter()
+    {
+        // animation etc dmg
+        
     }
 
     public override void Update()
     {
-        if(!Movement.IsLaunched&&Movement.IsGrounded)
+        if (!Movement.IsLaunched && Movement.IsGrounded)
         {
-            stateMachine.Grounded.ChangeChild(stateMachine.Idle);
+            stateMachine.ChangeState(stateMachine.Grounded);
         }
         base.Update();
     }

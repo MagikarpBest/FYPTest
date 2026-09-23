@@ -2,8 +2,11 @@ using UnityEngine;
 
 public class RunState : PlayerState
 {
-    public RunState(PlayerStateMachine stateMachine) : base(stateMachine)
+    private GroundedState parent;
+
+    public RunState(PlayerStateMachine stateMachine,GroundedState parent) : base(stateMachine)
     {
+        this.parent = parent;
     }
     
     public override void FixedUpdate()
@@ -16,7 +19,7 @@ public class RunState : PlayerState
     {
         if (Input.MoveInput == Vector2.zero)
         {
-            stateMachine.Grounded.ChangeChild(stateMachine.Idle);
+            parent.ChangeChild(parent.Idle);
         }
     }
 }
