@@ -142,22 +142,6 @@ void ParallaxOffset(float3 viewDirTS, inout float2 uv, Texture2D heightMap, Samp
     uv.xy += viewDirTS.xy * height * heightmapStrength;
 }
 
-void InitSurfaceParameters(v2f i, out SigmaSurfaceParameters sp)
-{
-    sp.uv = i.uv;  
-    sp.positionWS = i.positionWS;
-    sp.normalWS = NormalizeNormalPerPixel(i.normalWS);
-    sp.tangentWS = float4(normalize(i.tangentWS.xyz), i.tangentWS.w);
-    sp.viewDirWS = normalize(i.viewWS);
-    sp.screenUV = GetNormalizedScreenSpaceUV(i.positionCS);
-    
-    //Parallax
-    float3 bitangentWS = cross(sp.normalWS, sp.tangentWS.xyz) * sp.tangentWS.w * unity_WorldTransformParams.w; 
-    float3x3 TBN = float3x3(sp.tangentWS.xyz, bitangentWS, sp.normalWS);
-    float3 viewDirTS = normalize(mul(TBN, sp.viewDirWS)); //world to tangent
-    ParallaxOffset(viewDirTS, sp.uv, _HeightMap, SIGMA_SAMPLER, _HeightMapStrength);
-}
-
 TriplanarViewDir GetTriplanarViewDir(SigmaSurfaceParameters sp)
 {
     TriplanarViewDir triView;
@@ -242,11 +226,31 @@ float3 GetTriplanarWeights(SigmaSurfaceParameters sp)
     return triW / max(sum, 1e-5);
 }
 
+void InitSurfaceParameters(v2f i, out SigmaSurfaceParameters sp)
+{
+    sp.uv = i.uv;  
+    sp.positionWS = i.positionWS;
+    sp.normalWS = NormalizeNormalPerPixel(i.normalWS);
+    sp.tangentWS = float4(normalize(i.tangentWS.xyz), i.tangentWS.w);
+    sp.viewDirWS = normalize(i.viewWS);
+    sp.screenUV = GetNormalizedScreenSpaceUV(i.positionCS);
+    
+    //Parallax
+    float3 bitangentWS = cross(sp.normalWS, sp.tangentWS.xyz) * sp.tangentWS.w * unity_WorldTransformParams.w; 
+    float3x3 TBN = float3x3(sp.tangentWS.xyz, bitangentWS, sp.normalWS);
+    float3 viewDirTS = normalize(mul(TBN, sp.viewDirWS)); //world to tangent
+    ParallaxOffset(viewDirTS, sp.uv, _HeightMap, SIGMA_SAMPLER, _HeightMapStrength);
+    
+    //Triplanar
+    TriplanarUV triUV = GetTriplanarUV(sp);
+    float3 triW = GetTriplanarWeights(sp);
+}
+
 float4 GetBaseColor(SigmaSurfaceParameters sp)
 {
     #ifdef _TRIPLANAR_MAPPING
-        TriplanarUV triUV = GetTriplanarUV(sp);
-        float3 triW = GetTriplanarWeights(sp);
+        TriplanarUV triUV = sp.triUV;
+        float3 triW = sp.triW;
 
         float4 baseColorX = SAMPLE_TEXTURE2D(_BaseTexture, SIGMA_SAMPLER, triUV.x) * _BaseColor;
         float4 baseColorY = SAMPLE_TEXTURE2D(_BaseTexture, SIGMA_SAMPLER, triUV.y) * _BaseColor;
@@ -279,8 +283,8 @@ float3 BlendTriplanarNormal(float3 mappedNormal, float3 surfaceNormal)
 float3 GetNormal(SigmaSurfaceParameters sp)
 {
     #ifdef _TRIPLANAR_MAPPING
-        TriplanarUV triUV = GetTriplanarUV(sp);
-        float3 triW = GetTriplanarWeights(sp);
+        TriplanarUV triUV = sp.triUV;
+        float3 triW = sp.triW;
         
         float3 normalTS_X = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTexture, SIGMA_SAMPLER, triUV.x), _NormalStrength);
         float3 normalTS_Y = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTexture, SIGMA_SAMPLER, triUV.y), _NormalStrength);
@@ -338,8 +342,8 @@ float3 GetNormal(SigmaSurfaceParameters sp)
     float GetSpecular(SigmaSurfaceParameters sp)
     {
         #ifdef _TRIPLANAR_MAPPING
-            TriplanarUV triUV = GetTriplanarUV(sp);
-            float3 triW = GetTriplanarWeights(sp);
+            TriplanarUV triUV = sp.triUV;
+            float3 triW = sp.triW;
             
             float3 specularX = SAMPLE_TEXTURE2D(_SpecularMap, SIGMA_SAMPLER, triUV.x).rgb * _SpecularColor;
             float3 specularY = SAMPLE_TEXTURE2D(_SpecularMap, SIGMA_SAMPLER, triUV.y).rgb * _SpecularColor;
@@ -364,8 +368,8 @@ float3 GetNormal(SigmaSurfaceParameters sp)
     float GetMetallic(SigmaSurfaceParameters sp)
     {
         #ifdef _TRIPLANAR_MAPPING
-            TriplanarUV triUV = GetTriplanarUV(sp);
-            float3 triW = GetTriplanarWeights(sp);
+            TriplanarUV triUV = sp.triUV;
+            float3 triW = sp.triW;
         
             float metallicX = SAMPLE_TEXTURE2D(_MetallicMap, SIGMA_SAMPLER, triUV.x).r * _Metallic;
             float metallicY = SAMPLE_TEXTURE2D(_MetallicMap, SIGMA_SAMPLER, triUV.y).r * _Metallic;
@@ -391,8 +395,8 @@ float3 GetNormal(SigmaSurfaceParameters sp)
 float GetSmoothness(SigmaSurfaceParameters sp)
 {
     #ifdef _TRIPLANAR_MAPPING
-        TriplanarUV triUV = GetTriplanarUV(sp);
-        float3 triW = GetTriplanarWeights(sp);
+        TriplanarUV triUV = sp.triUV;
+        float3 triW = sp.triW;
     
         float smoothnessX = SAMPLE_TEXTURE2D(_SmoothnessMap, SIGMA_SAMPLER, triUV.x).r * _Smoothness;
         float smoothnessY = SAMPLE_TEXTURE2D(_SmoothnessMap, SIGMA_SAMPLER, triUV.y).r * _Smoothness;
@@ -421,8 +425,8 @@ float GetSmoothness(SigmaSurfaceParameters sp)
 float GetOcclusion(SigmaSurfaceParameters sp)
 {
     #ifdef _TRIPLANAR_MAPPING
-        TriplanarUV triUV = GetTriplanarUV(sp);
-        float3 triW = GetTriplanarWeights(sp);
+        TriplanarUV triUV = sp.triUV;
+        float3 triW = sp.triW;
         
         float occlusionX = lerp(1.0f, SAMPLE_TEXTURE2D(_OcclusionMap, SIGMA_SAMPLER, triUV.x).r, _OcclusionStrength);
         float occlusionY = lerp(1.0f, SAMPLE_TEXTURE2D(_OcclusionMap, SIGMA_SAMPLER, triUV.y).r, _OcclusionStrength);
@@ -447,8 +451,8 @@ float GetOcclusion(SigmaSurfaceParameters sp)
 float3 GetEmissive(SigmaSurfaceParameters sp)
 {
     #ifdef _TRIPLANAR_MAPPING
-        TriplanarUV triUV = GetTriplanarUV(sp);
-        float3 triW = GetTriplanarWeights(sp);
+        TriplanarUV triUV = sp.triUV;
+        float3 triW = sp.triW;
         
         float3 emissionX = SAMPLE_TEXTURE2D(_EmissionMap, SIGMA_SAMPLER, triUV.x).rgb * _EmissionColor;
         float3 emissionY = SAMPLE_TEXTURE2D(_EmissionMap, SIGMA_SAMPLER, triUV.y).rgb * _EmissionColor;
