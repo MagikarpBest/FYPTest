@@ -27,8 +27,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
     private Vector3 moveVelocity;
     private Vector3 externalVelocity; // knockback XZ
 
-    private Vector3 groundNormal;
-
+    public bool IsGrounded => isGrounded;
     private PlayerInputManager inputManager;
 
     [SerializeField] private Animator animator;
@@ -107,7 +106,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
     }
     
     
-    private void HandleMovement()
+    private void HandleMovement(Vector2 moveInput)
     {
         
         if(isLaunched)
