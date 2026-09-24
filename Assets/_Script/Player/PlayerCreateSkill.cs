@@ -65,7 +65,23 @@ public class PlayerCreateSkill : MonoBehaviour
             if (distance <= maxCreateSkillRange)
             {
                 Debug.Log("Summoned");
-                Instantiate(skillPrefab, new Vector3(hit.point.x,(hit.point.y-4.5f),hit.point.z), Quaternion.identity);
+                float buriedDepth = 4.5f;
+                
+                Vector3 spawnPosition = hit.point - hit.normal * buriedDepth;
+                GameObject skill = Instantiate(
+                    skillPrefab,
+                    spawnPosition,
+                    Quaternion.identity
+                );
+
+
+                PillarRiseAnimation pillar = skill.GetComponent<PillarRiseAnimation>();
+
+                if (pillar != null)
+                {
+                    pillar.SetSpawnSurface(hit.point, hit.normal);
+                }
+                
             }
 
         }

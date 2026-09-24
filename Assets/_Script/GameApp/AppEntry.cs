@@ -12,7 +12,7 @@ public static class AppEntry
             return;
         }
 
-        await SceneManager.LoadSceneAsync("AppBootstrap", LoadSceneMode.Additive);
+        //await SceneManager.LoadSceneAsync("AppBootstrap", LoadSceneMode.Additive);
     }
 
     private static bool IsSceneLoaded(string sceneName)

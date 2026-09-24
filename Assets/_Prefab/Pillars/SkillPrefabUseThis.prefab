@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2196229504722438273}
   - component: {fileID: 5864741220047612058}
   - component: {fileID: 7651569350869723788}
-  - component: {fileID: 8301268578431078850}
   m_Layer: 7
   m_Name: SkillPrefabVisual
   m_TagString: Untagged
@@ -113,33 +112,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &8301268578431078850
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2025565802318860479}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 1
-  m_Constraints: 112
-  m_CollisionDetection: 0
 --- !u!1 &3735636886572184386
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,6 +123,7 @@ GameObject:
   - component: {fileID: 3116800882330218225}
   - component: {fileID: 6746744605045669030}
   - component: {fileID: 8012963347071993447}
+  - component: {fileID: 5795798811533084454}
   m_Layer: 7
   m_Name: SkillPrefabUseThis
   m_TagString: Untagged
@@ -186,8 +159,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b42acf5281132cf429e4b78fbcc5317a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PillarSkill
-  rigidBody: {fileID: 8301268578431078850}
+  rigidBody: {fileID: 5795798811533084454}
   riseDuration: 1
+  pillarHeight: 4.5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &8012963347071993447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,3 +178,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovingPlatform
   PlatformCollider: {fileID: 7651569350869723788}
+--- !u!54 &5795798811533084454
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3735636886572184386}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 112
+  m_CollisionDetection: 0
