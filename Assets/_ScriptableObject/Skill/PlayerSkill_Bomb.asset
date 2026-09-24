@@ -16,17 +16,17 @@ MonoBehaviour:
   Icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   ManaCost: 1
   _handler:
-    rid: 6373183337868034122
+    rid: 6373183367691632713
   references:
     version: 2
     RefIds:
-    - rid: 6373183337868034122
-      type: {class: BombSkillHandler, ns: Player, asm: Assembly-CSharp}
+    - rid: 6373183367691632713
+      type: {class: BombSkillHandler, ns: , asm: Assembly-CSharp}
       data:
         _range: 10
         _explosionRadius: 5
         _explosionForce: 5
+        _explodeDelay: 1.5
         _bombPrefab: {fileID: 6375996512068800576, guid: 5f36c46b1d34e07418876dd936ee679f, type: 3}
         _throwForce: 15
         _upwardForce: 5
-        _explodeDelay: 1.5

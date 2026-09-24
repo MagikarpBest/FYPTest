@@ -472,15 +472,13 @@ GameObject:
   - component: {fileID: 1233442018}
   - component: {fileID: 1233442017}
   - component: {fileID: 1233442016}
-  - component: {fileID: 1233442015}
   - component: {fileID: 1233442014}
-  - component: {fileID: 1233442013}
   - component: {fileID: 1233442020}
   - component: {fileID: 1233442019}
   - component: {fileID: 1233442021}
+  - component: {fileID: 1233442022}
   - component: {fileID: 1233442012}
   - component: {fileID: 1233442011}
-  - component: {fileID: 1233442022}
   m_Layer: 0
   m_Name: PlayerCharacterWithVIsual
   m_TagString: Untagged
@@ -538,23 +536,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 2
---- !u!114 &1233442013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1233442010}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eeeefedd9c629ad47a7ca99f81a44ed3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerBombSkill
-  bombPrefab: {fileID: 6375996512068800576, guid: 5f36c46b1d34e07418876dd936ee679f, type: 3}
-  bombHoldPoint: {fileID: 60730115}
-  playerVisual: {fileID: 1501413897}
-  throwForce: 10
-  upwardForce: 9
 --- !u!114 &1233442014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -579,26 +560,6 @@ MonoBehaviour:
   jumpHeight: 3
   externalDecaySpeed: 2
   animator: {fileID: 1233442017}
---- !u!114 &1233442015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1233442010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b1e643a28d5fe740bf1e9a3e647bc7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerCreateSkill
-  lineRenderer: {fileID: 1238242762}
-  skillPrefab: {fileID: 3735636886572184386, guid: a5bade558e610de4bb63893b05f02f5a, type: 3}
-  skillPrefabLaunch: {fileID: 3735636886572184386, guid: 9e6b45004aeb91747a86c7bc124bf472, type: 3}
-  inputManager: {fileID: 1841097570}
-  summonLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  isDebug: 0
 --- !u!114 &1233442016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -684,8 +645,8 @@ MonoBehaviour:
   _startingCurrency: 0
   _activeSkill: {fileID: 0}
   _skillSlots:
-  - {fileID: 11400000, guid: d2a8bcb508320e447a24c5508b8310aa, type: 2}
-  - {fileID: 11400000, guid: f88c7f9392dfc8c4d94bcac2104fe196, type: 2}
+  - {fileID: 11400000, guid: 2193578baef56d74492459eb1aa33efc, type: 2}
+  - {fileID: 11400000, guid: 93796f0e7a633d8438711869de45fa85, type: 2}
 --- !u!114 &1233442021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2238,10 +2199,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1841097568}
-  - component: {fileID: 1841097569}
   - component: {fileID: 1841097570}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: InputManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2262,18 +2222,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1397139264}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1841097569
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1841097567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 211d7945ad6b7eb4dbe08e5bf9361555, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!114 &1841097570
 MonoBehaviour:
   m_ObjectHideFlags: 0
