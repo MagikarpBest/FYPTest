@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Bomb : MonoBehaviour
@@ -7,6 +8,7 @@ public class Bomb : MonoBehaviour
 
     [SerializeField] private float explosionRadius = 5f;
     [SerializeField] private float explosionForce = 5f;
+    private bool _hasExploded;
 
 
     public void Hold(Transform bombHoldPoint)
@@ -20,19 +22,32 @@ public class Bomb : MonoBehaviour
         Debug.Log("Holding bomb");
     }
 
-    public void Throw(Vector3 throwDirection, float throwForce, float upwardForce)
+    public void Throw(Vector3 throwDirection, float throwForce, float upwardForce, float explodeDelay = 2.5f)
     {
         transform.SetParent(null);
         rb.isKinematic = false;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
-        Vector3 force = throwDirection * throwForce + Vector3.up * upwardForce;
+        Vector3 force = throwDirection.normalized * throwForce + Vector3.up * upwardForce;
 
         rb.AddForce(force, ForceMode.VelocityChange);
+        StartCoroutine(DelayedExplode(explodeDelay));
         Debug.Log("Bomb Thrown");
+    }
+
+    private IEnumerator DelayedExplode(float delay)
+    {
+        // TODO: Handle game pause logic
+        yield return new WaitForSeconds(delay);
+        Explode();
     }
 
     public void Explode()
     {
+        if (_hasExploded)
+            return;
+
+        _hasExploded = true;
+
         Collider[] objects = Physics.OverlapSphere(transform.position, explosionRadius);
 
         foreach (var col in objects)

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 098f2f46aa6b53147948d40a55c645f0, type: 3}
+  m_Name: PlayerSkill_Pillar
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerSkill
+  SkillName: Pillar
+  Icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  ManaCost: 1
+  _handler:
+    rid: 6373183337868034123
+  references:
+    version: 2
+    RefIds:
+    - rid: 6373183337868034123
+      type: {class: PillarSkillHandler, ns: Player, asm: Assembly-CSharp}
+      data:
+        _range: 10
+        _pillarPrefab: {fileID: 3735636886572184386, guid: a5bade558e610de4bb63893b05f02f5a, type: 3}
+        _pillarPreviewPrefab: {fileID: 3735636886572184386, guid: 3f0d2ab6949eb9542b24ad7c4f2ff5f4, type: 3}
+        _summonLayer:
+          serializedVersion: 2
+          m_Bits: 384
