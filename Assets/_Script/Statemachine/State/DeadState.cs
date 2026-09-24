@@ -1,16 +1,17 @@
-using UnityEngine;
 
-public class DeadState : MonoBehaviour
+public class DeadState : State
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    
+    public DeadState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent, PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
-        
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void OnEnter()
     {
-        
+        if (CharacterContext is Player player)
+        {
+            player.Movement.StopMove();
+            // die
+        }
     }
 }

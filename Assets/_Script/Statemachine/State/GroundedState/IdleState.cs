@@ -4,8 +4,9 @@ public class IdleState : State
 {
     private PlayerMovementRB movement;
     private PlayerInputManager input;
-    
-    public IdleState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent) : base(stateMachine, characterContext, parent)
+
+    public IdleState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
+        PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
         if (CharacterContext is Player player)
         {
@@ -13,12 +14,15 @@ public class IdleState : State
             input = player.Input;
         }
     }
-    
+
     protected override State GetInitialState() => null;
 
     protected override State GetTransition()
     {
-        if (input.MoveInput != Vector2.zero) return ((GroundedState)Parent).Run;
+        if (input.MoveInput != Vector2.zero)
+        {
+            return Factory.Run;
+        }
 
         return null;
     }

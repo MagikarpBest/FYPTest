@@ -5,7 +5,8 @@ public class FallState : State
     private PlayerMovementRB movement;
     private PlayerInputManager input;
 
-    public FallState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent) : base(stateMachine, characterContext, parent)
+    public FallState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
+        PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
         if (CharacterContext is Player player)
         {
@@ -18,7 +19,10 @@ public class FallState : State
     
     protected override State GetTransition()
     {
-        if (!movement.IsLaunched && movement.IsGrounded) return ((AliveState)Parent.Parent).Grounded;
+        if (!movement.IsLaunched && movement.IsGrounded)
+        {
+            return Factory.Grounded;
+        }
         
         return null;
     }

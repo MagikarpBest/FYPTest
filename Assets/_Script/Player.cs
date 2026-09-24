@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -21,6 +22,8 @@ public class Player : MonoBehaviour, ICharacter
     public PlayerCreateSkill CreateSkill {get; private set;}
     
     private HierarchicalStateMachine stateMachine;
+    public float Health { get; set; } = 100f; // Fake health
+    public bool IsDead => Health <= 0;
     
     //I like having all the stuff the shared components need here so u just pass it to the compoenents rather than having to assign or use get compoenent in all the individual scripts
     //get component is expensive so if u can reduce its best
@@ -52,7 +55,7 @@ public class Player : MonoBehaviour, ICharacter
         
         //u actually want a root state which substates are alive and dead 
         stateMachine = GetComponent<HierarchicalStateMachine>();
-        AliveState aliveState = new AliveState(stateMachine, this, null);
-        stateMachine.Init(aliveState);
+        PlayerStateFactory factory = new PlayerStateFactory(stateMachine, this);
+        stateMachine.Init(factory.Alive);
     }
 }

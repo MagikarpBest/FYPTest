@@ -59,6 +59,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         LaunchCheck();
         CheckGround();
         ApplyExternalVelocity();
+
     }
     
     
@@ -82,14 +83,13 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         {
             isLaunched = false;
         }
+        //Debug.Log(isLaunched);
     }
 
     public void CheckGround()
     {
-        isGrounded = false;
-
         if (Physics.Raycast(
-                transform.position,
+                rigidBody.position,
                 Vector3.down,
                 out RaycastHit hit,
                 groundCheckDistance + 0.5f,
@@ -98,6 +98,11 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         {
             isGrounded = true;
         }
+        else
+        {
+            isGrounded = false;
+        }
+        //Debug.Log(isGrounded);
     }
 
     // ==========================

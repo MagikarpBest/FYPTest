@@ -6,7 +6,8 @@ public class JumpState : State
     private PlayerInputManager input;
     private Rigidbody rb;
     
-    public JumpState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent) : base(stateMachine, characterContext, parent)
+    public JumpState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
+        PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
         if (CharacterContext is Player player)
         {
@@ -20,7 +21,10 @@ public class JumpState : State
     
     protected override State GetTransition()
     {
-        if (rb.linearVelocity.y <= 0) return ((AirborneState)Parent).Fall; //at apex 
+        if (rb.linearVelocity.y <= 0)
+        {
+            return Factory.Fall;
+        } //at apex 
 
         return null;
     }

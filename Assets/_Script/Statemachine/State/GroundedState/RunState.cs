@@ -5,8 +5,13 @@ public class RunState : State
     private PlayerMovementRB movement;
     private PlayerInputManager input;
 
-    public RunState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent) : base(
-        stateMachine, characterContext, parent)
+    public RunState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
+        PlayerStateFactory factory) : base(
+        stateMachine,
+        characterContext,
+        parent,
+        factory
+    )
     {
         if (CharacterContext is Player player)
         {
@@ -19,7 +24,10 @@ public class RunState : State
 
     protected override State GetTransition()
     {
-        if (input.MoveInput == Vector2.zero) return ((GroundedState)Parent).Idle;
+        if (input.MoveInput == Vector2.zero)
+        {
+            return Factory.Idle;
+        }
 
         return null;
     }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class HierarchicalStateMachine : MonoBehaviour
 {
+    [SerializeField] private bool isDebug;
     public State Root {  get; private set; }
     private bool started;
 
@@ -18,12 +19,18 @@ public class HierarchicalStateMachine : MonoBehaviour
     //tree concept
     private void Update()
     {
-        if (started) Root.Tick(Time.deltaTime);
+        if (started)
+        {
+            Root.Tick(Time.deltaTime);
+        }
     }
 
     private void FixedUpdate()
     {
-        if (started) Root.PhysicsTick(Time.deltaTime);
+        if (started)
+        {
+            Root.PhysicsTick(Time.deltaTime);
+        }
     }
 
     public void ChangeState(State from, State to)
@@ -41,7 +48,12 @@ public class HierarchicalStateMachine : MonoBehaviour
         while (stack.Count > 0) stack.Pop().Enter();
 
         //Print hierarchy after the transition
-        PrintActiveHierarchy();
+        if(isDebug)
+        {
+            PrintActiveHierarchy();
+        }
+
+
     }
 
     //Compute the Lowest Common Ancestor of two states.
