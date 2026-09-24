@@ -480,6 +480,7 @@ GameObject:
   - component: {fileID: 1233442021}
   - component: {fileID: 1233442012}
   - component: {fileID: 1233442011}
+  - component: {fileID: 1233442022}
   m_Layer: 0
   m_Name: PlayerCharacterWithVIsual
   m_TagString: Untagged
@@ -573,9 +574,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 384
+  moveSpeed: 11
   gravityMultiply: 2
   jumpHeight: 3
-  moveSpeed: 11
   externalDecaySpeed: 2
   animator: {fileID: 1233442017}
 --- !u!114 &1233442015
@@ -585,7 +586,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1233442010}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7b1e643a28d5fe740bf1e9a3e647bc7d, type: 3}
   m_Name: 
@@ -626,7 +627,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 6a19b422358762046923e0799d043ded, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -700,6 +701,18 @@ MonoBehaviour:
   _characterTransform: {fileID: 1501413897}
   _skillHoldPoint: {fileID: 60730115}
   _aimLineRenderer: {fileID: 1238242762}
+--- !u!114 &1233442022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1233442010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 654adf90d17af184fb10a5ee77509ed7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStateMachine
 --- !u!1 &1235783224
 GameObject:
   m_ObjectHideFlags: 0
@@ -2650,5 +2663,5 @@ SceneRoots:
   - {fileID: 789519955}
   - {fileID: 2031095862}
   - {fileID: 1089342889}
-  - {fileID: 1233442018}
   - {fileID: 1238242763}
+  - {fileID: 1233442018}
