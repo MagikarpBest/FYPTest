@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,32 +16,32 @@ namespace HUD
     public class HUDPresenter : IDisposable
     {
         private readonly IHUDView _view;
-        // ===== Model =====
-        // For binding entities invoked actions
-        // Health bar
-        // Mana bar
-        // Skills list (using skill interaction handle in model itself, switch skills from view or maybe model itself still)
-        private HUDModel _model;
-        // =================
+        private readonly IPlayerStatus _model;
 
-        public HUDPresenter(IHUDView view)
+        public HUDPresenter(IHUDView view, IPlayerStatus model)
         {
             _view = view;
+            _model = model;
         }
 
         /// <summary>
         /// Call once whenever the active HudModel changes (e.g. from a PlayerModelProvider callback).
         /// </summary>
-        public void Bind(HUDModel model)
+        public void Initialize()
         {
             Unbind();
-            _model = model;
 
+            _view.OnSkillSwitchInput += HandleSkillSwitchInput;
+            
             _model.OnHealthChanged += RefreshHealth;
             _model.OnManaChanged += RefreshMana;
+            _model.OnActiveSkillChanged += RefreshActiveSkill;
+            _model.OnSkillSlotChanged += RefreshSkillSlot;
 
             RefreshHealth(_model.CurrentHealth, _model.MaxHealth);
             RefreshMana(_model.CurrentMana, _model.MaxMana);
+            RefreshAllSkills();
+            RefreshActiveSkill(_model.ActiveSkill);
         }
 
         public void Unbind()
@@ -50,7 +51,6 @@ namespace HUD
 
             _model.OnHealthChanged -= RefreshHealth;
             _model.OnManaChanged -= RefreshMana;
-            _model = null;
         }
         
         public void Dispose()
@@ -63,6 +63,20 @@ namespace HUD
         public void Show(bool instant = false) => _view.Show(instant);
         public void Hide(bool instant = false) => _view.Hide(instant);
 
+        private void HandleSkillSwitchInput(int direction)
+        {
+            bool switched = _model.TrySwitchSkill(direction);
+
+            if (switched)
+            {
+                _view.PlaySkillSwitchPressed();
+            }
+            else
+            {
+                _view.PlaySkillSwitchFailed();
+            }
+        }
+        
         private void RefreshHealth(int currentHealth, int maxHealth)
         {
             if (_model == null) return;
@@ -73,6 +87,26 @@ namespace HUD
         {
             if (_model == null) return;
             _view.SetMana(currentMana, maxMana);
+        }
+
+        private void RefreshActiveSkill(PlayerSkill skill)
+        {
+            _view.SetActiveSkill(skill);
+        }
+
+        private void RefreshSkillSlot(
+            int slotIndex,
+            PlayerSkill skill)
+        {
+            _view.SetSkill(slotIndex, skill);
+        }
+
+        private void RefreshAllSkills()
+        {
+            for (int i = 0; i < _model.SkillSlotCount; i++)
+            {
+                _view.SetSkill(i, _model.GetSkill(i));
+            }
         }
     }
 }

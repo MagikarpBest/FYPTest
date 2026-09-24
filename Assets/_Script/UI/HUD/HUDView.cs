@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using Player;
+using UnityEngine.InputSystem;
 
 namespace HUD
 {
@@ -14,37 +16,63 @@ namespace HUD
     public class HUDView : MonoBehaviour, IHUDView
     {
         [Header("Health")]
-        [SerializeField] private Transform heartContainer;
-        [SerializeField] private GameIcons.HeartIcon heartIconPrefab;
+        [SerializeField] private Transform _heartContainer;
+        [SerializeField] private GameIcons.HeartIcon _heartIconPrefab;
 
         [Header("Mana")]
-        // [SerializeField] private Image manaFillImage;
-        [SerializeField] private TextMeshProUGUI manaCountText; // swap for TMP_Text in a real project
+        [SerializeField] private TextMeshProUGUI _manaCountText; // swap for TMP_Text in a real project
 
+        [SerializeField]
+        private Transform _skillContainer;
+
+        [SerializeField]
+        private HUDSkillSlot _skillSlotPrefab;
 
         [Header("Visibility")]
-        [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] private CanvasGroup _canvasGroup;
 
         private readonly List<GameIcons.HeartIcon> _hearts = new();
+        private readonly List<HUDSkillSlot> _skillSlots = new();
+        public event Action<int> OnSkillSwitchInput;
 
-        private void Start()
+        private void Awake()
         {
             // delete content under heartContainer
-            foreach (Transform child in heartContainer)
+            foreach (Transform child in _heartContainer)
+            {
+                Destroy(child.gameObject);
+            }
+
+            foreach (Transform child in _skillContainer)
             {
                 Destroy(child.gameObject);
             }
 
             // Ensure the canvas group is hidden at start
-            canvasGroup.alpha = 0f;
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
+            _canvasGroup.alpha = 0f;
+            _canvasGroup.interactable = false;
+            _canvasGroup.blocksRaycasts = false;
+        }
 
-            // TODO: Remove this and use actual bootstrap code to bind.
-            // Test: test purpose
-            HUDPresenter presenter = new HUDPresenter(this);
-            presenter.Bind(new HUDModel(5, 100f)); // 5 hearts, 100 mana
-            presenter.Show(true); // Show instantly for testing
+        private void Update()
+        {
+            HandleSkillSwitchInput();
+        }
+
+        private void HandleSkillSwitchInput()
+        {
+            if (Keyboard.current == null)
+                return;
+
+            if (Keyboard.current.qKey.wasPressedThisFrame)
+            {
+                OnSkillSwitchInput?.Invoke(-1);
+            }
+
+            if (Keyboard.current.rKey.wasPressedThisFrame)
+            {
+                OnSkillSwitchInput?.Invoke(1);
+            }
         }
 
         public void SetHealth(int current, int max)
@@ -62,15 +90,40 @@ namespace HUD
         public void SetMana(float current, float max)
         {
             // manaFillImage.fillAmount = max > 0f ? current / max : 0f;
-            manaCountText.text = $"Mana: {Mathf.FloorToInt(current)}/{Mathf.FloorToInt(max)}";
+            _manaCountText.text = $"Mana: {Mathf.FloorToInt(current)}/{Mathf.FloorToInt(max)}";
         }
+
+        public void SetSkill(int slotIndex, PlayerSkill skill)
+        {
+            EnsureSkillSlotCount(slotIndex + 1);
+            _skillSlots[slotIndex].SetSkill(skill);
+        }
+
+        public void SetActiveSkill(PlayerSkill skill)
+        {
+            for (int i = 0; i < _skillSlots.Count; i++)
+            {
+                _skillSlots[i].SetSelected(_skillSlots[i].Skill == skill);
+            }
+        }
+
+        public void PlaySkillSwitchPressed()
+        {
+            // TODO: Add button press visual.
+        }
+
+        public void PlaySkillSwitchFailed()
+        {
+            // TODO: Add failed switch shake visual.
+        }
+
         public void Show(bool instant)
         {
-            canvasGroup.blocksRaycasts = true;
-            canvasGroup.interactable = true;
+            _canvasGroup.blocksRaycasts = true;
+            _canvasGroup.interactable = true;
             if (instant)
             {
-                canvasGroup.alpha = 1f;
+                _canvasGroup.alpha = 1f;
             }
             else
             {
@@ -80,25 +133,34 @@ namespace HUD
 
         public void Hide(bool instant)
         {
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
+            _canvasGroup.interactable = false;
+            _canvasGroup.blocksRaycasts = false;
             if (instant)
             {
-                canvasGroup.alpha = 0f;
+                _canvasGroup.alpha = 0f;
             }
             else
             {
-                
+                // TODO: Add slide in animation.
             }
         }
 
         private void EnsureHeartCount(int needed)
         {
             while (_hearts.Count < needed)
-                _hearts.Add(Instantiate(heartIconPrefab, heartContainer));
+                _hearts.Add(Instantiate(_heartIconPrefab, _heartContainer));
 
             for (int i = 0; i < _hearts.Count; i++)
                 _hearts[i].gameObject.SetActive(i < needed);
+        }
+
+        private void EnsureSkillSlotCount(int needed)
+        {
+            while (_skillSlots.Count < needed)
+            {
+                HUDSkillSlot slot = Instantiate(_skillSlotPrefab, _skillContainer);
+                _skillSlots.Add(slot);
+            }
         }
     }
 }

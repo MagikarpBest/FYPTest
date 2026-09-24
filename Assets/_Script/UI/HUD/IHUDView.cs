@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+using System;
+using Player;
 
 namespace HUD
 {
@@ -7,9 +8,14 @@ namespace HUD
     /// </summary>
     public interface IHUDView
     {
+        event Action<int> OnSkillSwitchInput;
+
         void SetHealth(int current, int max);
         void SetMana(float current, float max);
-        // void SetSkills
+        void SetSkill(int slotIndex, PlayerSkill skill);
+        void SetActiveSkill(PlayerSkill skill);
+        void PlaySkillSwitchPressed();
+        void PlaySkillSwitchFailed();
 
         void Show(bool instant);
         void Hide(bool instant);
