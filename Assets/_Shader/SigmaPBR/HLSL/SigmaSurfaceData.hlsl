@@ -63,6 +63,8 @@ TEXTURE2D(_EmissionMap);
     TEXTURE2D(_TopEmissionMap);
 #endif
 
+#define SIGMA_SAMPLER sampler_LinearRepeat
+
 #if defined(_TEXTUREFILTER_LINEAR) && defined(_TEXTUREWRAP_REPEAT)
     #define SIGMA_SAMPLER sampler_LinearRepeat
 #elif defined(_TEXTUREFILTER_LINEAR) && defined(_TEXTUREWRAP_CLAMP)
@@ -73,6 +75,16 @@ TEXTURE2D(_EmissionMap);
     #define SIGMA_SAMPLER sampler_PointClamp
 #endif
 
+struct TriplanarUV 
+{
+    float2 x, y, z;
+};
+
+struct TriplanarViewDir
+{
+    float3 x, y, z; 
+};
+
 struct SigmaSurfaceParameters
 {
     float2 uv;   
@@ -81,6 +93,11 @@ struct SigmaSurfaceParameters
     float4 tangentWS;  
     float3 viewDirWS;
     float2 screenUV;
+    
+    #ifdef _TRIPLANAR_MAPPING
+        TriplanarUV triUV;
+        float3 triW;
+    #endif
 };
 
 struct SigmaSurfaceData
@@ -113,16 +130,6 @@ struct v2f
     float4 tangentWS : TEXCOORD3;
     float3 viewWS : TEXCOORD4;
     float2 dynamicLightmapUV : TEXCOORD5;
-};
-
-struct TriplanarUV 
-{
-    float2 x, y, z;
-};
-
-struct TriplanarViewDir
-{
-    float3 x, y, z; 
 };
 
 void ParallaxOffset(float3 viewDirTS, inout float2 uv, Texture2D heightMap, SamplerState heightSampler, float heightmapStrength)
@@ -242,8 +249,10 @@ void InitSurfaceParameters(v2f i, out SigmaSurfaceParameters sp)
     ParallaxOffset(viewDirTS, sp.uv, _HeightMap, SIGMA_SAMPLER, _HeightMapStrength);
     
     //Triplanar
-    TriplanarUV triUV = GetTriplanarUV(sp);
-    float3 triW = GetTriplanarWeights(sp);
+    #ifdef _TRIPLANAR_MAPPING
+        sp.triUV = GetTriplanarUV(sp);
+        sp.triW = GetTriplanarWeights(sp);
+    #endif 
 }
 
 float4 GetBaseColor(SigmaSurfaceParameters sp)

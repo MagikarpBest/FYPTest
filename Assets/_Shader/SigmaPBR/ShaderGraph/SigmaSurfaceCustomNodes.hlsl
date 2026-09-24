@@ -117,7 +117,7 @@ float3 BlendTriplanarNormal(float3 mappedNormal, float3 surfaceNormal)
     return n;
 }
 
-void SigmaTriplanarNormal(float3 normalWS, float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triWeights, UnityTexture2D normalMap, UnitySamplerState normalSampler, float normalStrength,
+void SigmaTriplanarNormal_float(float3 normalWS, float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triWeights, UnityTexture2D normalMap, UnitySamplerState normalSampler, float normalStrength,
     out float3 result)
 {
     float3 normalTS_X = UnpackNormalScale(SAMPLE_TEXTURE2D(normalMap, normalSampler, triUV_X), normalStrength);
