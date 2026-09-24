@@ -1,7 +1,5 @@
 using UnityEngine;
 
-namespace Player
-{
     [RequireComponent(typeof(PlayerStatus))]
     public class PlayerDamageReceiver : MonoBehaviour
     {
@@ -30,4 +28,3 @@ namespace Player
         }
     #endif
     }
-}

@@ -3,7 +3,6 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Player;
 
 /// <summary>
 /// Provide Serialize data binding with actual script that implement inspector.

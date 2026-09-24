@@ -1,157 +1,154 @@
 using System;
 using UnityEngine;
 
-namespace Player
+public enum SkillConfirmResult
 {
-    public enum SkillConfirmResult
+    Finish = 1,
+    Proceed = 2, // If skill need to confirm more than 1 steps.
+    Fail = -1
+}
+
+/// <summary>
+/// Packed {CharacterTransform, SkillHoldPoint, Camera} reference sent from PlayerSkillController.cs
+/// </summary>
+public class PlayerSkillContext
+{
+    public Transform CharacterTransform { get; }
+    public Transform SkillHoldPoint { get; }
+    public Camera Camera { get; }
+    public LineRenderer AimLineRenderer { get; }
+
+    public PlayerSkillContext(
+        Transform characterTransform,
+        Transform skillHoldPoint,
+        Camera camera,
+        LineRenderer aimLineRenderer)
     {
-        Finish = 1,
-        Proceed = 2, // If skill need to confirm more than 1 steps.
-        Fail = -1
+        CharacterTransform = characterTransform;
+        SkillHoldPoint = skillHoldPoint;
+        Camera = camera;
+        AimLineRenderer = aimLineRenderer;
+    }
+}
+
+[RequireComponent(typeof(PlayerStatus))]
+public class PlayerSkillController : MonoBehaviour
+{
+    private PlayerStatus _playerStatus;
+    private PlayerInputManager _inputManager;
+
+    [Header("PlayerSkillContext")]
+    [SerializeField] private Transform _characterTransform;
+    [SerializeField] private Transform _skillHoldPoint;
+    [SerializeField] private LineRenderer _aimLineRenderer;
+
+    private PlayerSkillContext _context;
+    private PlayerSkill _cachedSkill;
+    private IPlayerSkillHandler _activeHandler;
+
+    private void Awake()
+    {
+        _playerStatus = GetComponent<PlayerStatus>();
+        _context = new PlayerSkillContext(_characterTransform, _skillHoldPoint, Camera.main, _aimLineRenderer);
     }
 
-    /// <summary>
-    /// Packed {CharacterTransform, SkillHoldPoint, Camera} reference sent from PlayerSkillController.cs
-    /// </summary>
-    public class PlayerSkillContext
+    private void Start()
     {
-        public Transform CharacterTransform { get; }
-        public Transform SkillHoldPoint { get; }
-        public Camera Camera { get; }
-        public LineRenderer AimLineRenderer { get; }
-
-        public PlayerSkillContext(
-            Transform characterTransform,
-            Transform skillHoldPoint,
-            Camera camera,
-            LineRenderer aimLineRenderer)
-        {
-            CharacterTransform = characterTransform;
-            SkillHoldPoint = skillHoldPoint;
-            Camera = camera;
-            AimLineRenderer = aimLineRenderer;
-        }
+        FindInputManager();
+        BindInputEvents();
     }
 
-    [RequireComponent(typeof(PlayerStatus))]
-    public class PlayerSkillController : MonoBehaviour
+    private void OnDisable()
     {
-        private PlayerStatus _playerStatus;
-        private PlayerInputManager _inputManager;
+        UnbindInputEvents();
+    }
 
-        [Header("PlayerSkillContext")]
-        [SerializeField] private Transform _characterTransform;
-        [SerializeField] private Transform _skillHoldPoint;
-        [SerializeField] private LineRenderer _aimLineRenderer;
-        
-        private PlayerSkillContext _context;
-        private PlayerSkill _cachedSkill;
-        private IPlayerSkillHandler _activeHandler;
+    private void FindInputManager()
+    {
+        _inputManager = FindFirstObjectByType<PlayerInputManager>();
+    }
 
-        private void Awake()
+    private void BindInputEvents()
+    {
+        if (_inputManager == null)
         {
-            _playerStatus = GetComponent<PlayerStatus>();
-            _context = new PlayerSkillContext(_characterTransform, _skillHoldPoint, Camera.main, _aimLineRenderer);
+            Debug.LogWarning($"{nameof(PlayerSkillController)}: " + $"{nameof(PlayerInputManager)} not found.", this);
+            return;
         }
 
-        private void Start()
-        {
-            FindInputManager();
-            BindInputEvents();
-        }
+        _inputManager.OnSkill3Pressed += HandleSkillPressed;
+        _inputManager.OnAttackPressed += HandleAttackPressed;
+        _inputManager.OnSkillCancelPressed += CancelCurrentSkill;
+    }
 
-        private void OnDisable()
-        {
-            UnbindInputEvents();
-        }
+    private void UnbindInputEvents()
+    {
+        if (_inputManager == null)
+            return;
 
-        private void FindInputManager()
-        {
-            _inputManager = FindFirstObjectByType<PlayerInputManager>();
-        }
+        _inputManager.OnSkill3Pressed -= HandleSkillPressed;
+        _inputManager.OnAttackPressed -= HandleAttackPressed;
+        _inputManager.OnSkillCancelPressed -= CancelCurrentSkill;
+    }
 
-        private void BindInputEvents()
-        {
-            if (_inputManager == null)
-            {
-                Debug.LogWarning($"{nameof(PlayerSkillController)}: " + $"{nameof(PlayerInputManager)} not found.", this);
-                return;
-            }
+    private void HandleSkillPressed()
+    {
+        if (_playerStatus == null) return;
+        PlayerSkill activeSkill = _playerStatus.ActiveSkill;
+        if (activeSkill == null) return;
 
-            _inputManager.OnSkill3Pressed += HandleSkillPressed;
-            _inputManager.OnAttackPressed += HandleAttackPressed;
-            _inputManager.OnSkillCancelPressed += CancelCurrentSkill;
-        }
+        if (_playerStatus.CheckMana(activeSkill.ManaCost) == false) return;
+        SelectSkill(activeSkill);
+    }
 
-        private void UnbindInputEvents()
-        {
-            if (_inputManager == null)
-                return;
+    private void HandleAttackPressed()
+    {
+        ConfirmSkill();
+    }
 
-            _inputManager.OnSkill3Pressed -= HandleSkillPressed;
-            _inputManager.OnAttackPressed -= HandleAttackPressed;
-            _inputManager.OnSkillCancelPressed -= CancelCurrentSkill;
-        }
+    public void SelectSkill(PlayerSkill skill)
+    {
+        if (skill == null)
+            return;
 
-        private void HandleSkillPressed()
-        {
-            if (_playerStatus == null) return;
-            PlayerSkill activeSkill = _playerStatus.ActiveSkill;
-            if (activeSkill == null) return;
+        CancelCurrentSkill();
 
-            if (_playerStatus.CheckMana(activeSkill.ManaCost) == false) return;
-            SelectSkill(activeSkill);
-        }
+        _cachedSkill = skill;
 
-        private void HandleAttackPressed()
-        {
-            ConfirmSkill();
-        }
+        _activeHandler = skill.Handler;
 
-        public void SelectSkill(PlayerSkill skill)
-        {
-            if (skill == null)
-                return;
+        if (_activeHandler == null)
+            return;
 
-            CancelCurrentSkill();
+        _activeHandler.Begin(_context);
+        Debug.Log("SelectSkill Success");
+    }
 
-            _cachedSkill = skill;
+    public void ConfirmSkill()
+    {
+        if (_activeHandler == null) return;
 
-            _activeHandler = skill.Handler;
+        SkillConfirmResult result = _activeHandler.Confirm();
 
-            if (_activeHandler == null)
-                return;
+        if (result == SkillConfirmResult.Finish) FinishSkill();
+    }
 
-            _activeHandler.Begin(_context);
-            Debug.Log("SelectSkill Success");
-        }
+    private void Update()
+    {
+        _activeHandler?.Update();
+    }
 
-        public void ConfirmSkill()
-        {
-            if (_activeHandler == null) return;
+    private void CancelCurrentSkill()
+    {
+        _activeHandler?.Cancel();
+        _activeHandler = null;
+    }
 
-            SkillConfirmResult result = _activeHandler.Confirm();
-            
-            if (result == SkillConfirmResult.Finish) FinishSkill();
-        }
+    private void FinishSkill()
+    {
+        _playerStatus.ConsumeMana(_cachedSkill.ManaCost);
+        _activeHandler?.Cancel();
 
-        private void Update()
-        {
-            _activeHandler?.Update();
-        }
-
-        private void CancelCurrentSkill()
-        {
-            _activeHandler?.Cancel();
-            _activeHandler = null;
-        }
-
-        private void FinishSkill()
-        {
-            _playerStatus.ConsumeMana(_cachedSkill.ManaCost);
-            _activeHandler?.Cancel();
-
-            _activeHandler = null;
-        }
+        _activeHandler = null;
     }
 }
