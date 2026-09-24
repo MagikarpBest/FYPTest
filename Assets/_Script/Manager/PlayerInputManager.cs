@@ -9,6 +9,7 @@ public class PlayerInputManager : MonoBehaviour
     public event Action OnSkillPressed;
     public event Action OnSkill2Pressed;
     public event Action OnSkill3Pressed;
+    public event Action OnSkillCancelPressed;
     public event Action OnAttackPressed;
     public Vector2 MoveInput { get; private set; }
 
@@ -24,6 +25,7 @@ public class PlayerInputManager : MonoBehaviour
         input.Player.Skill2.performed += Skill2_Performed;
         input.Player.Skill3.performed += Skill3_Performed;
         input.Player.Attack.performed += Attack_Performed;
+        input.Player.SkillCancel.performed += SkillCancel_Performed;
     }
 
 
@@ -57,6 +59,11 @@ public class PlayerInputManager : MonoBehaviour
     private void Skill3_Performed(InputAction.CallbackContext obj)
     {
         OnSkill3Pressed?.Invoke();
+    }
+
+    private void SkillCancel_Performed(InputAction.CallbackContext obj)
+    {
+        OnSkillCancelPressed?.Invoke();
     }
 
     private void Attack_Performed(InputAction.CallbackContext obj)

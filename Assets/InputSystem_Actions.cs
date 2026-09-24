@@ -208,6 +208,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SkillCancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""2c98b89d-96f1-4501-89a3-5f443d1c8227"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -637,6 +646,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""New action1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8f72d5b1-e268-4ef6-9823-9d4a1dc44d2a"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SkillCancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1237,6 +1257,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Skill2 = m_Player.FindAction("Skill2", throwIfNotFound: true);
         m_Player_Skill3 = m_Player.FindAction("Skill3", throwIfNotFound: true);
         m_Player_Newaction1 = m_Player.FindAction("New action1", throwIfNotFound: true);
+        m_Player_SkillCancel = m_Player.FindAction("SkillCancel", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1343,6 +1364,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Skill2;
     private readonly InputAction m_Player_Skill3;
     private readonly InputAction m_Player_Newaction1;
+    private readonly InputAction m_Player_SkillCancel;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1406,6 +1428,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Newaction1".
         /// </summary>
         public InputAction @Newaction1 => m_Wrapper.m_Player_Newaction1;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/SkillCancel".
+        /// </summary>
+        public InputAction @SkillCancel => m_Wrapper.m_Player_SkillCancel;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1471,6 +1497,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Newaction1.started += instance.OnNewaction1;
             @Newaction1.performed += instance.OnNewaction1;
             @Newaction1.canceled += instance.OnNewaction1;
+            @SkillCancel.started += instance.OnSkillCancel;
+            @SkillCancel.performed += instance.OnSkillCancel;
+            @SkillCancel.canceled += instance.OnSkillCancel;
         }
 
         /// <summary>
@@ -1521,6 +1550,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Newaction1.started -= instance.OnNewaction1;
             @Newaction1.performed -= instance.OnNewaction1;
             @Newaction1.canceled -= instance.OnNewaction1;
+            @SkillCancel.started -= instance.OnSkillCancel;
+            @SkillCancel.performed -= instance.OnSkillCancel;
+            @SkillCancel.canceled -= instance.OnSkillCancel;
         }
 
         /// <summary>
@@ -1912,6 +1944,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnNewaction1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SkillCancel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkillCancel(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
