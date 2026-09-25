@@ -5,12 +5,12 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Collider))]
 
-[RequireComponent(typeof(PlayerInputManager))]
 [RequireComponent(typeof(PlayerMovementRB))]
 [RequireComponent(typeof(HierarchicalStateMachine))]
 
-[RequireComponent(typeof(PlayerBombSkill))]
-[RequireComponent(typeof(PlayerCreateSkill))]
+[RequireComponent(typeof(PlayerSkillController))]
+[RequireComponent(typeof(PlayerStatus))]
+[RequireComponent(typeof(PlayerDamageReceiver))]
 
 public class Player : MonoBehaviour, ICharacter
 {
@@ -18,8 +18,9 @@ public class Player : MonoBehaviour, ICharacter
     public PlayerMovementRB Movement {get; private set;}
     
     //Make these a PlayerSkillManager or something if u have more skill later if only these two or like 3 ish skills its fine this way
-    public PlayerBombSkill BombSkill {get; private set;}
-    public PlayerCreateSkill CreateSkill {get; private set;}
+    public PlayerSkillController SkillController {get; private set;}
+    public PlayerStatus CurrentPlayerStatus {get; private set;}
+    public PlayerDamageReceiver DamageReceiver {get; private set;}
     
     private HierarchicalStateMachine stateMachine;
     public float Health { get; set; } = 100f; // Fake health
@@ -43,11 +44,12 @@ public class Player : MonoBehaviour, ICharacter
         Animator = GetComponent<Animator>();
         cameraTransform = Camera.main.transform;
         
-        Input = GetComponent<PlayerInputManager>();
+        Input = FindFirstObjectByType<PlayerInputManager>(); 
         Movement = GetComponent<PlayerMovementRB>();
 
-        BombSkill = GetComponent<PlayerBombSkill>();
-        CreateSkill = GetComponent<PlayerCreateSkill>();
+        SkillController = GetComponent<PlayerSkillController>();
+        CurrentPlayerStatus = GetComponent<PlayerStatus>();
+        DamageReceiver = GetComponent<PlayerDamageReceiver>();
         
         //all these components can be pure c sharp but then u cant see them in inspector
         
