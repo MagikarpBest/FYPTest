@@ -147,7 +147,7 @@ public class GrassChunk
         
         PropertyBlock.SetBuffer("_GrassDataBuffer", CulledGrassBuffer);
         
-        UnityEngine.Debug.Log($"Model {Model.name} Chunk ({ChunkX}, {ChunkY}) has been allocated");
+        //UnityEngine.Debug.Log($"Model {Model.name} Chunk ({ChunkX}, {ChunkY}) has been allocated");
     }
     
     public void ClearBuffers() 
@@ -162,6 +162,6 @@ public class GrassChunk
         ArgsBuffer = null;
         ArgsBufferLOD = null;
         
-        UnityEngine.Debug.Log($"Model {Model.name} Chunk ({ChunkX}, {ChunkY}) has been cleared");
+        //UnityEngine.Debug.Log($"Model {Model.name} Chunk ({ChunkX}, {ChunkY}) has been cleared");
     }
 }

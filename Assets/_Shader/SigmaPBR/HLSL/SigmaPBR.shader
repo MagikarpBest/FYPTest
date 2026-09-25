@@ -2,18 +2,27 @@ Shader "SigmaShader/SigmaPBR"
 {
     Properties
     {
-        _BaseColor("Base Color", Color) = (1, 1, 1, 1)
-        _BaseTexture("Base Texture", 2D) = "white" {}
+    	[KeywordEnum(Linear, Point)]
+	    _TextureFilter ("Texture Filter", Float) = 0
+
+	    [KeywordEnum(Repeat, Clamp)]
+	    _TextureWrap ("Texture Wrap", Float) = 0
+    	
     	[Toggle(_TRIPLANAR_MAPPING)] _UseTriplanarMapping("Use Triplanar Mapping", Integer) = 0
     	_TriplanarTile("Triplanar Tile", Float) = 0.1
-    	_TriplanarBlend("Triplanar Blend", Float) = 1
+    	_TriplanarBlendOffset ("Triplanar Blend Offset", Range(0, 0.5)) = 0
+		_TriplanarBlendExponent ("Triplanar Blend Exponent", Range(1, 8)) = 1
+    	
+    	//Base map
+	    _BaseColor("Base Color", Color) = (1, 1, 1, 1)
+        _BaseTexture("Base Texture", 2D) = "white" {}
     	
     	[Toggle(_SPECULAR_SETUP)] _UseSpecularSetup("Use Specular Setup", Integer) = 0
 
-		[NoScaleOffset] _MetallicMap("Metallic", 2D) = "white" {}
+		[NoScaleOffset] _MetallicMap("Metallic Map", 2D) = "white" {}
 		_Metallic("Metallic", Range(0.0, 1.0)) = 0.0
 
-		[NoScaleOffset] _SpecularMap("SpecularMap", 2D) = "white" {}
+		[NoScaleOffset] _SpecularMap("Specular Map", 2D) = "white" {}
 		_SpecularColor("Specular Color", Color) = (1.0, 1.0, 1.0, 1.0)
 
 		[NoScaleOffset] _SmoothnessMap("Smoothness Map", 2D) = "white" {}
@@ -31,6 +40,35 @@ Shader "SigmaShader/SigmaPBR"
 
 		[NoScaleOffset] _EmissionMap("Emission Map", 2D) = "white" {}
 		[HDR] _EmissionColor("Emission Color", Color) = (0.0, 0.0, 0.0, 1.0)
+    	
+    	//Top map
+	    [Toggle(_SEPARATE_TOP_MAP)] _SeparateTopMap("Use Separate Top Map", Integer) = 0
+
+    	_TopBaseColor("Top Base Color", Color) = (1, 1, 1, 1)
+        _TopBaseTexture("Top Base Texture", 2D) = "white" {}
+
+		[NoScaleOffset] _TopMetallicMap("Top Metallic Map", 2D) = "white" {}
+		_TopMetallic("Top Metallic", Range(0.0, 1.0)) = 0.0
+
+		[NoScaleOffset] _TopSpecularMap("Top Specular Map", 2D) = "white" {}
+		_TopSpecularColor("Top Specular Color", Color) = (1.0, 1.0, 1.0, 1.0)
+
+		[NoScaleOffset] _TopSmoothnessMap("Top Smoothness Map", 2D) = "white" {}
+		_TopSmoothness("Top Smoothness", Range(0.0, 1.0)) = 0.5
+    	[Toggle(_TOP_CONVERT_FROM_ROUGHNESS)] _TopConvertFromRoughness("Top Convert From Roughness", Integer) = 0
+
+		[NoScaleOffset] [Normal] _TopNormalTexture("Top Normal Texture", 2D) = "bump" {}
+		_TopNormalStrength("Top Normal Strength", Range(0.0, 2.0)) = 1.0
+
+		[NoScaleOffset] _TopHeightMap("Top Height Map", 2D) = "white" {}
+		_TopHeightMapStrength("Top Height Map Strength", Range(0.0, 0.1)) = 0.0
+
+		[NoScaleOffset] _TopOcclusionMap("Top Occlusion Map", 2D) = "white" {}
+		_TopOcclusionStrength("Top Occlusion Strength", Range(0.0, 1.0)) = 1.0
+
+		[NoScaleOffset] _TopEmissionMap("Top Emission Map", 2D) = "white" {}
+		[HDR] _TopEmissionColor("Top Emission Color", Color) = (0.0, 0.0, 0.0, 1.0)
+    	
     	
     	[HideInInspector] _Surface("_Surface", Float) = 0
 		[HideInInspector] _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
@@ -89,15 +127,23 @@ Shader "SigmaShader/SigmaPBR"
 				#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION
 	            #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
                 
+                #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
+                #pragma shader_feature_local _ _ALPHATEST_ON
+                #pragma shader_feature_local _ _ALPHAPREMULTIPLY_ON
+				#pragma shader_feature_local _ _ALPHAMODULATE_ON
+                
                 #pragma shader_feature_local _ _CONVERT_FROM_ROUGHNESS
                 #pragma shader_feature_local _ _SPECULAR_SETUP
                 #pragma shader_feature_local _ _TRIPLANAR_MAPPING
-                #pragma shader_feature_local _ _RECEIVE_SHADOWS_OFF
-                #pragma shader_feature_local _ _ALPHATEST_ON
+                #pragma shader_feature_local _ _SEPARATE_TOP_MAP
+                #pragma shader_feature_local _ _TOP_CONVERT_FROM_ROUGHNESS
+                
+                #pragma shader_feature_local _TEXTUREFILTER_LINEAR _TEXTUREFILTER_POINT
+				#pragma shader_feature_local _TEXTUREWRAP_REPEAT _TEXTUREWRAP_CLAMP
                 
                 #pragma multi_compile_instancing
 	            #pragma instancing_options renderinglayer
-	            #pragma multi_compile _ DOTS_INSTANCING_ON
+	            //#pragma multi_compile _ DOTS_INSTANCING_ON
                 
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 				#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -107,14 +153,7 @@ Shader "SigmaShader/SigmaPBR"
                 
                 v2f vert(appdata v)
                 {
-                    v2f o = (v2f)0;
-
-                	o.uv = TRANSFORM_TEX(v.uv, _BaseTexture);
-                    o.positionCS = TransformObjectToHClip(v.positionOS.xyz);
-					o.positionWS = TransformObjectToWorld(v.positionOS.xyz);
-                    o.normalWS = TransformObjectToWorldNormal(v.normalOS);
-					o.tangentWS = float4(TransformObjectToWorldDir(v.tangentOS.xyz), v.tangentOS.w);
-                    o.viewWS = GetWorldSpaceViewDir(o.positionWS);
+                    v2f o = Initv2f(v);
 					o.dynamicLightmapUV = v.dynamicLightmapUV.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
 
                     return o;
@@ -128,29 +167,29 @@ Shader "SigmaShader/SigmaPBR"
                 	SigmaSurfaceData surface;
                 	InitSurfaceData(sp, surface);
                 	
-                	#ifdef _ALPHATEST_ON
-                		if (surface.alpha < _Cutoff)
-                		{
-                			discard;
-                		}
-                	#endif
+                	AlphaDiscard(surface.alpha, _Cutoff);
+                	surface.albedo = AlphaModulate(surface.albedo, surface.alpha);
                 	
                 	float3 normalWS = surface.normal;
-                	float3 viewDirWS = normalize(i.viewWS);
+                	float3 viewDirWS = sp.viewDirWS;
                 	float4 shadowCoord = TransformWorldToShadowCoord(i.positionWS);
 					float4 shadowMask = SAMPLE_SHADOWMASK(i.dynamicLightmapUV);
                 	
                 	float roughness = 1.0 - surface.smoothness;
                 	roughness = max(roughness, 0.085);
                 	
-                	#ifdef _SPECULAR_SETUP
+                	#ifdef _SPECULAR_SETUP 
                 		float3 F0 = surface.specular;
-						half oneMinusReflectivity = 1.0;
+                		half oneMinusReflectivity = 1.0 - ReflectivitySpecular(F0);
                 	#else
                 		//0.04 is kDieletricSpec.a
                 		float3 F0 = lerp(0.04, surface.albedo, surface.metallic);
 					    half oneMinusReflectivity = OneMinusReflectivityMetallic(surface.metallic); 
                 	#endif
+                	
+                	//Base Color
+                	float3 diffuseColor = surface.albedo * oneMinusReflectivity;
+					diffuseColor = AlphaPremultiply(diffuseColor, surface.alpha);
                 	
                 	//Main light
                 	Light mainLight = GetMainLight(shadowCoord);
@@ -180,7 +219,7 @@ Shader "SigmaShader/SigmaPBR"
            
                 	//Diffuse
                 	//float3 diffuse = kd * albedo / PI 
-                	float3 diffuse = surface.albedo * oneMinusReflectivity;
+                	float3 diffuse = diffuseColor;
                 	
                 	//BRDF = kdfdiffuse + ksfspecular
                 	//Cook torrance u get rid of ks in specular cause it already has fresnel so if u dont remove you doubling
@@ -211,7 +250,7 @@ Shader "SigmaShader/SigmaPBR"
                 	
                 	float3 diffuseAO = GTAOMultiBounce(surface.occlusion, surface.albedo);
      
-                	float3 diffuseIndirect = irradianceSH * surface.albedo * oneMinusReflectivity * diffuseAO;
+                	float3 diffuseIndirect = irradianceSH * diffuseColor * diffuseAO;
                 	
                 	float3 indirectLight = diffuseIndirect + specularIndirect;
                 	
@@ -237,17 +276,16 @@ Shader "SigmaShader/SigmaPBR"
                 			float3 specularAdd = SpecularGGX(light.direction, normalWS, viewDirWS, halfVectorAdd, F0, roughness) * PI;
 
                 			//Diffuse
-                			float3 diffuseAdd = surface.albedo * oneMinusReflectivity;
+                			float3 diffuseAdd = diffuseColor;
                 	
                 			float NdotLAdd = saturate(dot(normalWS, light.direction));
                 			
                 			directLight += (diffuseAdd + specularAdd) * lightColorAdd * NdotLAdd;
 		                LIGHT_LOOP_END
 					#endif
-                	
+      
                 	float3 finalColor = surface.emission + directLight + indirectLight;
                 	float alpha = OutputAlpha(surface.alpha, IsSurfaceTypeTransparent(_Surface));
-                	
 					return float4(finalColor, alpha);
                 }
 
@@ -270,14 +308,24 @@ Shader "SigmaShader/SigmaPBR"
 			#pragma vertex shadowPassVert
 			#pragma fragment shadowPassFrag
 
+			#pragma shader_feature_local _ _ALPHATEST_ON
+			#pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
+			#pragma shader_feature_local _ _CONVERT_FROM_ROUGHNESS
+            #pragma shader_feature_local _ _SPECULAR_SETUP
+            #pragma shader_feature_local _ _TRIPLANAR_MAPPING
+            #pragma shader_feature_local _ _SEPARATE_TOP_MAP
+            #pragma shader_feature_local _ _TOP_CONVERT_FROM_ROUGHNESS
+			
+			#pragma shader_feature_local _TEXTUREFILTER_LINEAR _TEXTUREFILTER_POINT
+			#pragma shader_feature_local _TEXTUREWRAP_REPEAT _TEXTUREWRAP_CLAMP
+			
+			#pragma multi_compile_instancing
+			
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
             #include "SigmaSurfaceData.hlsl"
-
-			#pragma shader_feature_local _ _ALPHATEST_ON
-			#pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
-
+			
 			float3 _LightDirection;
 			float3 _LightPosition;
 
@@ -300,10 +348,8 @@ Shader "SigmaShader/SigmaPBR"
 
 			v2f shadowPassVert(appdata v)
 			{
-				v2f o = (v2f)0;
-
+				v2f o = Initv2f(v);
 				o.positionCS = GetShadowPositionHClip(v.positionOS, v.normalOS);
-				o.uv = TRANSFORM_TEX(v.uv, _BaseTexture);
 
 				return o;
 			}
@@ -313,8 +359,11 @@ Shader "SigmaShader/SigmaPBR"
 				SigmaSurfaceParameters sp;
                 InitSurfaceParameters(i, sp);
 				
-				float4 baseColor = GetBaseColor(sp);
-				AlphaDiscard(baseColor.a, _Cutoff);
+				SigmaSurfaceData surface;
+                InitSurfaceData(sp, surface);
+			
+				AlphaDiscard(surface.alpha, _Cutoff);
+				
 				return 0;
 			}
 			ENDHLSL
@@ -336,16 +385,25 @@ Shader "SigmaShader/SigmaPBR"
                 #pragma vertex depthOnlyVert
                 #pragma fragment depthOnlyFrag
 
+                #pragma shader_feature_local _ _ALPHATEST_ON
+                #pragma shader_feature_local _ _CONVERT_FROM_ROUGHNESS
+                #pragma shader_feature_local _ _SPECULAR_SETUP
+                #pragma shader_feature_local _ _TRIPLANAR_MAPPING
+                #pragma shader_feature_local _ _SEPARATE_TOP_MAP
+                #pragma shader_feature_local _ _TOP_CONVERT_FROM_ROUGHNESS
+                
+                #pragma shader_feature_local _TEXTUREFILTER_LINEAR _TEXTUREFILTER_POINT
+				#pragma shader_feature_local _TEXTUREWRAP_REPEAT _TEXTUREWRAP_CLAMP
+                
+                #pragma multi_compile_instancing
+                
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
                 #include "SigmaSurfaceData.hlsl"
-				#pragma shader_feature_local _ _ALPHATEST_ON
+				
 
                 v2f depthOnlyVert(appdata v)
                 {
-                    v2f o = (v2f)0;
-
-                    o.positionCS = TransformObjectToHClip(v.positionOS.xyz);
-					o.uv = TRANSFORM_TEX(v.uv, _BaseTexture);
+                    v2f o = Initv2f(v);
 
                     return o;
                 }
@@ -355,8 +413,10 @@ Shader "SigmaShader/SigmaPBR"
 					SigmaSurfaceParameters sp;
 	                InitSurfaceParameters(i, sp);
 					
-					float4 baseColor = GetBaseColor(sp);
-					AlphaDiscard(baseColor.a, _Cutoff);
+					SigmaSurfaceData surface;
+                	InitSurfaceData(sp, surface);
+			
+					AlphaDiscard(surface.alpha, _Cutoff);
 				
                     return i.positionCS.z;
                 }
@@ -378,19 +438,24 @@ Shader "SigmaShader/SigmaPBR"
                 #pragma vertex depthNormalVert
                 #pragma fragment depthNormalFrag
 
+                #pragma shader_feature_local _ _ALPHATEST_ON
+                #pragma shader_feature_local _ _CONVERT_FROM_ROUGHNESS
+                #pragma shader_feature_local _ _SPECULAR_SETUP
+                #pragma shader_feature_local _ _TRIPLANAR_MAPPING
+                #pragma shader_feature_local _ _SEPARATE_TOP_MAP
+                #pragma shader_feature_local _ _TOP_CONVERT_FROM_ROUGHNESS
+                
+                #pragma shader_feature_local _TEXTUREFILTER_LINEAR _TEXTUREFILTER_POINT
+				#pragma shader_feature_local _TEXTUREWRAP_REPEAT _TEXTUREWRAP_CLAMP
+                
+                #pragma multi_compile_instancing
+                
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
                 #include "SigmaSurfaceData.hlsl"
                 
                 v2f depthNormalVert(appdata v)
                 {
-                    v2f o = (v2f)0;
-
-                    o.uv = TRANSFORM_TEX(v.uv, _BaseTexture);
-                    o.positionCS = TransformObjectToHClip(v.positionOS.xyz);
-					o.positionWS = TransformObjectToWorld(v.positionOS.xyz);
-                    o.normalWS = TransformObjectToWorldNormal(v.normalOS);
-					o.tangentWS = float4(TransformObjectToWorldDir(v.tangentOS.xyz), v.tangentOS.w);
-                    o.viewWS = GetWorldSpaceViewDir(o.positionWS);
+                    v2f o = Initv2f(v);
 
                     return o;
                 }
@@ -400,12 +465,12 @@ Shader "SigmaShader/SigmaPBR"
                     SigmaSurfaceParameters sp;
                 	InitSurfaceParameters(i, sp);
                 	
-					float4 baseColor = GetBaseColor(sp);
-					AlphaDiscard(baseColor.a, _Cutoff);
-				
-                	//get surface normal
-                	float3 normalWS = GetNormal(sp);
-					return float4(normalWS, 0.0);
+					SigmaSurfaceData surface;
+                	InitSurfaceData(sp, surface);
+			
+					AlphaDiscard(surface.alpha, _Cutoff);
+			
+					return float4(surface.normal, 0.0);
                 }
 
             ENDHLSL

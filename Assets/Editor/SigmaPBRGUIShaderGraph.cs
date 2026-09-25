@@ -85,6 +85,8 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
         "Should the shader use Triplanar Mapping prevents visible texture stretching and seams on surfaces with complex geometry or insufficient UVs?");
     private PBRShaderProperty triplanarTile = new("_TriplanarTile", "Triplanar Tile", 
         "Controls the scale of the triplanar texture mapping, determining how frequently the texture tiles across the surface.");
+    private PBRShaderProperty triplanarBlend = new("_TriplanarBlend", "Triplanar Blend", 
+        "Controls how sharply the three projection axes (X, Y, Z) blend together. Higher values give tighter transitions with less texture smearing on angled surfaces.");
     
     private PBRShaderProperty baseColor = new("_BaseColor", "Base Color", 
     "Albedo color of the object.");
@@ -167,7 +169,7 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
         
         useTriplanarMapping.prop = FindProperty(useTriplanarMapping.name, props, true);
         triplanarTile.prop = FindProperty(triplanarTile.name, props, true);
-        
+         
         workflowMode.prop = FindProperty(workflowMode.name, props, true);
         metallicMap.prop = FindProperty(metallicMap.name, props, true);
         metallic.prop = FindProperty(metallic.name, props, true);
@@ -236,6 +238,9 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
         var dstBlendRGB = BlendMode.Zero;
         var srcBlendA = BlendMode.One;
         var dstBlendA = BlendMode.Zero;
+        
+        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        material.DisableKeyword("_ALPHAMODULATE_ON");
 
         if (surfaceType == SurfaceType.Transparent)
         {
@@ -255,6 +260,7 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
                     dstBlendRGB = BlendMode.OneMinusSrcAlpha;
                     srcBlendA = BlendMode.One;
                     dstBlendA = BlendMode.OneMinusSrcAlpha;
+                    material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
                     break;
                 }
                 case BlendFunction.Additive:
@@ -271,6 +277,7 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
                     dstBlendRGB = BlendMode.Zero;
                     srcBlendA = BlendMode.Zero;
                     dstBlendA = BlendMode.One;
+                    material.EnableKeyword("_ALPHAMODULATE_ON");
                     break;
                 }
             }
@@ -422,11 +429,13 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
 
     private void DrawPBRProperties(Material material)
     {
+        //Triplanar
         materialEditor.ShaderProperty(useTriplanarMapping.prop, useTriplanarMapping.info);
-        if (useTriplanarMapping.prop.intValue > 0)
+        if (useTriplanarMapping.prop.floatValue > 0.5f)
         {
             EditorGUI.indentLevel++;
             materialEditor.ShaderProperty(triplanarTile.prop, triplanarTile.info);
+            materialEditor.ShaderProperty(triplanarBlend.prop, triplanarBlend.info);
             EditorGUI.indentLevel--;
         }
         
@@ -434,11 +443,8 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
         materialEditor.TextureScaleOffsetProperty(baseTexture.prop);
         materialEditor.PopupShaderProperty(workflowMode.prop, workflowMode.info, workflowModeNames);
         
-        bool isSpecular = material.GetFloat(workflowMode.id) < 0.5f;
-
-        CoreUtils.SetKeyword(material, "_SPECULAR_SETUP", isSpecular);
-
-        if (isSpecular)
+        //Specular/Metallic
+        if (material.GetFloat(workflowMode.id) < 0.5f)
         {
             materialEditor.TexturePropertySingleLine(specularMap.info, specularMap.prop, specularColor.prop);
             material.EnableKeyword("_SPECULAR_SETUP");
