@@ -25,9 +25,15 @@ namespace GameApp.SceneManagement
             }
 
             _activeSceneGroup = sceneGroup;
-            List<string> loadedScenes = new List<string>();
+            HashSet<string> scenePathsToKeep = new HashSet<string>(
+                sceneGroup.Scenes
+                    .Where(scene => scene != null && !string.IsNullOrEmpty(scene.Path))
+                    .Select(scene => scene.Path),
+                StringComparer.OrdinalIgnoreCase);
 
-            await UnloadScenes();
+            await UnloadScenes(scenePathsToKeep);
+
+            List<string> loadedScenes = new List<string>();
 
             int sceneCount = SceneManager.sceneCount;
             for (int i = 0; i < sceneCount; i++)
@@ -80,11 +86,54 @@ namespace GameApp.SceneManagement
             OnSceneGroupLoaded?.Invoke();
         }
 
-        // TODO: Don't unload the duplicated scenes.
-        public async Task UnloadScenes()
+        public async Task<bool> LoadSceneAdditive(string scenePath, IProgress<float> progress = null, bool setActiveScene = false)
         {
-            List<string> scenes = new List<string>();
-            //string activeScene = SceneManager.GetActiveScene().name;
+            if (string.IsNullOrEmpty(scenePath))
+            {
+                Debug.LogError("Cannot load an additive scene without a scene path");
+                return false;
+            }
+
+            Scene scene = SceneManager.GetSceneByPath(scenePath);
+            if (scene.IsValid() && scene.isLoaded)
+            {
+                if (setActiveScene)
+                {
+                    SceneManager.SetActiveScene(scene);
+                }
+
+                return true;
+            }
+
+            AsyncOperation operation = SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Additive);
+            if (operation == null)
+            {
+                Debug.LogError($"Could not load additive scene '{scenePath}'");
+                return false;
+            }
+
+            while (!operation.isDone)
+            {
+                progress?.Report(operation.progress);
+                await Task.Delay(100);
+            }
+
+            scene = SceneManager.GetSceneByPath(scenePath);
+            if (setActiveScene && scene.IsValid() && scene.isLoaded)
+            {
+                SceneManager.SetActiveScene(scene);
+            }
+
+            OnSceneLoaded?.Invoke(scenePath);
+            return true;
+        }
+
+        public async Task UnloadScenes(IEnumerable<string> scenePathsToKeep = null)
+        {
+            HashSet<string> pathsToKeep = new HashSet<string>(
+                scenePathsToKeep ?? Enumerable.Empty<string>(),
+                StringComparer.OrdinalIgnoreCase);
+            List<Scene> scenesToUnload = new List<Scene>();
             int sceneCount = SceneManager.sceneCount;
 
             for (int i = 0; i < sceneCount; i++)
@@ -92,20 +141,20 @@ namespace GameApp.SceneManagement
                 Scene scene = SceneManager.GetSceneAt(i);
                 if (!scene.isLoaded) continue;
 
-                if (scene.name == "Bootstrapper") continue;
-                scenes.Add(scene.name);
+                if (IsPersistentScene(scene) || pathsToKeep.Contains(scene.path)) continue;
+                scenesToUnload.Add(scene);
             }
 
             AsyncOperationGroup operationGroup = new AsyncOperationGroup(sceneCount);
 
-            foreach (string scene in scenes)
+            foreach (Scene scene in scenesToUnload)
             {
-                var operation = SceneManager.UnloadSceneAsync(scene);   
+                var operation = SceneManager.UnloadSceneAsync(scene);
                 if (operation == null) continue;
 
                 operationGroup.Operations.Add(operation);
 
-                OnSceneUnloaded?.Invoke(scene);
+                OnSceneUnloaded?.Invoke(scene.path);
             }
 
             // Wait until all AsyncOperations in the group are done
@@ -113,6 +162,11 @@ namespace GameApp.SceneManagement
             {
                 await Task.Delay(100);
             }
+        }
+
+        private static bool IsPersistentScene(Scene scene)
+        {
+            return scene.name == "AppBootstrap";
         }
     }
 

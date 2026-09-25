@@ -2,87 +2,118 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 namespace GameApp.SceneManagement
 {
     public class SceneLoader : MonoBehaviour
     {
+        public event Action<SceneGroup> SceneGroupLoaded;
+        public event Action<Scene> SceneAdditivelyLoaded;
+
         [SerializeField] private SceneGroup[] sceneGroups;
 
         private float _targetProgress = 0f;
         private bool _isLoading = false;
         [SerializeField] private Canvas _loadingScreen;
+        [SerializeField] private CanvasGroup _loadingCanvasGroup;
+        [SerializeField] private float _loadTransitionDuration = 0.25f;
+        [SerializeField] private float _resumeTransitionDuration = 0.25f;
 
         public readonly SceneGroupManager sceneGroupManager = new SceneGroupManager();
 
-        void Awake()
+        public bool IsLoading => _isLoading;
+
+        private void Awake()
         {
             sceneGroupManager.OnSceneLoaded += sceneName => Debug.Log("Scene loaded: " + sceneName);
         }
 
-        async private void Start()
+        private async Task<bool> LoadSceneGroupInternal(SceneGroup group)
         {
-            await LoadSceneGroup(0);
-        }
+            if (group == null) return false;
 
-        // private void Update()
-        // {
-        //     if (!_isLoading) return;
-
-
-        //     float currentFillAmount = loadingScreen.LoadingBar.fillAmount;
-        //     float progressDif = Mathf.Abs(currentFillAmount - _targetProgress);
-
-        //     float dynamicFillSpeed = progressDif * loadingScreen.FillSpeed;
-        //     loadingScreen.LoadingBar.fillAmount = Mathf.Lerp(currentFillAmount, _targetProgress, Time.deltaTime * dynamicFillSpeed);
-        // }
-
-        public async Task LoadSceneGroup(int index)
-        {
-            // _loadingScreen.LoadingBar.fillAmount = 0f;
             _targetProgress = 1f;
 
+            var loadingProgress = new LoadingProgress();
+            loadingProgress.OnProgress += target => _targetProgress = Mathf.Max(target, _targetProgress);
+
+            _isLoading = true;
+            await sceneGroupManager.LoadScenes(group, loadingProgress);
+            _isLoading = false;
+
+            SceneGroupLoaded?.Invoke(group);
+            return true;
+        }
+
+        public Task<bool> LoadSceneGroup(int index)
+        {
             if (index < 0 || index >= sceneGroups.Length)
             {
                 Debug.LogError(this + " Invalid scene group index " + index);
-                return;
+                return Task.FromResult(false);
             }
-
-            LoadingProgress loadingProgress = new LoadingProgress();
-            loadingProgress.OnProgress += target => _targetProgress = Mathf.Max(target, _targetProgress);
-
-            EnableLoadingCanvas(true);
-            await sceneGroupManager.LoadScenes(sceneGroups[index], loadingProgress);
-            EnableLoadingCanvas(false);
+            return LoadSceneGroupInternal(sceneGroups[index]);
         }
 
-        public async Task LoadSceneGroup(string name)
+        public Task<bool> LoadSceneGroup(string name)
         {
-            // _loadingScreen.LoadingBar.fillAmount = 0f;
-            _targetProgress = 1f;
-
             var group = Array.Find(sceneGroups, g => g.Name == name);
-
             if (group == null)
             {
                 Debug.LogError(this + " Invalid scene group name: " + name);
-                return;
+                return Task.FromResult(false);
             }
+            return LoadSceneGroupInternal(group);
+        }
 
+        public async Task<bool> LoadSceneAdditive(string scenePath, bool setActiveScene = false)
+        {
             LoadingProgress loadingProgress = new LoadingProgress();
             loadingProgress.OnProgress += target => _targetProgress = Mathf.Max(target, _targetProgress);
 
             _isLoading = true;
+            bool loaded = await sceneGroupManager.LoadSceneAdditive(scenePath, loadingProgress, setActiveScene);
+            _isLoading = false;
 
-            EnableLoadingCanvas(true);
-            await sceneGroupManager.LoadScenes(group, loadingProgress);
-            EnableLoadingCanvas(false);
+            if (loaded)
+            {
+                SceneAdditivelyLoaded?.Invoke(SceneManager.GetSceneByPath(scenePath));
+            }
+
+            return loaded;
         }
 
-        void EnableLoadingCanvas(bool enable = true)
+        private IEnumerator Fade(bool fadeIn, Action callback = null)
         {
-            _isLoading = enable;
-            _loadingScreen.gameObject.SetActive(enable);
+            Debug.Log("Fade in > " + fadeIn); 
+            float duration = fadeIn ? _loadTransitionDuration : _resumeTransitionDuration;
+            if (fadeIn) _loadingScreen.gameObject.SetActive(true);
+
+            float start = fadeIn ? 0f : 1f;
+            float end = fadeIn ? 1f : 0f;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                _loadingCanvasGroup.alpha = Mathf.Lerp(start, end, elapsed / duration);
+                yield return null;
+            }
+
+            _loadingCanvasGroup.alpha = end;
+            if (!fadeIn) _loadingScreen.gameObject.SetActive(false);
+            callback?.Invoke();
+        }
+
+        public void FadeIn(Action callback = null) => StartCoroutine(Fade(true, callback));
+        public void FadeOut(Action callback = null) => StartCoroutine(Fade(false, callback));
+
+        [InspectorButton("Load First Scene Group", true)]
+        private void TestLoadSceneGroup()
+        {
+            GameManager.Instance.SwitchScene(sceneGroups[0].Name);
         }
     }
 

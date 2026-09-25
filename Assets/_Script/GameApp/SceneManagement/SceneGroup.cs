@@ -19,16 +19,14 @@ namespace GameApp.SceneManagement
         // For editor use only, to open the scene group in the editor.
         public void Open()
         {
-            int index = 0;
-            foreach (SceneReference scene in Scenes)
+            for (int i = 0; i < Scenes.Count; i++)
             {
-                EditorSceneManager.OpenScene(scene.Path, index == 0 ? OpenSceneMode.Single : OpenSceneMode.Additive);
-                index++;
+                EditorSceneManager.OpenScene(Scenes[i].Path, i == 0 ? OpenSceneMode.Single : OpenSceneMode.Additive);
             }
 
             SetActiveScene(GetActiveScenePath());
         }
-#endif
+    #endif
 
         public string GetActiveScenePath()
         {
