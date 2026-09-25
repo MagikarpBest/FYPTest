@@ -26,6 +26,9 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _CONVERT_FROM_ROUGHNESS
+  - _TEXTUREFILTER_LINEAR
+  - _TEXTUREWRAP_REPEAT
+  - _TRIPLANAR_MAPPING
   m_InvalidKeywords: []
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
@@ -35,7 +38,7 @@ Material:
     RenderType: Opaque
   disabledShaderPasses:
   - MOTIONVECTORS
-  m_LockedProperties: 
+  m_LockedProperties: _TriplanarBlendOffset
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -95,27 +98,33 @@ Material:
     - _Cutoff: 0.5
     - _DstBlend: 0
     - _DstBlendAlpha: 0
-    - _HeightMapStrength: 10
+    - _HeightMapStrength: 0.1
     - _Metallic: 0
     - _NormalStrength: 2
-    - _OcclusionStrength: 1
+    - _OcclusionStrength: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _Smoothness: 0.35
+    - _Smoothness: 0.421
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
-    - _TRIPLANAR_MAPPING: 0
+    - _TEXTUREFILTER: 0
+    - _TEXTUREWRAP: 0
+    - _TRIPLANAR_MAPPING: 1
     - _TriplanarBlend: 1
-    - _TriplanarTile: 0.07
+    - _TriplanarBlendExponent: 1
+    - _TriplanarBlendOffset: 0
+    - _TriplanarTile: 0.13
     - _WorkflowMode: 1
     - _ZTest: 4
     - _ZWrite: 1
     - _ZWriteControl: 0
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmissionColor: {r: 0.5849056, g: 0.1970318, b: 0, a: 1}
     - _SpecularColor: {r: 0, g: 0, b: 0, a: 1}
+    - _TextureOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _TextureTiling: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

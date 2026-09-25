@@ -24,7 +24,9 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: 6ce3798584f4ae146919fc58ec7b7932, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _TEXTUREFILTER_LINEAR
+  - _TEXTUREWRAP_REPEAT
   m_InvalidKeywords: []
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
@@ -107,8 +109,12 @@ Material:
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
+    - _TEXTUREFILTER: 0
+    - _TEXTUREWRAP: 0
     - _TRIPLANAR_MAPPING: 0
     - _TriplanarBlend: 0
+    - _TriplanarBlendExponent: 1
+    - _TriplanarBlendOffset: 0
     - _TriplanarScale: 0
     - _TriplanarTile: 0
     - _WorkflowMode: 1
@@ -119,5 +125,7 @@ Material:
     - _BaseColor: {r: 1, g: 0.62352943, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _TextureOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _TextureTiling: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

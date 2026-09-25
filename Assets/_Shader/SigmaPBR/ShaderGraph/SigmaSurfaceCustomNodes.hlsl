@@ -4,6 +4,21 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Packing.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Texture.hlsl"
 
+void GetEditableSampler_float(out UnitySamplerState samplerOut)
+{
+    //samplerOut.samplerstate = sampler_LinearRepeat;
+    
+    #if defined(_TEXTUREFILTER_LINEAR) && defined(_TEXTUREWRAP_REPEAT)
+        samplerOut.samplerstate = sampler_LinearRepeat;
+    #elif defined(_TEXTUREFILTER_LINEAR) && defined(_TEXTUREWRAP_CLAMP)
+        samplerOut.samplerstate = sampler_LinearClamp;
+    #elif defined(_TEXTUREFILTER_POINT) && defined(_TEXTUREWRAP_REPEAT)
+        samplerOut.samplerstate = sampler_PointRepeat;
+    #elif defined(_TEXTUREFILTER_POINT) && defined(_TEXTUREWRAP_CLAMP)
+        samplerOut.samplerstate = sampler_PointClamp;
+    #endif
+}
+
 void GetTriplanarUV_float(float3 positionWS, float3 normalWS, float triplanarTile,
     out float2 triUV_X, out float2 triUV_Y, out float2 triUV_Z) 
 {
@@ -68,20 +83,23 @@ void GetTriplanarWeights_float(float3 normalWS, float triplanarBlendOffset, floa
 void GetParallaxOffsetUV_float(float3 viewDirTS, float2 uv, UnityTexture2D heightMap, UnitySamplerState heightSampler, float heightmapStrength,
     out float2 parallaxUV)
 {
-    //scale view so that z is 1 no need to /z cause we dont use z
-    //offset the z component so it never approaches zero, which would blow up the xy/z division at shallow (grazing) view angles
-    //this trades a bit of projection accuracy it warps the perspective slightly for much more stable manageable parallax artifacts at those angles
-    //0.42 is Unity's standard-shader value, chosen empirically rather than derived.
-    viewDirTS = normalize(viewDirTS);
-    
-    float parallaxBias = 0.42;
-    viewDirTS.xy /= (viewDirTS.z + parallaxBias); 
-
-    float height = SAMPLE_TEXTURE2D(heightMap, heightSampler, uv).g;
-    height -= 0.5; //centers height around 0 
-    
     parallaxUV = uv;
-    parallaxUV.xy += viewDirTS.xy * height * heightmapStrength;
+    
+    #ifdef USE_HEIGHTMAP
+        //scale view so that z is 1 no need to /z cause we dont use z
+        //offset the z component so it never approaches zero, which would blow up the xy/z division at shallow (grazing) view angles
+        //this trades a bit of projection accuracy it warps the perspective slightly for much more stable manageable parallax artifacts at those angles
+        //0.42 is Unity's standard-shader value, chosen empirically rather than derived.
+        viewDirTS = normalize(viewDirTS);
+        
+        float parallaxBias = 0.42;
+        viewDirTS.xy /= (viewDirTS.z + parallaxBias); 
+
+        float height = SAMPLE_TEXTURE2D(heightMap, heightSampler, uv).g;
+        height -= 0.5; //centers height around 0 
+        
+        parallaxUV.xy += viewDirTS.xy * height * heightmapStrength;
+    #endif
 }
 
 void GetParallaxOffsetTriplanarUV_float(float3 positionWS, float3 viewDirWS, float3 normalWS, UnityTexture2D heightMap, UnitySamplerState heightSampler, 
@@ -151,5 +169,120 @@ void SigmaTriplanarNormal_float(float3 normalWS, float2 triUV_X, float2 triUV_Y,
     result = normalWS_X * triWeights.x + normalWS_Y * triWeights.y + normalWS_Z * triWeights.z;
     result = normalize(result);
 }
+
+//Get surface property abstraction
+void GetBaseColor_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _BaseTexture, float4 _BaseColor,
+    out float4 result)
+{
+    #ifdef _TRIPLANAR_MAPPING
+        float4 baseColor;
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _BaseTexture, SIGMA_SAMPLER, baseColor);
+    #else
+        float4 baseColor = SAMPLE_TEXTURE2D(_BaseTexture, SIGMA_SAMPLER, parallaxUV);
+    #endif
+    
+    result = baseColor * _BaseColor;
+}
+
+void GetNormal_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
+    float3 normalWS, float3 tangentWS, float3 bitangentWS,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _NormalTexture, float _NormalStrength,
+    out float3 result)
+{
+    #ifdef _TRIPLANAR_MAPPING
+        float3 normal;
+        SigmaTriplanarNormal_float(normalWS, triUV_X, triUV_Y, triUV_Z, triW, _NormalTexture, SIGMA_SAMPLER, _NormalStrength, normal);
+    #else
+        float3 normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTexture, SIGMA_SAMPLER, parallaxUV), _NormalStrength);
+        normalTS = normalize(normalTS);
+     
+        float3x3 TBN = float3x3(tangentWS, bitangentWS, normalWS);
+        float3 normal = normalize(mul(normalTS, TBN));
+    #endif
+    
+    result = normalize(normal);
+}
+
+void GetSmoothness_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _SmoothnessTexture, float _Smoothness,
+    out float result)
+{
+    #ifdef _TRIPLANAR_MAPPING
+        float4 triSmoothness;
+        float smoothness = triSmoothness.r;
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _SmoothnessTexture, SIGMA_SAMPLER, triSmoothness);
+    #else
+        float smoothness = SAMPLE_TEXTURE2D(_SmoothnessTexture, SIGMA_SAMPLER, parallaxUV).r;
+    #endif
+    
+    result = smoothness * _Smoothness;
+    
+    #ifdef _CONVERT_FROM_ROUGHNESS 
+        result = 1.0 - smoothness;
+    #endif
+}
+
+void GetEmission_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _EmissionTexture, float4 _EmissionColor,
+    out float3 result)
+{
+    #ifdef _TRIPLANAR_MAPPING
+        float4 emission;
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _EmissionTexture, SIGMA_SAMPLER, emission);
+    #else
+        float4 emission = SAMPLE_TEXTURE2D(_EmissionTexture, SIGMA_SAMPLER, parallaxUV);
+    #endif
+    
+    result = emission.rgb * _EmissionColor;
+}
+
+void GetOcclusion_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _OcclusionTexture, float _OcclusionStrength,
+    out float result)
+{
+    #ifdef _TRIPLANAR_MAPPING
+        float4 triOcclusion;
+        float occlusion = triOcclusion.r;
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _OcclusionTexture, SIGMA_SAMPLER, triOcclusion);
+    #else
+        float occlusion = SAMPLE_TEXTURE2D(_OcclusionTexture, SIGMA_SAMPLER, parallaxUV).r;
+    #endif
+    
+    result = lerp(1.0f, occlusion, _OcclusionStrength);
+}
+
+void GetMetallic_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _MetallicTexture, float _Metallic,
+    out float result)
+{
+    #ifdef _TRIPLANAR_MAPPING
+        float4 triMetallic;
+        float metallic = triMetallic.r;
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _MetallicTexture, SIGMA_SAMPLER, triMetallic);
+    #else
+        float metallic = SAMPLE_TEXTURE2D(_MetallicTexture, SIGMA_SAMPLER, parallaxUV).r;
+    #endif
+    
+    result = metallic * _Metallic;
+}
+
+void GetSpecular_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _SpecularTexture, float4 _SpecularColor,
+    out float3 result)
+{
+    #ifdef _TRIPLANAR_MAPPING
+        float4 specular;
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _SpecularTexture, SIGMA_SAMPLER, specular);
+    #else
+        float4 specular = SAMPLE_TEXTURE2D(_SpecularTexture, SIGMA_SAMPLER, parallaxUV);
+    #endif
+    
+    result = specular.rgb * _SpecularColor;
+}
+
+
+
+
 
 #endif

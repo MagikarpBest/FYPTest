@@ -81,12 +81,25 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
     private string[] queueControlNames =  Enum.GetNames(typeof(QueueControl));
     private string[] compareFunctionNames = Enum.GetNames(typeof(CompareFunction));
     
+    private PBRShaderProperty textureFilter = new("_TEXTUREFILTER", "Texture Filter",
+        "Controls how textures are sampled");
+    private PBRShaderProperty textureWrap = new("_TEXTUREWRAP", "Texture Wrap",
+        "Controls how textures behave outside their UV range");
+    
+    private PBRShaderProperty textureTiling = new("_TextureTiling", "Texture Tiling",
+        "Controls texture tiling");
+    
+    private PBRShaderProperty textureOffset = new("_TextureOffset", "Texture Offset",
+        "Controls texture offset");
+    
     private PBRShaderProperty useTriplanarMapping = new("_TRIPLANAR_MAPPING", "Use Triplanar Mapping", 
         "Should the shader use Triplanar Mapping prevents visible texture stretching and seams on surfaces with complex geometry or insufficient UVs?");
     private PBRShaderProperty triplanarTile = new("_TriplanarTile", "Triplanar Tile", 
         "Controls the scale of the triplanar texture mapping, determining how frequently the texture tiles across the surface.");
-    private PBRShaderProperty triplanarBlend = new("_TriplanarBlend", "Triplanar Blend", 
-        "Controls how sharply the three projection axes (X, Y, Z) blend together. Higher values give tighter transitions with less texture smearing on angled surfaces.");
+    private PBRShaderProperty triplanarBlendOffset = new("_TriplanarBlendOffset", "Triplanar Blend Offset", 
+        "Subtracts from each axis's blend weight and clamps to zero, eliminating weakly-aligned projection axes (X, Y, Z) before sharpening to widen the transition dead zone.");
+    private PBRShaderProperty triplanarBlendExponent = new("_TriplanarBlendExponent", "Triplanar Blend Exponent", 
+        "Raises each axis's blend weight to this power after the offset is applied. Higher values give tighter transitions with less texture smearing on angled surfaces.");
     
     private PBRShaderProperty baseColor = new("_BaseColor", "Base Color", 
     "Albedo color of the object.");
@@ -164,12 +177,20 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
 
     private void FindProperties(MaterialProperty[] props)
     {
+        textureFilter.prop = FindProperty(textureFilter.name, props, true);
+        textureWrap.prop = FindProperty(textureWrap.name, props, true);
+        
+        textureTiling.prop = FindProperty(textureTiling.name, props, true);
+        textureOffset.prop = FindProperty(textureOffset.name, props, true);
+        
         baseColor.prop = FindProperty(baseColor.name, props, true);
         baseTexture.prop = FindProperty(baseTexture.name, props, true);
         
         useTriplanarMapping.prop = FindProperty(useTriplanarMapping.name, props, true);
         triplanarTile.prop = FindProperty(triplanarTile.name, props, true);
-         
+        triplanarBlendOffset.prop = FindProperty(triplanarBlendOffset.name, props, true);
+        triplanarBlendExponent.prop = FindProperty(triplanarBlendExponent.name, props, true);
+        
         workflowMode.prop = FindProperty(workflowMode.name, props, true);
         metallicMap.prop = FindProperty(metallicMap.name, props, true);
         metallic.prop = FindProperty(metallic.name, props, true);
@@ -429,18 +450,33 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
 
     private void DrawPBRProperties(Material material)
     {
+        materialEditor.ShaderProperty(textureFilter.prop, textureFilter.info);
+        materialEditor.ShaderProperty(textureWrap.prop, textureWrap.info);
+        
+        EditorGUILayout.Separator();
+        
+        materialEditor.ShaderProperty(textureTiling.prop, textureTiling.info);
+        materialEditor.ShaderProperty(textureOffset.prop, textureOffset.info);
+        
+        DrawBaseMapPBRProperties(material);
+        
+        EditorGUILayout.Separator();
         //Triplanar
         materialEditor.ShaderProperty(useTriplanarMapping.prop, useTriplanarMapping.info);
         if (useTriplanarMapping.prop.floatValue > 0.5f)
         {
             EditorGUI.indentLevel++;
             materialEditor.ShaderProperty(triplanarTile.prop, triplanarTile.info);
-            materialEditor.ShaderProperty(triplanarBlend.prop, triplanarBlend.info);
+            materialEditor.ShaderProperty(triplanarBlendOffset.prop, triplanarBlendOffset.info);
+            materialEditor.ShaderProperty(triplanarBlendExponent.prop, triplanarBlendExponent.info);
             EditorGUI.indentLevel--;
         }
-        
+    }
+
+    private void DrawBaseMapPBRProperties(Material material)
+    {
         materialEditor.TexturePropertySingleLine(baseTexture.info, baseTexture.prop, baseColor.prop);
-        materialEditor.TextureScaleOffsetProperty(baseTexture.prop);
+        
         materialEditor.PopupShaderProperty(workflowMode.prop, workflowMode.info, workflowModeNames);
         
         //Specular/Metallic
@@ -476,5 +512,7 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
         {
             materialEditor.IntSliderShaderProperty(queueOffset.prop, -queueOffsetRange, queueOffsetRange, queueOffset.info);
         }
+        
+        materialEditor.EnableInstancingField();
     }
 }
