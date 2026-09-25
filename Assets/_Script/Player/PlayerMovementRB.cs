@@ -4,8 +4,8 @@ using UnityEngine;
 public class PlayerMovementRB : MonoBehaviour, ILaunchable
 {
     [Header("Reference")]
-    [SerializeField] private Rigidbody rigidBody;
-    [SerializeField] private Transform model;
+    private Rigidbody rigidBody;
+    private Transform model;
     [SerializeField] private float rotationSpeed = 720f;
     [SerializeField] private float groundCheckDistance = 0.2f;
     [SerializeField] private LayerMask groundLayer;
@@ -31,38 +31,48 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
     // state machine test
     public bool IsGrounded => isGrounded;
     public bool IsLaunched => isLaunched;
+    
     public Action OnLaunched;   
-    [SerializeField] private Animator animator;
+    private Animator animator;
 
-    private void Start()
+    // private void Start()
+    // {
+    //     //Application.targetFrameRate = 60;
+    // }
+    // private void Awake()
+    // {
+    //     cameraTransform = Camera.main.transform;
+    //     animator = GetComponent<Animator>();
+    // }
+
+    public void Init(Rigidbody rigidBody, Transform model, Transform cameraTransform, Animator animator)
     {
-        //Application.targetFrameRate = 60;
-    }
-    private void Awake()
-    {
-        cameraTransform = Camera.main.transform;
+        this.rigidBody = rigidBody;
+        this.model = model;
+        this.cameraTransform = cameraTransform;
+        this.animator = animator;
     }
 
+    //These should handle in your states
     private void Update()
     {
         LaunchCheck();
         CheckGround();
         ApplyExternalVelocity();
+
     }
     
     
     private void FixedUpdate()
     {
-        
         HandleGravity();
         ApplyVelocity();
     }
     
-
     // ==========================
     // Ground
     // ==========================
-    private void LaunchCheck()
+    public void LaunchCheck()
     {
         if(!isLaunched)
         {
@@ -73,14 +83,13 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         {
             isLaunched = false;
         }
+        //Debug.Log(isLaunched);
     }
 
-    private void CheckGround()
+    public void CheckGround()
     {
-        isGrounded = false;
-
         if (Physics.Raycast(
-                transform.position,
+                rigidBody.position,
                 Vector3.down,
                 out RaycastHit hit,
                 groundCheckDistance + 0.5f,
@@ -89,17 +98,22 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         {
             isGrounded = true;
         }
+        else
+        {
+            isGrounded = false;
+        }
+        //Debug.Log(isGrounded);
     }
 
     // ==========================
     // Physics
     // ==========================
-    private void HandleGravity()
+    public void HandleGravity()
     {
         rigidBody.AddForce(Physics.gravity * gravityMultiply, ForceMode.Acceleration);
     }
     // decay
-    private void ApplyExternalVelocity()
+    public void ApplyExternalVelocity()
     {
         // decay only horizontal velocity
         Vector3 horizontal = new Vector3(externalVelocity.x, 0, externalVelocity.z);
@@ -109,7 +123,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         externalVelocity.x = horizontal.x;
         externalVelocity.z = horizontal.z;
     }
-    private void ApplyVelocity()
+    public void ApplyVelocity()
     {
         Vector3 velocity = rigidBody.linearVelocity;
         Vector3 targetHorizontalVelocity = moveVelocity + externalVelocity;
