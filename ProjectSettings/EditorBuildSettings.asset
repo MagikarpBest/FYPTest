@@ -20,6 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Scenes/Test/IngameSplitScenesTest.unity
     guid: 867373e233f844248af0859625e8526e
+  - enabled: 1
+    path: Assets/_Scenes/Test/SceneTransition/1_TestSceneTransiton.unity
+    guid: 89ba1bc381567594497fa31f1a58f856
+  - enabled: 1
+    path: Assets/_Scenes/Test/SceneTransition/2_TestSceneTransiton.unity
+    guid: d07ea59e45210354e8d5e08a5bd37631
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
