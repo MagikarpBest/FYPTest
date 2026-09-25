@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 
+// TODO: IF UI control active, toggle cursor on and off.
 public class PlayerInputManager : MonoBehaviour
 {
     private InputSystem_Actions input;
@@ -26,10 +27,20 @@ public class PlayerInputManager : MonoBehaviour
         input.Player.Skill3.performed += Skill3_Performed;
         input.Player.Attack.performed += Attack_Performed;
         input.Player.SkillCancel.performed += SkillCancel_Performed;
+
+        // Assume testing gameplay most of the time. Might remove later.
+        ToggleCursor(false);
     }
 
-
-
+    /// <summary>
+    /// Track when enter UI input mode.
+    /// </summary>
+    /// <param name="active"></param>
+    private void ToggleCursor(bool active)
+    {
+        Cursor.visible = active;
+        Cursor.lockState = active ? CursorLockMode.Confined : CursorLockMode.Locked;
+    }
 
     private void Move_Performed(InputAction.CallbackContext obj)
     {
