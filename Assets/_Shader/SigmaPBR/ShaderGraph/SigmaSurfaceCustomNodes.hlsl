@@ -6,7 +6,7 @@
 
 void GetEditableSampler_float(out UnitySamplerState samplerOut)
 {
-    //samplerOut.samplerstate = sampler_LinearRepeat;
+    samplerOut.samplerstate = sampler_LinearRepeat;
     
     #if defined(_TEXTUREFILTER_LINEAR) && defined(_TEXTUREWRAP_REPEAT)
         samplerOut.samplerstate = sampler_LinearRepeat;
@@ -85,7 +85,7 @@ void GetParallaxOffsetUV_float(float3 viewDirTS, float2 uv, UnityTexture2D heigh
 {
     parallaxUV = uv;
     
-    #ifdef USE_HEIGHTMAP
+    //#ifdef USE_HEIGHTMAP
         //scale view so that z is 1 no need to /z cause we dont use z
         //offset the z component so it never approaches zero, which would blow up the xy/z division at shallow (grazing) view angles
         //this trades a bit of projection accuracy it warps the perspective slightly for much more stable manageable parallax artifacts at those angles
@@ -99,7 +99,7 @@ void GetParallaxOffsetUV_float(float3 viewDirTS, float2 uv, UnityTexture2D heigh
         height -= 0.5; //centers height around 0 
         
         parallaxUV.xy += viewDirTS.xy * height * heightmapStrength;
-    #endif
+    //#endif
 }
 
 void GetParallaxOffsetTriplanarUV_float(float3 positionWS, float3 viewDirWS, float3 normalWS, UnityTexture2D heightMap, UnitySamplerState heightSampler, 
@@ -117,12 +117,12 @@ void GetParallaxOffsetTriplanarUV_float(float3 positionWS, float3 viewDirWS, flo
     GetParallaxOffsetUV_float(triViewZ, triUV_Z, heightMap, heightSampler, heightmapStrength, parallaxTriUV_Z);
 }
 
-void SigmaTriplanar_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triWeights, UnityTexture2D _texture, UnitySamplerState _sampler,
+void SigmaTriplanar_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triWeights, UnityTexture2D triTexture, UnitySamplerState triSampler,
     out float4 result)
 {
-    float4 sampleX = SAMPLE_TEXTURE2D(_texture, _sampler, triUV_X);
-    float4 sampleY = SAMPLE_TEXTURE2D(_texture, _sampler, triUV_Y);
-    float4 sampleZ = SAMPLE_TEXTURE2D(_texture, _sampler, triUV_Z);
+    float4 sampleX = SAMPLE_TEXTURE2D(triTexture, triSampler, triUV_X);
+    float4 sampleY = SAMPLE_TEXTURE2D(triTexture, triSampler, triUV_Y);
+    float4 sampleZ = SAMPLE_TEXTURE2D(triTexture, triSampler, triUV_Z);
     
     result = sampleX * triWeights.x + sampleY * triWeights.y + sampleZ * triWeights.z;
 }
@@ -172,29 +172,29 @@ void SigmaTriplanarNormal_float(float3 normalWS, float2 triUV_X, float2 triUV_Y,
 
 //Get surface property abstraction
 void GetBaseColor_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
-    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _BaseTexture, float4 _BaseColor,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D baseTexture, float4 baseTint,
     out float4 result)
 {
     #ifdef _TRIPLANAR_MAPPING
         float4 baseColor;
-        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _BaseTexture, SIGMA_SAMPLER, baseColor);
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, baseTexture, SIGMA_SAMPLER, baseColor);
     #else
-        float4 baseColor = SAMPLE_TEXTURE2D(_BaseTexture, SIGMA_SAMPLER, parallaxUV);
+        float4 baseColor = SAMPLE_TEXTURE2D(baseTexture, SIGMA_SAMPLER, parallaxUV);
     #endif
     
-    result = baseColor * _BaseColor;
+    result = baseColor * baseTint;
 }
 
 void GetNormal_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
     float3 normalWS, float3 tangentWS, float3 bitangentWS,
-    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _NormalTexture, float _NormalStrength,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D normalTexture, float normalStrength,
     out float3 result)
 {
     #ifdef _TRIPLANAR_MAPPING
         float3 normal;
-        SigmaTriplanarNormal_float(normalWS, triUV_X, triUV_Y, triUV_Z, triW, _NormalTexture, SIGMA_SAMPLER, _NormalStrength, normal);
+        SigmaTriplanarNormal_float(normalWS, triUV_X, triUV_Y, triUV_Z, triW, normalTexture, SIGMA_SAMPLER, normalStrength, normal);
     #else
-        float3 normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTexture, SIGMA_SAMPLER, parallaxUV), _NormalStrength);
+        float3 normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(normalTexture, SIGMA_SAMPLER, parallaxUV), normalStrength);
         normalTS = normalize(normalTS);
      
         float3x3 TBN = float3x3(tangentWS, bitangentWS, normalWS);
@@ -205,18 +205,18 @@ void GetNormal_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW
 }
 
 void GetSmoothness_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
-    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _SmoothnessTexture, float _Smoothness,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D smoothnessTexture, float smoothnessValue,
     out float result)
 {
     #ifdef _TRIPLANAR_MAPPING
         float4 triSmoothness;
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, smoothnessTexture, SIGMA_SAMPLER, triSmoothness);
         float smoothness = triSmoothness.r;
-        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _SmoothnessTexture, SIGMA_SAMPLER, triSmoothness);
     #else
-        float smoothness = SAMPLE_TEXTURE2D(_SmoothnessTexture, SIGMA_SAMPLER, parallaxUV).r;
+        float smoothness = SAMPLE_TEXTURE2D(smoothnessTexture, SIGMA_SAMPLER, parallaxUV).r;
     #endif
     
-    result = smoothness * _Smoothness;
+    result = smoothness * smoothnessValue;
     
     #ifdef _CONVERT_FROM_ROUGHNESS 
         result = 1.0 - smoothness;
@@ -224,65 +224,92 @@ void GetSmoothness_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 
 }
 
 void GetEmission_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
-    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _EmissionTexture, float4 _EmissionColor,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D emissionTexture, float4 emissionColor,
     out float3 result)
 {
     #ifdef _TRIPLANAR_MAPPING
         float4 emission;
-        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _EmissionTexture, SIGMA_SAMPLER, emission);
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, emissionTexture, SIGMA_SAMPLER, emission);
     #else
-        float4 emission = SAMPLE_TEXTURE2D(_EmissionTexture, SIGMA_SAMPLER, parallaxUV);
+        float4 emission = SAMPLE_TEXTURE2D(emissionTexture, SIGMA_SAMPLER, parallaxUV);
     #endif
     
-    result = emission.rgb * _EmissionColor;
+    result = emission.rgb * emissionColor;
 }
 
 void GetOcclusion_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
-    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _OcclusionTexture, float _OcclusionStrength,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D occlusionTexture, float occlusionStrength,
     out float result)
 {
     #ifdef _TRIPLANAR_MAPPING
         float4 triOcclusion;
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, occlusionTexture, SIGMA_SAMPLER, triOcclusion);
         float occlusion = triOcclusion.r;
-        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _OcclusionTexture, SIGMA_SAMPLER, triOcclusion);
     #else
-        float occlusion = SAMPLE_TEXTURE2D(_OcclusionTexture, SIGMA_SAMPLER, parallaxUV).r;
+        float occlusion = SAMPLE_TEXTURE2D(occlusionTexture, SIGMA_SAMPLER, parallaxUV).r;
     #endif
     
-    result = lerp(1.0f, occlusion, _OcclusionStrength);
+    result = lerp(1.0f, occlusion, occlusionStrength);
 }
 
 void GetMetallic_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
-    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _MetallicTexture, float _Metallic,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D metallicTexture, float metallicValue,
     out float result)
 {
     #ifdef _TRIPLANAR_MAPPING
         float4 triMetallic;
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, metallicTexture, SIGMA_SAMPLER, triMetallic);
         float metallic = triMetallic.r;
-        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _MetallicTexture, SIGMA_SAMPLER, triMetallic);
     #else
-        float metallic = SAMPLE_TEXTURE2D(_MetallicTexture, SIGMA_SAMPLER, parallaxUV).r;
+        float metallic = SAMPLE_TEXTURE2D(metallicTexture, SIGMA_SAMPLER, parallaxUV).r;
     #endif
     
-    result = metallic * _Metallic;
+    result = metallic * metallicValue;
 }
 
 void GetSpecular_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
-    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D _SpecularTexture, float4 _SpecularColor,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D specularTexture, float4 specularStrength,
     out float3 result)
 {
     #ifdef _TRIPLANAR_MAPPING
         float4 specular;
-        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, _SpecularTexture, SIGMA_SAMPLER, specular);
+        SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, specularTexture, SIGMA_SAMPLER, specular);
     #else
-        float4 specular = SAMPLE_TEXTURE2D(_SpecularTexture, SIGMA_SAMPLER, parallaxUV);
+        float4 specular = SAMPLE_TEXTURE2D(specularTexture, SIGMA_SAMPLER, parallaxUV);
     #endif
     
-    result = specular.rgb * _SpecularColor;
+    result = specular.rgb * specularStrength;
 }
 
+void SigmaTerrainPremultiplyLayer_float(float4x4 surfaceData, float mask, out float4x4 result)
+{
+    result = surfaceData * mask;
+}
 
+void SigmaTerrainBlendLayersAdd_float(float4x4 surfaceData1, float4x4 surfaceData2, float4x4 surfaceData3, float4x4 surfaceData4, out float4x4 result)
+{
+    result = surfaceData1 + surfaceData2 + surfaceData3 + surfaceData4;
+} 
 
+void SigmaPackSurfaceData_float(float4 baseColor, float3 normalWS, float smoothness, float3 emission, float occlusion, float metallic, float3 specular,
+    out float4x4 surfaceData)
+{
+    surfaceData[0] = baseColor;
+    surfaceData[1] = float4(normalWS, smoothness);
+    surfaceData[2] = float4(emission, occlusion);
+    surfaceData[3] = float4(metallic, specular);
+}
 
+void SigmaUnpackSurfaceData_float(float4x4 surfaceData, 
+    out float4 baseColor, out float3 normalWS, out float smoothness, out float3 emission, out float occlusion, out float metallic, out float3 specular)
+{
+    baseColor = surfaceData[0];
+    normalWS = surfaceData[1].xyz;
+    smoothness = surfaceData[1].w;
+    emission = surfaceData[2].xyz;
+    occlusion = surfaceData[2].w;
+    metallic = surfaceData[3].x;
+    specular = surfaceData[3].yzw;
+}
 
 #endif
