@@ -1,5 +1,13 @@
-using Unity.VisualScripting;
 using UnityEngine;
+[System.Flags]
+public enum PlayerActionRestrictions
+{
+    None = 0,
+    RestrictMovement = 1 << 0,
+    RestrictJump = 1 << 1,
+    RestrictRotation = 1 << 2,
+    All = ~0
+}
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Animator))]
@@ -11,6 +19,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerSkillController))]
 [RequireComponent(typeof(PlayerStatus))]
 [RequireComponent(typeof(PlayerDamageReceiver))]
+
 
 public class Player : MonoBehaviour, ICharacter
 {
@@ -61,3 +70,4 @@ public class Player : MonoBehaviour, ICharacter
         stateMachine.Init(factory.Alive);
     }
 }
+

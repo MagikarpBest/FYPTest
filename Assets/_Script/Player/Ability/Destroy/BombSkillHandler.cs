@@ -26,7 +26,7 @@ public class BombSkillHandler : IPlayerSkillHandler
         if (_context.SkillHoldPoint == null)
             return;
 
-
+ 
         _activeBomb = UnityEngine.Object.Instantiate(_bombPrefab, _context.SkillHoldPoint.position, _context.SkillHoldPoint.rotation);
         _activeBomb.Hold(_context.SkillHoldPoint);
     }
@@ -83,5 +83,12 @@ public class BombSkillHandler : IPlayerSkillHandler
             Quaternion.LookRotation(
                 flatDirection.normalized,
                 Vector3.up);
+    }
+    
+    // state restriction test, change to manageable by scriptable object
+    public PlayerActionRestrictions GetRestrictions()
+    {
+        // stop jumping while placing a pillar
+        return PlayerActionRestrictions.RestrictJump;
     }
 }

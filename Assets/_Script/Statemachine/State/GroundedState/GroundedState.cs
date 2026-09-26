@@ -4,6 +4,7 @@ public class GroundedState : State
     // public readonly IdleState Idle;
     // public readonly RunState Run;
 
+    private Player player;
     private PlayerMovementRB movement;
     private PlayerInputManager input;
 
@@ -13,6 +14,7 @@ public class GroundedState : State
 
         if (CharacterContext is Player player)
         {
+            this.player = player;
             movement = player.Movement;
             input = player.Input;
         }
@@ -21,7 +23,17 @@ public class GroundedState : State
     // Use the factory to set the initial child
     protected override State GetInitialState() => Factory.Idle;
 
-    private void HandleJump() => EventRequestTransition(Factory.Jump);
+    // test restriction
+    private void HandleJump()
+    {
+        var restrictions = player.SkillController.CurrentRestrictions;
+        if (restrictions.HasFlag(PlayerActionRestrictions.RestrictJump))
+        {
+            return;
+        }
+
+        EventRequestTransition(Factory.Jump);
+    } 
 
     protected override State GetTransition()
     {

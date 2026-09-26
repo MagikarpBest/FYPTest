@@ -2,19 +2,18 @@ using UnityEngine;
 
 public class RunState : State
 {
+    private Player player;
     private PlayerMovementRB movement;
     private PlayerInputManager input;
 
     public RunState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
-        PlayerStateFactory factory) : base(
-        stateMachine,
-        characterContext,
-        parent,
-        factory
-    )
+        PlayerStateFactory factory) 
+        : base(stateMachine, characterContext, parent, factory)
+    
     {
         if (CharacterContext is Player player)
         {
+            this.player = player;
             movement = player.Movement;
             input = player.Input;
         }
@@ -39,6 +38,13 @@ public class RunState : State
 
     protected override void OnPhysicsTick(float fixedDeltaTime)
     {
+        var restrictions = player.SkillController.CurrentRestrictions;
+    
+        if (restrictions.HasFlag(PlayerActionRestrictions.RestrictMovement))
+        {
+            movement.StopMove();
+            return;
+        }
         movement.Move(input.MoveInput);
         movement.RotateTowardsMovement();
     }

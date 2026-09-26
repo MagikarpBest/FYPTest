@@ -142,4 +142,11 @@ public class PillarSkillHandler : IPlayerSkillHandler
         aimLineRenderer.SetPosition(0, ray.origin);
         aimLineRenderer.SetPosition(1, ray.origin + ray.direction * 100f);
     }
+    
+    // state restriction test, change to manageable by scriptable object
+    public PlayerActionRestrictions GetRestrictions()
+    {
+        // stop jumping while placing a pillar
+        return PlayerActionRestrictions.RestrictJump;
+    }
 }

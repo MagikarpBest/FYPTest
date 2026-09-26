@@ -18,7 +18,7 @@ public class PlayerStateFactory
 
     public State Dead { get; private set; }
 
-    public PlayerStateFactory(HierarchicalStateMachine context, ICharacter player)
+    public PlayerStateFactory(HierarchicalStateMachine context, Player player)
     {
         this.context = context;
         this.player = player;
