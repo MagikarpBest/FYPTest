@@ -2523,10 +2523,10 @@
     "promotedFromAssetID": "",
     "promotedFromCategoryName": "",
     "promotedOrdering": -1,
-    "m_Name": "BaseColor (1)",
+    "m_Name": "BaseTint (1)",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "BaseColor (1)",
-    "m_DefaultReferenceName": "_BaseColor_1",
+    "m_RefNameGeneratedByDisplayName": "BaseTint (1)",
+    "m_DefaultReferenceName": "_BaseTint_1",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -2539,9 +2539,9 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": {
-        "r": 0.0,
-        "g": 0.0,
-        "b": 0.0,
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
         "a": 1.0
     },
     "isMainColor": false,
@@ -2724,10 +2724,10 @@
     "promotedFromAssetID": "",
     "promotedFromCategoryName": "",
     "promotedOrdering": -1,
-    "m_Name": "BaseColor (3)",
+    "m_Name": "BaseTint (3)",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "BaseColor (3)",
-    "m_DefaultReferenceName": "_BaseColor_3",
+    "m_RefNameGeneratedByDisplayName": "BaseTint (3)",
+    "m_DefaultReferenceName": "_BaseTint_3",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -2740,9 +2740,9 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": {
-        "r": 0.0,
-        "g": 0.0,
-        "b": 0.0,
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
         "a": 1.0
     },
     "isMainColor": false,
@@ -2913,7 +2913,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DMaterialSlot",
     "m_ObjectId": "0e20d77f104a4036b8bf45b7322ce971",
     "m_Id": 0,
-    "m_DisplayName": "EmissionMap (1)",
+    "m_DisplayName": "EmissionTexture (1)",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -3068,7 +3068,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DMaterialSlot",
     "m_ObjectId": "11d4f14825ec4b6d963089e59e3c27e8",
     "m_Id": 0,
-    "m_DisplayName": "EmissionMap (2)",
+    "m_DisplayName": "EmissionTexture (2)",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -3345,10 +3345,10 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DInputMaterialSlot",
     "m_ObjectId": "17d6717b3dda4f6a86e0ed491fdf3cf9",
     "m_Id": -722169031,
-    "m_DisplayName": "EmissionMap",
+    "m_DisplayName": "EmissionTexture",
     "m_SlotType": 0,
     "m_Hidden": false,
-    "m_ShaderOutputName": "_EmissionMap",
+    "m_ShaderOutputName": "_EmissionTexture",
     "m_StageCapability": 3,
     "m_BareResource": false,
     "m_Texture": {
@@ -4137,6 +4137,29 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "27387c32e8a942d48c36723fd7351799",
+    "m_Id": 4,
+    "m_DisplayName": "emission",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "emission",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
     "m_ObjectId": "278b407ce5af42758b41bf9e39638762",
     "m_Group": {
@@ -4681,7 +4704,7 @@
             "m_Id": "5d0b62150d684b0dad531747327cf733"
         },
         {
-            "m_Id": "7d3d4d9f5665494d8ed65e644e9e9bfe"
+            "m_Id": "27387c32e8a942d48c36723fd7351799"
         },
         {
             "m_Id": "9f94284941f44741b46498e5488edb5c"
@@ -5316,7 +5339,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DMaterialSlot",
     "m_ObjectId": "3b494f17699c42c19150f009d5897050",
     "m_Id": 0,
-    "m_DisplayName": "fuckerngverg",
+    "m_DisplayName": "EmissionTexture",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -5547,10 +5570,10 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DInputMaterialSlot",
     "m_ObjectId": "4204ed8458de41e092bc3e88285227d6",
     "m_Id": -722169031,
-    "m_DisplayName": "EmissionMap",
+    "m_DisplayName": "EmissionTexture",
     "m_SlotType": 0,
     "m_Hidden": false,
-    "m_ShaderOutputName": "_EmissionMap",
+    "m_ShaderOutputName": "_EmissionTexture",
     "m_StageCapability": 3,
     "m_BareResource": false,
     "m_Texture": {
@@ -6062,8 +6085,8 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": {
-        "x": 0.0,
-        "y": 0.0,
+        "x": 1.0,
+        "y": 1.0,
         "z": 0.0,
         "w": 0.0
     }
@@ -6159,10 +6182,10 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DInputMaterialSlot",
     "m_ObjectId": "49341e3af7414674878e41e8012063a3",
     "m_Id": -722169031,
-    "m_DisplayName": "EmissionMap",
+    "m_DisplayName": "EmissionTexture",
     "m_SlotType": 0,
     "m_Hidden": false,
-    "m_ShaderOutputName": "_EmissionMap",
+    "m_ShaderOutputName": "_EmissionTexture",
     "m_StageCapability": 3,
     "m_BareResource": false,
     "m_Texture": {
@@ -7776,8 +7799,8 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": {
-        "x": 0.0,
-        "y": 0.0,
+        "x": 1.0,
+        "y": 1.0,
         "z": 0.0,
         "w": 0.0
     }
@@ -8030,9 +8053,9 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": {
-        "r": 0.0,
-        "g": 0.0,
-        "b": 0.0,
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
         "a": 1.0
     },
     "isMainColor": false,
@@ -8350,10 +8373,10 @@
     "promotedFromAssetID": "",
     "promotedFromCategoryName": "",
     "promotedOrdering": -1,
-    "m_Name": "EmissionMap (3)",
+    "m_Name": "EmissionTexture (3)",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "EmissionMap (3)",
-    "m_DefaultReferenceName": "_EmissionMap_3",
+    "m_RefNameGeneratedByDisplayName": "EmissionTexture (3)",
+    "m_DefaultReferenceName": "_EmissionTexture_3",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -8929,22 +8952,6 @@
 }
 
 {
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
-    "m_ObjectId": "7d3d4d9f5665494d8ed65e644e9e9bfe",
-    "m_Id": 4,
-    "m_DisplayName": "emission",
-    "m_SlotType": 1,
-    "m_Hidden": false,
-    "m_ShaderOutputName": "emission",
-    "m_StageCapability": 3,
-    "m_Value": 0.0,
-    "m_DefaultValue": 0.0,
-    "m_Labels": [],
-    "m_LiteralMode": false
-}
-
-{
     "m_SGVersion": 1,
     "m_Type": "UnityEditor.ShaderGraph.CustomFunctionNode",
     "m_ObjectId": "7d9723c638b6406b97a3147a8886f3fc",
@@ -9128,8 +9135,8 @@
     "m_ObjectId": "832bc5f57377471689669ff7a15a19b3",
     "m_Title": "Layer1",
     "m_Position": {
-        "x": -2447.999755859375,
-        "y": 1298.9998779296875
+        "x": -2448.0,
+        "y": 1299.0
     }
 }
 
@@ -9383,10 +9390,10 @@
     "promotedFromAssetID": "",
     "promotedFromCategoryName": "",
     "promotedOrdering": -1,
-    "m_Name": "BaseColor (2)",
+    "m_Name": "BaseTint (2)",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "BaseColor (2)",
-    "m_DefaultReferenceName": "_BaseColor_2",
+    "m_RefNameGeneratedByDisplayName": "BaseTint (2)",
+    "m_DefaultReferenceName": "_BaseTint_2",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -9399,9 +9406,9 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": {
-        "r": 0.0,
-        "g": 0.0,
-        "b": 0.0,
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
         "a": 1.0
     },
     "isMainColor": false,
@@ -10349,10 +10356,10 @@
     "promotedFromAssetID": "",
     "promotedFromCategoryName": "",
     "promotedOrdering": -1,
-    "m_Name": "fuckerngverg",
+    "m_Name": "EmissionTexture",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "fuckerngverg",
-    "m_DefaultReferenceName": "_fuckerngverg",
+    "m_RefNameGeneratedByDisplayName": "EmissionTexture",
+    "m_DefaultReferenceName": "_EmissionTexture",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -10562,10 +10569,10 @@
     "promotedFromAssetID": "",
     "promotedFromCategoryName": "",
     "promotedOrdering": -1,
-    "m_Name": "EmissionMap (2)",
+    "m_Name": "EmissionTexture (2)",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "EmissionMap (2)",
-    "m_DefaultReferenceName": "_EmissionMap_2",
+    "m_RefNameGeneratedByDisplayName": "EmissionTexture (2)",
+    "m_DefaultReferenceName": "_EmissionTexture_2",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -11165,7 +11172,7 @@
     "m_ObjectId": "a0420b233c174743b98f2ce83c16a855",
     "m_Title": "Layer3",
     "m_Position": {
-        "x": -1179.000244140625,
+        "x": -1179.0,
         "y": 1297.0
     }
 }
@@ -11821,7 +11828,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
     "m_ObjectId": "ad60567dd03441328523198774913789",
     "m_Id": 0,
-    "m_DisplayName": "BaseColor (2)",
+    "m_DisplayName": "BaseTint (2)",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -12171,10 +12178,10 @@
     "promotedFromAssetID": "",
     "promotedFromCategoryName": "",
     "promotedOrdering": -1,
-    "m_Name": "EmissionMap (1)",
+    "m_Name": "EmissionTexture (1)",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "EmissionMap (1)",
-    "m_DefaultReferenceName": "_EmissionMap_1",
+    "m_RefNameGeneratedByDisplayName": "EmissionTexture (1)",
+    "m_DefaultReferenceName": "_EmissionTexture_1",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -12770,7 +12777,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
     "m_ObjectId": "c02be6a6572945c782413c211b4a1daf",
     "m_Id": 0,
-    "m_DisplayName": "BaseColor (3)",
+    "m_DisplayName": "BaseTint (3)",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -13291,7 +13298,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
     "m_ObjectId": "ccb4155a8db441e5a6d662f19a78d636",
     "m_Id": 0,
-    "m_DisplayName": "BaseColor (1)",
+    "m_DisplayName": "BaseTint (1)",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -13921,7 +13928,7 @@
     "m_AdditionalMotionVectorMode": 0,
     "m_AlembicMotionVectors": false,
     "m_SupportsLODCrossFade": false,
-    "m_CustomEditorGUI": "",
+    "m_CustomEditorGUI": "SigmaTerrainGUI",
     "m_SupportVFX": false
 }
 
@@ -14166,8 +14173,8 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": {
-        "x": 0.0,
-        "y": 0.0,
+        "x": 1.0,
+        "y": 1.0,
         "z": 0.0,
         "w": 0.0
     }
@@ -14582,7 +14589,7 @@
     "m_ObjectId": "e32ac3defd4f40359ce1efc32d282f3b",
     "m_Title": "Layer2",
     "m_Position": {
-        "x": -1815.0001220703125,
+        "x": -1815.0,
         "y": 1299.0
     }
 }
@@ -14856,8 +14863,8 @@
     "m_PerRendererData": false,
     "m_customAttributes": [],
     "m_Value": {
-        "x": 0.0,
-        "y": 0.0,
+        "x": 1.0,
+        "y": 1.0,
         "z": 0.0,
         "w": 0.0
     }
@@ -15083,7 +15090,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DMaterialSlot",
     "m_ObjectId": "ec24b74dfdc54258bc44aaf32610849c",
     "m_Id": 0,
-    "m_DisplayName": "EmissionMap (3)",
+    "m_DisplayName": "EmissionTexture (3)",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -15178,10 +15185,10 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DInputMaterialSlot",
     "m_ObjectId": "f10c6bf24c9a4e53bb92e5dd73b57155",
     "m_Id": -722169031,
-    "m_DisplayName": "EmissionMap",
+    "m_DisplayName": "EmissionTexture",
     "m_SlotType": 0,
     "m_Hidden": false,
-    "m_ShaderOutputName": "_EmissionMap",
+    "m_ShaderOutputName": "_EmissionTexture",
     "m_StageCapability": 3,
     "m_BareResource": false,
     "m_Texture": {

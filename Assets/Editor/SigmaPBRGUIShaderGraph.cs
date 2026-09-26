@@ -4,75 +4,12 @@ using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;    
 
-public class SigmaPBRGUIShaderGraph : ShaderGUI
+public class SigmaPBRGUIShaderGraph : SigmaPBRGUI
 {
     private readonly MaterialHeaderScopeList materialScopeList = new MaterialHeaderScopeList();
     private MaterialEditor materialEditor;
     private bool firstTimeOpen = true;
     private const int queueOffsetRange = 50;
-    
-    public struct PBRShaderProperty
-    {
-        public MaterialProperty prop;
-        public readonly string name;
-        public readonly GUIContent info;
-        public readonly int id;
-
-        public PBRShaderProperty(string name, string label, string desc)
-        {
-            prop = null;
-            this.name = name;
-            info = new GUIContent(label, desc);
-            id = Shader.PropertyToID(name);
-        }
-    }
-
-    public enum SurfaceType
-    {
-        Opaque = 0,
-        Transparent = 1
-    }
-
-    public enum RenderFace
-    {
-        Front = 2,
-        Back = 1,
-        Both = 0
-    }
-
-    public enum BlendFunction
-    {
-        Alpha = 0,
-        Premultiply = 1,
-        Additive = 2,
-        Multiply = 3
-    }
-    
-    public enum ZWriteControl
-    {
-        Auto = 0,
-        ForceEnabled = 1,
-        ForceDisabled = 2
-    }
-    
-    public enum QueueControl
-    {
-        Auto = 0,
-        UserOverride = 1
-    }
-    
-    public enum CompareFunction
-    {
-        Disabled,
-        Never,
-        Less,
-        Equal,
-        LessEqual,
-        Greater,
-        NotEqual,
-        GreaterEqual,
-        Always,
-    }
     
     private string[] surfaceTypeNames = Enum.GetNames(typeof(SurfaceType));
     private string[] renderFaceNames = Enum.GetNames(typeof(RenderFace));
@@ -81,100 +18,56 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
     private string[] queueControlNames =  Enum.GetNames(typeof(QueueControl));
     private string[] compareFunctionNames = Enum.GetNames(typeof(CompareFunction));
     
-    private PBRShaderProperty textureFilter = new("_TEXTUREFILTER", "Texture Filter",
-        "Controls how textures are sampled");
-    private PBRShaderProperty textureWrap = new("_TEXTUREWRAP", "Texture Wrap",
-        "Controls how textures behave outside their UV range");
+    private PBRShaderProperty textureFilter = new("_TEXTUREFILTER", "Texture Filter");
+    private PBRShaderProperty textureWrap = new("_TEXTUREWRAP", "Texture Wrap");
     
-    private PBRShaderProperty textureTiling = new("_TextureTiling", "Texture Tiling",
-        "Controls texture tiling");
+    private PBRShaderProperty textureTiling = new("_TextureTiling", "Texture Tiling");
     
-    private PBRShaderProperty textureOffset = new("_TextureOffset", "Texture Offset",
-        "Controls texture offset");
+    private PBRShaderProperty textureOffset = new("_TextureOffset", "Texture Offset");
     
-    private PBRShaderProperty useTriplanarMapping = new("_TRIPLANAR_MAPPING", "Use Triplanar Mapping", 
-        "Should the shader use Triplanar Mapping prevents visible texture stretching and seams on surfaces with complex geometry or insufficient UVs?");
-    private PBRShaderProperty triplanarTile = new("_TriplanarTile", "Triplanar Tile", 
-        "Controls the scale of the triplanar texture mapping, determining how frequently the texture tiles across the surface.");
-    private PBRShaderProperty triplanarBlendOffset = new("_TriplanarBlendOffset", "Triplanar Blend Offset", 
-        "Subtracts from each axis's blend weight and clamps to zero, eliminating weakly-aligned projection axes (X, Y, Z) before sharpening to widen the transition dead zone.");
-    private PBRShaderProperty triplanarBlendExponent = new("_TriplanarBlendExponent", "Triplanar Blend Exponent", 
-        "Raises each axis's blend weight to this power after the offset is applied. Higher values give tighter transitions with less texture smearing on angled surfaces.");
+    private PBRShaderProperty useTriplanarMapping = new("_TRIPLANAR_MAPPING", "Use Triplanar Mapping");
+    private PBRShaderProperty triplanarTile = new("_TriplanarTile", "Triplanar Tile");
+    private PBRShaderProperty triplanarBlendOffset = new("_TriplanarBlendOffset", "Triplanar Blend Offset");
+    private PBRShaderProperty triplanarBlendExponent = new("_TriplanarBlendExponent", "Triplanar Blend Exponent");
     
-    private PBRShaderProperty baseColor = new("_BaseColor", "Base Color", 
-    "Albedo color of the object.");
-    private PBRShaderProperty baseTexture = new("_BaseTexture", "Base Texture", 
-        "Albedo color of the object.");
-    private PBRShaderProperty workflowMode = new("_WorkflowMode", "Workflow Mode",
-        "Choose between the Specular and Metallic workflows.");
+    private PBRShaderProperty baseColor = new("_BaseColor", "Base Color");
+    private PBRShaderProperty baseTexture = new("_BaseTexture", "Base Texture");
+    private PBRShaderProperty workflowMode = new("_WorkflowMode", "Workflow Mode");
     private readonly string[] workflowModeNames = { "Specular", "Metallic" };
-    private PBRShaderProperty metallicMap = new("_MetallicMap", "Metallic Map", 
-        "How metallic the object's surface is (only used in metallic workflow mode).");
-    private PBRShaderProperty metallic = new("_Metallic", "Metallic", 
-        "How metallic the object's surface is (only used in metallic workflow mode).");
-    private PBRShaderProperty specularMap = new("_SpecularMap", "Specular Map", 
-        "The color of the object's specular highlights (only used in specular workflow mode).");
-    private PBRShaderProperty specularColor = new("_SpecularColor", "Specular Color", 
-        "The color of the object's specular highlights (only used in specular workflow mode).");
-    private PBRShaderProperty smoothnessMap = new("_SmoothnessMap", "Smoothness Map", 
-        "How smooth (or rough) the microscopic surface of the object is.");
-    private PBRShaderProperty smoothness = new("_Smoothness", "Smoothness", 
-        "How smooth (or rough) the microscopic surface of the object is.");
-    private PBRShaderProperty convertFromRoughness = new("_CONVERT_FROM_ROUGHNESS", "Convert From Roughness", 
-        "Should the shader treat the smoothness texture as a roughness texture instead?");
-    private PBRShaderProperty normalTexture = new("_NormalTexture", "Normal Texture", 
-        "A texture encoding normal vector offsets at each point on the object surface.");
-    private PBRShaderProperty normalStrength = new("_NormalStrength", "Normal Strength", 
-        "How strongly the normal texture is applied to the existing surface normals.");
-    private PBRShaderProperty heightMap = new("_HeightMap", "Height Map", 
-        "The physical height offset of each part of the surface.");
-    private PBRShaderProperty heightMapStrength = new("_HeightMapStrength", "Height Map Strength", 
-        "How strongly the height map values are applied as UV offsets to create a surface height illusion.");
-    private PBRShaderProperty occlusionMap = new("_OcclusionMap", "Occlusion Map", 
-        "The strength of ambient occlusion at each point on the surface.");
-    private PBRShaderProperty occlusionStrength = new("_OcclusionStrength", "Occlusion Strength", 
-        "How strongly the occlusion map values are applied to the surface.");
-    private PBRShaderProperty emissionMap = new("_EmissionMap", "Emission Map", 
-        "The color of emissive (self-illuminated) light on the surface.");
-    private PBRShaderProperty emissionColor = new("_EmissionColor", "Emission Color", 
-        "The color of emissive (self-illuminated) light on the surface.");
+    private PBRShaderProperty metallicMap = new("_MetallicMap", "Metallic Map");
+    private PBRShaderProperty metallic = new("_Metallic", "Metallic");
+    private PBRShaderProperty specularMap = new("_SpecularMap", "Specular Map");
+    private PBRShaderProperty specularColor = new("_SpecularColor", "Specular Color");
+    private PBRShaderProperty smoothnessMap = new("_SmoothnessMap", "Smoothness Map");
+    private PBRShaderProperty smoothness = new("_Smoothness", "Smoothness");
+    private PBRShaderProperty convertFromRoughness = new("_CONVERT_FROM_ROUGHNESS", "Convert From Roughness");
+    private PBRShaderProperty normalTexture = new("_NormalTexture", "Normal Texture");
+    private PBRShaderProperty normalStrength = new("_NormalStrength", "Normal Strength");
+    private PBRShaderProperty heightMap = new("_HeightMap", "Height Map");
+    private PBRShaderProperty heightMapStrength = new("_HeightMapStrength", "Height Map Strength");
+    private PBRShaderProperty occlusionMap = new("_OcclusionMap", "Occlusion Map");
+    private PBRShaderProperty occlusionStrength = new("_OcclusionStrength", "Occlusion Strength");
+    private PBRShaderProperty emissionMap = new("_EmissionMap", "Emission Map");
+    private PBRShaderProperty emissionColor = new("_EmissionColor", "Emission Color");
 
-    private PBRShaderProperty surface = new("_Surface", "Surface Type", 
-        "Choose whether to use opaque or transparent rendering mode.");
-    private PBRShaderProperty cutoff = new("_Cutoff", "Alpha Cutoff", 
-        "Pixels with alpha below this threshold value get discarded.");
-    private PBRShaderProperty srcBlend = new("_SrcBlend", "Source Blend", 
-        "Blend factor to use for the existing framebuffer RGB contents.");
-    private PBRShaderProperty dstBlend = new("_DstBlend", "Destination Blend", 
-        "Blend factor to use for the newly drawn object RGB contents.");
-    private PBRShaderProperty srcBlendAlpha = new("_SrcBlendAlpha", "Source Blend Alpha", 
-        "Blend factor to use for the existing framebuffer alpha contents.");
-    private PBRShaderProperty dstBlendAlpha = new("_DstBlendAlpha", "Destination Blend Alpha", 
-        "Blend factor to use for the newly drawn object alpha contents.");
-    private PBRShaderProperty zWrite = new("_ZWrite", "ZWrite", 
-        "Should this material write depth information?");
-    private PBRShaderProperty zTest = new("_ZTest", "ZTest", 
-        "Choose which depth test to apply to this object.");
-    private PBRShaderProperty cull = new("_Cull", "Render Face", 
-        "Which faces should the shader draw?");
-    private PBRShaderProperty alphaToMask = new("_AlphaToMask", "Alpha To Mask", 
-        "Should the shader use alpha-to-mask if MSAA is enabled?");
+    private PBRShaderProperty surface = new("_Surface", "Surface Type");
+    private PBRShaderProperty cutoff = new("_Cutoff", "Alpha Cutoff");
+    private PBRShaderProperty srcBlend = new("_SrcBlend", "Source Blend");
+    private PBRShaderProperty dstBlend = new("_DstBlend", "Destination Blend");
+    private PBRShaderProperty srcBlendAlpha = new("_SrcBlendAlpha", "Source Blend Alpha");
+    private PBRShaderProperty dstBlendAlpha = new("_DstBlendAlpha", "Destination Blend Alpha");
+    private PBRShaderProperty zWrite = new("_ZWrite", "ZWrite");
+    private PBRShaderProperty zTest = new("_ZTest", "ZTest");
+    private PBRShaderProperty cull = new("_Cull", "Render Face");
+    private PBRShaderProperty alphaToMask = new("_AlphaToMask", "Alpha To Mask");
 
-    private PBRShaderProperty castShadows = new("_CastShadows", "Cast Shadows", 
-        "Should the object cast shadows from realtime lights?");
-    private PBRShaderProperty receiveShadows = new("_ReceiveShadows", "Receive Shadows", 
-        "Should the object receive shadows from realtime lights?");
-    private PBRShaderProperty blend = new("_Blend", "Blend Mode", 
-        "Choose which blending function to use for transparent objects.");
-    private PBRShaderProperty alphaClip = new("_AlphaClip", "Alpha Clipping", 
-        "Choose whether to use alpha clipping. Note that the threshold value may be set within the graph itself.");
-    private PBRShaderProperty zWriteControl = new("_ZWriteControl", "ZWrite Control", 
-        "Choose whether to handle ZWrite automatically, or force it on or off at all times.");
-    private PBRShaderProperty queueOffset = new("_QueueOffset", "Sorting Priority", 
-        "Determines chronological rendering order for a Material. Materials with lower value are rendered first.");
-    private PBRShaderProperty queueControl = new("_QueueControl", "Queue Control", 
-        "Controls whether render queue is set based on material surface type, or explicitly set by the user.");
-
+    private PBRShaderProperty castShadows = new("_CastShadows", "Cast Shadows");
+    private PBRShaderProperty receiveShadows = new("_ReceiveShadows", "Receive Shadows");
+    private PBRShaderProperty blend = new("_Blend", "Blend Mode");
+    private PBRShaderProperty alphaClip = new("_AlphaClip", "Alpha Clipping");
+    private PBRShaderProperty zWriteControl = new("_ZWriteControl", "ZWrite Control");
+    private PBRShaderProperty queueOffset = new("_QueueOffset", "Sorting Priority");
+    private PBRShaderProperty queueControl = new("_QueueControl", "Queue Control");
     private void FindProperties(MaterialProperty[] props)
     {
         textureFilter.prop = FindProperty(textureFilter.name, props, true);
@@ -251,63 +144,6 @@ public class SigmaPBRGUIShaderGraph : ShaderGUI
         materialScopeList.DrawHeaders(materialEditor, material);
         
         materialEditor.serializedObject.ApplyModifiedProperties();
-    }
-    
-    protected void SetBlendMode(BlendFunction blendFunction, SurfaceType surfaceType, Material material)
-    {
-        var srcBlendRGB = BlendMode.One;
-        var dstBlendRGB = BlendMode.Zero;
-        var srcBlendA = BlendMode.One;
-        var dstBlendA = BlendMode.Zero;
-        
-        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        material.DisableKeyword("_ALPHAMODULATE_ON");
-
-        if (surfaceType == SurfaceType.Transparent)
-        {
-            switch (blendFunction)
-            {
-                case BlendFunction.Alpha:
-                {
-                    srcBlendRGB = BlendMode.SrcAlpha;
-                    dstBlendRGB = BlendMode.OneMinusSrcAlpha;
-                    srcBlendA = BlendMode.One;
-                    dstBlendA = BlendMode.OneMinusSrcAlpha;
-                    break;
-                }
-                case BlendFunction.Premultiply:
-                {
-                    srcBlendRGB = BlendMode.One;
-                    dstBlendRGB = BlendMode.OneMinusSrcAlpha;
-                    srcBlendA = BlendMode.One;
-                    dstBlendA = BlendMode.OneMinusSrcAlpha;
-                    material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
-                    break;
-                }
-                case BlendFunction.Additive:
-                {
-                    srcBlendRGB = BlendMode.SrcAlpha;
-                    dstBlendRGB = BlendMode.One;
-                    srcBlendA = BlendMode.One;
-                    dstBlendA = BlendMode.One;
-                    break;
-                }
-                case BlendFunction.Multiply:
-                {
-                    srcBlendRGB = BlendMode.DstColor;
-                    dstBlendRGB = BlendMode.Zero;
-                    srcBlendA = BlendMode.Zero;
-                    dstBlendA = BlendMode.One;
-                    material.EnableKeyword("_ALPHAMODULATE_ON");
-                    break;
-                }
-            }
-        }
-
-        material.SetFloat(srcBlend.id, (float)srcBlendRGB);
-        material.SetFloat(dstBlend.id, (float)dstBlendRGB);
-        material.SetFloat(srcBlendAlpha.id, (float)srcBlendA);
-        material.SetFloat(dstBlendAlpha.id, (float)dstBlendA);
     }
     
     private void DrawSurfaceProperties(Material material)

@@ -6,16 +6,16 @@
 
 void GetEditableSampler_float(out UnitySamplerState samplerOut)
 {
-    samplerOut.samplerstate = sampler_LinearRepeat;
-    
+    samplerOut.samplerstate = default_sampler_Linear_Repeat;
+
     #if defined(_TEXTUREFILTER_LINEAR) && defined(_TEXTUREWRAP_REPEAT)
-        samplerOut.samplerstate = sampler_LinearRepeat;
+    samplerOut.samplerstate = default_sampler_Linear_Repeat;
     #elif defined(_TEXTUREFILTER_LINEAR) && defined(_TEXTUREWRAP_CLAMP)
-        samplerOut.samplerstate = sampler_LinearClamp;
+    samplerOut.samplerstate = default_sampler_Linear_Clamp;
     #elif defined(_TEXTUREFILTER_POINT) && defined(_TEXTUREWRAP_REPEAT)
-        samplerOut.samplerstate = sampler_PointRepeat;
+    samplerOut.samplerstate = default_sampler_Point_Repeat;
     #elif defined(_TEXTUREFILTER_POINT) && defined(_TEXTUREWRAP_CLAMP)
-        samplerOut.samplerstate = sampler_PointClamp;
+    samplerOut.samplerstate = default_sampler_Point_Clamp;
     #endif
 }
 

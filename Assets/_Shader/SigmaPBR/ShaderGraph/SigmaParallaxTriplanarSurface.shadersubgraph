@@ -4050,8 +4050,8 @@
     "m_ObjectId": "2c4e9b03ce3d4934872d37ec9341ca67",
     "m_Title": "TriplanarUV",
     "m_Position": {
-        "x": -604.0,
-        "y": -1054.0
+        "x": -604.0000610351563,
+        "y": -1053.9998779296875
     }
 }
 
@@ -5749,8 +5749,8 @@
     "m_ObjectId": "52e6760d6fc24feab2ee34fe34623c46",
     "m_Title": "UV",
     "m_Position": {
-        "x": -645.9999389648438,
-        "y": 261.0000305175781
+        "x": -646.0001220703125,
+        "y": 261.00006103515627
     }
 }
 
@@ -7681,7 +7681,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DMaterialSlot",
     "m_ObjectId": "8aaa245b57cd4dee9fc04ad1d20ff821",
     "m_Id": 0,
-    "m_DisplayName": "EmissionMap",
+    "m_DisplayName": "EmissionTexture",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -11440,8 +11440,8 @@
     "m_ObjectId": "e8ae72566ae4474e8837676d426a1296",
     "m_Title": "TriplanarWeights",
     "m_Position": {
-        "x": -552.0,
-        "y": -37.0
+        "x": -552.0000610351563,
+        "y": -36.999977111816409
     }
 }
 
@@ -12165,10 +12165,10 @@
     "promotedFromAssetID": "",
     "promotedFromCategoryName": "",
     "promotedOrdering": -1,
-    "m_Name": "EmissionMap",
+    "m_Name": "EmissionTexture",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "EmissionMap",
-    "m_DefaultReferenceName": "_EmissionMap",
+    "m_RefNameGeneratedByDisplayName": "EmissionTexture",
+    "m_DefaultReferenceName": "_EmissionTexture",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,

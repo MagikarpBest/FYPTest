@@ -26,13 +26,14 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _TERRAIN_INSTANCED_PERPIXEL_NORMAL
+  - _TRIPLANAR_MAPPING
   m_InvalidKeywords:
   - _TOPLAYER1_LAYER1
   - _TOPLAYER2_LAYER1
   - _TOPLAYER3_LAYER1
   - _TOPLAYER4_LAYER1
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -42,11 +43,11 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseTexture:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: e69a5991dcfaf4947b144b7682f6a7ce, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseTexture_1:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 6c98a29be8676e4468119285547d6d7c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseTexture_2:
@@ -81,8 +82,24 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _EmissionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionTexture_1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionTexture_2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionTexture_3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _HeightMap:
-        m_Texture: {fileID: 2800000, guid: f637c9ff6ac2bb545ba448971d981f46, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _HeightMap_1:
@@ -134,7 +151,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalTexture:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 62df1e932e6f6384ab3af16351209ce2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalTexture_1:
@@ -217,6 +234,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _fuckerngverg:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -248,7 +269,7 @@ Material:
     - _Metallic_1: 0
     - _Metallic_2: 0
     - _Metallic_3: 0
-    - _NormalStrength: 1.37
+    - _NormalStrength: 2
     - _NormalStrength_1: 1
     - _NormalStrength_2: 1
     - _NormalStrength_3: 1
@@ -256,7 +277,7 @@ Material:
     - _OcclusionStrength_1: 0
     - _OcclusionStrength_2: 0
     - _OcclusionStrength_3: 0
-    - _Smoothness: 0
+    - _Smoothness: 1
     - _Smoothness0: 1
     - _Smoothness1: 1
     - _Smoothness2: 1
@@ -268,16 +289,19 @@ Material:
     - _TOPLAYER2: 0
     - _TOPLAYER3: 0
     - _TOPLAYER4: 0
-    - _TRIPLANAR_MAPPING: 0
+    - _TRIPLANAR_MAPPING: 1
     - _TriplanarBlendExponent: 1
     - _TriplanarBlendOffset: 0
-    - _TriplanarTile: 0
+    - _TriplanarTile: 0.1
     m_Colors:
     - _BaseColor: {r: 0, g: 0, b: 0, a: 1}
-    - _BaseColor_1: {r: 0, g: 0, b: 0, a: 1}
+    - _BaseColor_1: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor_2: {r: 0, g: 0, b: 0, a: 1}
     - _BaseColor_3: {r: 0, g: 0, b: 0, a: 1}
-    - _BaseTint: {r: 1, g: 0.7028302, b: 0.7028302, a: 1}
+    - _BaseTint: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseTint_1: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseTint_2: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseTint_3: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor_1: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor_2: {r: 0, g: 0, b: 0, a: 1}
@@ -290,7 +314,7 @@ Material:
     - _TextureOffset_1: {r: 0, g: 0, b: 0, a: 0}
     - _TextureOffset_2: {r: 0, g: 0, b: 0, a: 0}
     - _TextureOffset_3: {r: 0, g: 0, b: 0, a: 0}
-    - _TextureTiling: {r: 0, g: 0, b: 0, a: 0}
+    - _TextureTiling: {r: 1, g: 1, b: 0, a: 0}
     - _TextureTiling_1: {r: 0, g: 0, b: 0, a: 0}
     - _TextureTiling_2: {r: 0, g: 0, b: 0, a: 0}
     - _TextureTiling_3: {r: 0, g: 0, b: 0, a: 0}
