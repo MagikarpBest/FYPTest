@@ -8,7 +8,6 @@ public enum SkillConfirmResult
     Fail = -1
 }
 
-
 /// <summary>
 /// Packed {CharacterTransform, SkillHoldPoint, Camera} reference sent from PlayerSkillController.cs
 /// </summary>
@@ -48,7 +47,7 @@ public class PlayerSkillController : MonoBehaviour
     private IPlayerSkillHandler _activeHandler;
     
     // for state machine if using certain skill cant do certain action
-    public PlayerActionRestrictions CurrentRestrictions => _activeHandler?.GetRestrictions() ?? PlayerActionRestrictions.None;
+    public PlayerActionRestrictions CurrentRestrictions => GetRestrictions();
 
     public bool IsSkillActive => _activeHandler != null;
 
@@ -148,6 +147,7 @@ public class PlayerSkillController : MonoBehaviour
     {
         _activeHandler?.Cancel();
         _activeHandler = null;
+        _cachedSkill = null;
     }
 
     private void FinishSkill()
@@ -156,5 +156,18 @@ public class PlayerSkillController : MonoBehaviour
         _activeHandler?.Cancel();
 
         _activeHandler = null;
+        _cachedSkill = null;
+    }
+    
+    private PlayerActionRestrictions GetRestrictions()
+    {
+        if (_cachedSkill != null)
+        {
+            return _cachedSkill.Restrictions;
+        }
+        else
+        {
+            return PlayerActionRestrictions.None;
+        }
     }
 }

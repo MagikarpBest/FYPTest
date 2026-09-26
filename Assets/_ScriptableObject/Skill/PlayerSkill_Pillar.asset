@@ -15,6 +15,7 @@ MonoBehaviour:
   SkillName: Pillar
   Icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   ManaCost: 1
+  Restrictions: 1
   _handler:
     rid: 6373183367691632717
   references:

@@ -18,6 +18,7 @@ public class BombSkillHandler : IPlayerSkillHandler
     // Data defined by ScriptableObject.
 
     #region IPlayerSkillHandler
+
     public void Begin(PlayerSkillContext context)
     {
         _context = context;
@@ -26,8 +27,12 @@ public class BombSkillHandler : IPlayerSkillHandler
         if (_context.SkillHoldPoint == null)
             return;
 
- 
-        _activeBomb = UnityEngine.Object.Instantiate(_bombPrefab, _context.SkillHoldPoint.position, _context.SkillHoldPoint.rotation);
+
+        _activeBomb = UnityEngine.Object.Instantiate(
+            _bombPrefab,
+            _context.SkillHoldPoint.position,
+            _context.SkillHoldPoint.rotation
+        );
         _activeBomb.Hold(_context.SkillHoldPoint);
     }
 
@@ -38,6 +43,8 @@ public class BombSkillHandler : IPlayerSkillHandler
 
         // TODO: Update bomb aiming / direction.
     }
+
+
 
     public SkillConfirmResult Confirm()
     {
@@ -66,6 +73,7 @@ public class BombSkillHandler : IPlayerSkillHandler
 
         _activeBomb = null;
     }
+
     #endregion
 
     private void RotateCharacterToAim(Vector3 aimDirection)
@@ -82,13 +90,7 @@ public class BombSkillHandler : IPlayerSkillHandler
         _context.CharacterTransform.rotation =
             Quaternion.LookRotation(
                 flatDirection.normalized,
-                Vector3.up);
-    }
-    
-    // state restriction test, change to manageable by scriptable object
-    public PlayerActionRestrictions GetRestrictions()
-    {
-        // stop jumping while placing a pillar
-        return PlayerActionRestrictions.RestrictJump;
+                Vector3.up
+            );
     }
 }

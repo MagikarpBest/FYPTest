@@ -39,3 +39,4 @@ public interface IPlayerStatus
     void SetSkill(int slotIndex, PlayerSkill skill);
     bool TrySwitchSkill(int direction);
 }
+

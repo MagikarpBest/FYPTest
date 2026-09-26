@@ -13,6 +13,5 @@ public interface IPlayerSkillHandler
     // Might not needed.
     void Update();
     
-    // for state machine if in future wants to add restriction to certain skill for some action (etc: cant jump while using skill A)
-    PlayerActionRestrictions GetRestrictions();
 }
+

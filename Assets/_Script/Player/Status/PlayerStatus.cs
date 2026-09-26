@@ -21,7 +21,6 @@ public class PlayerStatus : MonoBehaviour, IPlayerStatus
     private float _invincibilityTimer;
 
     // Mana
-
     [Header("Mana")]
     [SerializeField]
     private float _maxMana = 5.0f;
@@ -221,4 +220,14 @@ public class PlayerStatus : MonoBehaviour, IPlayerStatus
     {
         return slotIndex >= 0 && slotIndex < _skillSlots.Count;
     }
+}
+
+[System.Flags]
+public enum PlayerActionRestrictions
+{
+    None = 0,
+    RestrictMovement = 1 << 0,
+    RestrictJump = 1 << 1,
+    RestrictRotation = 1 << 2,
+    All = ~0
 }
