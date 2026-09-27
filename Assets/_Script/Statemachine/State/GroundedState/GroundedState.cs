@@ -26,8 +26,8 @@ public class GroundedState : State
     // test restriction
     private void HandleJump()
     {
-        var restrictions = player.SkillController.CurrentRestrictions;
-        if (restrictions.HasFlag(PlayerActionRestrictions.RestrictJump))
+        // if current mode is unjumpable then dont let
+        if (player.ModeController.CurrentMode.Restrictions.HasFlag(PlayerActionRestrictions.RestrictJump))
         {
             return;
         }

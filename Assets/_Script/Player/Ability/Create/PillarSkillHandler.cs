@@ -144,9 +144,5 @@ public class PillarSkillHandler : IPlayerSkillHandler
     }
     
     // state restriction test, change to manageable by scriptable object
-    public PlayerActionRestrictions GetRestrictions()
-    {
-        // stop jumping while placing a pillar
-        return PlayerActionRestrictions.RestrictJump;
-    }
+
 }

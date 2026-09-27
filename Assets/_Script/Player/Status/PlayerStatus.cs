@@ -222,12 +222,3 @@ public class PlayerStatus : MonoBehaviour, IPlayerStatus
     }
 }
 
-[System.Flags]
-public enum PlayerActionRestrictions
-{
-    None = 0,
-    RestrictMovement = 1 << 0,
-    RestrictJump = 1 << 1,
-    RestrictRotation = 1 << 2,
-    All = ~0
-}

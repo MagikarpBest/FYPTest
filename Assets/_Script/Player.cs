@@ -18,10 +18,10 @@ public class Player : MonoBehaviour, ICharacter
     public PlayerInputManager Input {get; private set;}
     public PlayerMovementRB Movement {get; private set;}
     
-    //Make these a PlayerSkillManager or something if u have more skill later if only these two or like 3 ish skills its fine this way
-    public PlayerSkillController SkillController {get; private set;}
-    public PlayerStatus CurrentPlayerStatus {get; private set;}
-    public PlayerDamageReceiver DamageReceiver {get; private set;}
+    public PlayerSkillController SkillController {get; private set;}    // Control skill logic
+    public PlayerStatus CurrentPlayerStatus {get; private set;}         // Player data
+    public PlayerDamageReceiver DamageReceiver {get; private set;}      // 
+    public PlayerModeController ModeController {get; private set;}      // Control mode switches
     
     private HierarchicalStateMachine stateMachine;
     public float Health { get; set; } = 100f; // Fake health
@@ -51,6 +51,7 @@ public class Player : MonoBehaviour, ICharacter
         SkillController = GetComponent<PlayerSkillController>();
         CurrentPlayerStatus = GetComponent<PlayerStatus>();
         DamageReceiver = GetComponent<PlayerDamageReceiver>();
+        ModeController = GetComponent<PlayerModeController>();
         
         //all these components can be pure c sharp but then u cant see them in inspector
         

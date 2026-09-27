@@ -42,18 +42,19 @@ public class PlayerSkillController : MonoBehaviour
     [SerializeField] private Transform _skillHoldPoint;
     [SerializeField] private LineRenderer _aimLineRenderer;
 
+    private PlayerModeController _modeController;
     private PlayerSkillContext _context;
     private PlayerSkill _cachedSkill;
     private IPlayerSkillHandler _activeHandler;
     
-    // for state machine if using certain skill cant do certain action
-    public PlayerActionRestrictions CurrentRestrictions => GetRestrictions();
+
 
     public bool IsSkillActive => _activeHandler != null;
 
     private void Awake()
     {
         _playerStatus = GetComponent<PlayerStatus>();
+        _modeController = GetComponent<PlayerModeController>();
         _context = new PlayerSkillContext(_characterTransform, _skillHoldPoint, Camera.main, _aimLineRenderer);
     }
 
@@ -98,11 +99,13 @@ public class PlayerSkillController : MonoBehaviour
 
     private void HandleSkillPressed()
     {
+        if (_modeController.CurrentMode.Restrictions.HasFlag(PlayerActionRestrictions.RestrictSkill)) return;
         if (_playerStatus == null) return;
         PlayerSkill activeSkill = _playerStatus.ActiveSkill;
         if (activeSkill == null) return;
 
         if (_playerStatus.CheckMana(activeSkill.ManaCost) == false) return;
+        
         SelectSkill(activeSkill);
     }
 
@@ -124,7 +127,7 @@ public class PlayerSkillController : MonoBehaviour
 
         if (_activeHandler == null)
             return;
-
+        _modeController.ChangeMode(_modeController.Build);
         _activeHandler.Begin(_context);
         Debug.Log("SelectSkill Success");
     }
@@ -134,7 +137,7 @@ public class PlayerSkillController : MonoBehaviour
         if (_activeHandler == null) return;
 
         SkillConfirmResult result = _activeHandler.Confirm();
-
+        _modeController.ChangeMode(_modeController.Normal);
         if (result == SkillConfirmResult.Finish) FinishSkill();
     }
 
@@ -148,26 +151,16 @@ public class PlayerSkillController : MonoBehaviour
         _activeHandler?.Cancel();
         _activeHandler = null;
         _cachedSkill = null;
+        _modeController.ChangeMode(_modeController.Normal);
     }
 
     private void FinishSkill()
     {
         _playerStatus.ConsumeMana(_cachedSkill.ManaCost);
         _activeHandler?.Cancel();
-
+        _modeController.ChangeMode(_modeController.Normal);
         _activeHandler = null;
         _cachedSkill = null;
     }
     
-    private PlayerActionRestrictions GetRestrictions()
-    {
-        if (_cachedSkill != null)
-        {
-            return _cachedSkill.Restrictions;
-        }
-        else
-        {
-            return PlayerActionRestrictions.None;
-        }
-    }
 }

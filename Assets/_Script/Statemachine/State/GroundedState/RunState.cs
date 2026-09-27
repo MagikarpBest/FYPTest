@@ -38,9 +38,7 @@ public class RunState : State
 
     protected override void OnPhysicsTick(float fixedDeltaTime)
     {
-        var restrictions = player.SkillController.CurrentRestrictions;
-    
-        if (restrictions.HasFlag(PlayerActionRestrictions.RestrictMovement))
+        if (player.ModeController.CurrentMode.Restrictions.HasFlag(PlayerActionRestrictions.RestrictMovement))
         {
             movement.StopMove();
             return;
