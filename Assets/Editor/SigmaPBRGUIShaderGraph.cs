@@ -40,15 +40,18 @@ public class SigmaPBRGUIShaderGraph : SigmaPBRGUI
     private PBRShaderProperty specularColor = new("_SpecularColor", "Specular Color");
     private PBRShaderProperty smoothnessMap = new("_SmoothnessMap", "Smoothness Map");
     private PBRShaderProperty smoothness = new("_Smoothness", "Smoothness");
-    private PBRShaderProperty convertFromRoughness = new("_CONVERT_FROM_ROUGHNESS", "Convert From Roughness");
+    private PBRShaderProperty convertFromRoughness = new("_ConvertFromRoughness", "Convert From Roughness");
     private PBRShaderProperty normalTexture = new("_NormalTexture", "Normal Texture");
     private PBRShaderProperty normalStrength = new("_NormalStrength", "Normal Strength");
     private PBRShaderProperty heightMap = new("_HeightMap", "Height Map");
     private PBRShaderProperty heightMapStrength = new("_HeightMapStrength", "Height Map Strength");
+    private PBRShaderProperty useHeightMap = new("_UseHeightMap", "Use Height Map");
     private PBRShaderProperty occlusionMap = new("_OcclusionMap", "Occlusion Map");
     private PBRShaderProperty occlusionStrength = new("_OcclusionStrength", "Occlusion Strength");
+    private PBRShaderProperty useOcclusion = new("_UseOcclusion", "Use Occlusion");
     private PBRShaderProperty emissionMap = new("_EmissionMap", "Emission Map");
     private PBRShaderProperty emissionColor = new("_EmissionColor", "Emission Color");
+    private PBRShaderProperty useEmission = new("_UseEmission", "Use Emission");
 
     private PBRShaderProperty surface = new("_Surface", "Surface Type");
     private PBRShaderProperty cutoff = new("_Cutoff", "Alpha Cutoff");
@@ -96,10 +99,13 @@ public class SigmaPBRGUIShaderGraph : SigmaPBRGUI
         normalStrength.prop = FindProperty(normalStrength.name, props, true);
         heightMap.prop = FindProperty(heightMap.name, props, true);
         heightMapStrength.prop = FindProperty(heightMapStrength.name, props, true);
+        useHeightMap.prop = FindProperty(useHeightMap.name, props, true);
         occlusionMap.prop = FindProperty(occlusionMap.name, props, true);
         occlusionStrength.prop = FindProperty(occlusionStrength.name, props, true);
+        useOcclusion.prop = FindProperty(useOcclusion.name, props, true);
         emissionMap.prop = FindProperty(emissionMap.name, props, true);
         emissionColor.prop = FindProperty(emissionColor.name, props, true);
+        useEmission.prop = FindProperty(useEmission.name, props, true);
         
         surface.prop = FindProperty(surface.name, props, true);
         cutoff.prop = FindProperty(cutoff.name, props, true);
@@ -289,15 +295,6 @@ public class SigmaPBRGUIShaderGraph : SigmaPBRGUI
         materialEditor.ShaderProperty(textureFilter.prop, textureFilter.info);
         materialEditor.ShaderProperty(textureWrap.prop, textureWrap.info);
         
-        EditorGUILayout.Separator();
-        
-        materialEditor.ShaderProperty(textureTiling.prop, textureTiling.info);
-        materialEditor.ShaderProperty(textureOffset.prop, textureOffset.info);
-        
-        DrawBaseMapPBRProperties(material);
-        
-        EditorGUILayout.Separator();
-        //Triplanar
         materialEditor.ShaderProperty(useTriplanarMapping.prop, useTriplanarMapping.info);
         if (useTriplanarMapping.prop.floatValue > 0.5f)
         {
@@ -306,7 +303,19 @@ public class SigmaPBRGUIShaderGraph : SigmaPBRGUI
             materialEditor.ShaderProperty(triplanarBlendOffset.prop, triplanarBlendOffset.info);
             materialEditor.ShaderProperty(triplanarBlendExponent.prop, triplanarBlendExponent.info);
             EditorGUI.indentLevel--;
+            
+            EditorGUILayout.Separator();
         }
+        else
+        {
+            EditorGUILayout.Separator();
+        
+            materialEditor.ShaderProperty(textureTiling.prop, textureTiling.info);
+            materialEditor.ShaderProperty(textureOffset.prop, textureOffset.info);
+        }
+        
+        DrawBaseMapPBRProperties(material);
+        
     }
 
     private void DrawBaseMapPBRProperties(Material material)
@@ -330,9 +339,24 @@ public class SigmaPBRGUIShaderGraph : SigmaPBRGUI
         materialEditor.TexturePropertySingleLine(smoothnessMap.info, smoothnessMap.prop, smoothness.prop);
         materialEditor.ShaderProperty(convertFromRoughness.prop, convertFromRoughness.info);
         materialEditor.TexturePropertySingleLine(normalTexture.info, normalTexture.prop, normalStrength.prop);
-        materialEditor.TexturePropertySingleLine(heightMap.info, heightMap.prop, heightMapStrength.prop);
-        materialEditor.TexturePropertySingleLine(occlusionMap.info, occlusionMap.prop, occlusionStrength.prop);
-        materialEditor.TexturePropertySingleLine(emissionMap.info,  emissionMap.prop, emissionColor.prop);
+        
+        materialEditor.ShaderProperty(useHeightMap.prop, useHeightMap.info);
+        if (useHeightMap.prop.floatValue > 0.5f)
+        {
+            materialEditor.TexturePropertySingleLine(heightMap.info, heightMap.prop, heightMapStrength.prop);
+        }
+        
+        materialEditor.ShaderProperty(useOcclusion.prop, useOcclusion.info);
+        if (useOcclusion.prop.floatValue > 0.5f)
+        {
+            materialEditor.TexturePropertySingleLine(occlusionMap.info, occlusionMap.prop, occlusionStrength.prop);
+        }
+        
+        materialEditor.ShaderProperty(useEmission.prop, useEmission.info);
+        if (useEmission.prop.floatValue > 0.5f)
+        {
+            materialEditor.TexturePropertySingleLine(emissionMap.info, emissionMap.prop, emissionColor.prop);
+        }
     }
 
     private void DrawAdvancedSettings(Material material)

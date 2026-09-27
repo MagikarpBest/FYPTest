@@ -38,7 +38,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: 
+  m_LockedProperties: _UseOcclusion
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -99,7 +99,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _HeightMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 5c5a4c0d81abeb345bdd90f36988c906, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _HeightMap_1:
@@ -252,8 +252,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _ConvertFromRoughness: 0
+    - _ConvertFromRoughness_1: 0
+    - _ConvertFromRoughness_2: 0
+    - _ConvertFromRoughness_3: 0
     - _EnableInstancedPerPixelNormal: 1
-    - _HeightMapStrength: 0
+    - _HeightMapStrength: 0.0839
     - _HeightMapStrength1: 0
     - _HeightMapStrength2: 0
     - _HeightMapStrength3: 0
@@ -277,7 +281,7 @@ Material:
     - _OcclusionStrength_1: 0
     - _OcclusionStrength_2: 0
     - _OcclusionStrength_3: 0
-    - _Smoothness: 1
+    - _Smoothness: 0.585
     - _Smoothness0: 1
     - _Smoothness1: 1
     - _Smoothness2: 1
@@ -291,8 +295,29 @@ Material:
     - _TOPLAYER4: 0
     - _TRIPLANAR_MAPPING: 1
     - _TriplanarBlendExponent: 1
+    - _TriplanarBlendExponent_1: 1
+    - _TriplanarBlendExponent_2: 0
+    - _TriplanarBlendExponent_3: 0
     - _TriplanarBlendOffset: 0
+    - _TriplanarBlendOffset_1: 0
+    - _TriplanarBlendOffset_2: 0
+    - _TriplanarBlendOffset_3: 0
     - _TriplanarTile: 0.1
+    - _TriplanarTile_1: 0.1
+    - _TriplanarTile_2: 0.1
+    - _TriplanarTile_3: 0
+    - _UseEmission: 0
+    - _UseEmission_1: 0
+    - _UseEmission_2: 0
+    - _UseEmission_3: 0
+    - _UseHeightMap: 1
+    - _UseHeightMap_1: 0
+    - _UseHeightMap_2: 0
+    - _UseHeightMap_3: 0
+    - _UseOcclusion: 0
+    - _UseOcclusion_1: 0
+    - _UseOcclusion_2: 0
+    - _UseOcclusion_3: 0
     m_Colors:
     - _BaseColor: {r: 0, g: 0, b: 0, a: 1}
     - _BaseColor_1: {r: 1, g: 1, b: 1, a: 1}

@@ -9,13 +9,13 @@ void GetEditableSampler_float(out UnitySamplerState samplerOut)
     samplerOut.samplerstate = default_sampler_Linear_Repeat;
 
     #if defined(_TEXTUREFILTER_LINEAR) && defined(_TEXTUREWRAP_REPEAT)
-    samplerOut.samplerstate = default_sampler_Linear_Repeat;
+        samplerOut.samplerstate = default_sampler_Linear_Repeat;
     #elif defined(_TEXTUREFILTER_LINEAR) && defined(_TEXTUREWRAP_CLAMP)
-    samplerOut.samplerstate = default_sampler_Linear_Clamp;
+        samplerOut.samplerstate = default_sampler_Linear_Clamp;
     #elif defined(_TEXTUREFILTER_POINT) && defined(_TEXTUREWRAP_REPEAT)
-    samplerOut.samplerstate = default_sampler_Point_Repeat;
+        samplerOut.samplerstate = default_sampler_Point_Repeat;
     #elif defined(_TEXTUREFILTER_POINT) && defined(_TEXTUREWRAP_CLAMP)
-    samplerOut.samplerstate = default_sampler_Point_Clamp;
+        samplerOut.samplerstate = default_sampler_Point_Clamp;
     #endif
 }
 
@@ -45,76 +45,91 @@ void GetTriplanarUV_float(float3 positionWS, float3 normalWS, float triplanarTil
 void GetTriplanarViewDir_float(float3 viewDirWS, float3 normalWS,
     out float3 triViewX, out float3 triViewY, out float3 triViewZ)
 {
-    float3 v = viewDirWS;
+    triViewX = viewDirWS;
+    triViewY = viewDirWS;
+    triViewZ = viewDirWS;
     
-    //The Z component is perpendicular to the projection plane
-    //For triplanar mapping both sides of the plane use the same depth direction
-    //so we use its magnitude and remove the sign
-    triViewX = float3(v.z, v.y, abs(v.x));
-    triViewY = float3(v.x, v.z, abs(v.y));
-    triViewZ = float3(v.x, v.y, abs(v.z));
-    
-    //prevent mirror
-    if (normalWS.x < 0) 
-    {
-        triViewX.x = -triViewX.x;
-    }
-    if (normalWS.y < 0) 
-    {
-        triViewY.x = -triViewY.x;
-    }
-    if (normalWS.z >= 0) 
-    {
-        triViewZ.x = -triViewZ.x;
-    }
+    #ifdef _TRIPLANAR_MAPPING
+        float3 v = viewDirWS;
+        
+        //The Z component is perpendicular to the projection plane
+        //For triplanar mapping both sides of the plane use the same depth direction
+        //so we use its magnitude and remove the sign
+        triViewX = float3(v.z, v.y, abs(v.x));
+        triViewY = float3(v.x, v.z, abs(v.y));
+        triViewZ = float3(v.x, v.y, abs(v.z));
+        
+        //prevent mirror
+        if (normalWS.x < 0) 
+        {
+            triViewX.x = -triViewX.x;
+        }
+        if (normalWS.y < 0) 
+        {
+            triViewY.x = -triViewY.x;
+        }
+        if (normalWS.z >= 0) 
+        {
+            triViewZ.x = -triViewZ.x;
+        }
+    #endif
 }
 
 void GetTriplanarWeights_float(float3 normalWS, float triplanarBlendOffset, float triplanarBlendExponent,
     out float3 triWeights) 
 {
-    triWeights = abs(normalWS);
-    triWeights = saturate(triWeights - triplanarBlendOffset);
-    triWeights = pow(triWeights, triplanarBlendExponent);
+    triWeights = float3(1, 0, 0);
     
-    float sum = triWeights.x + triWeights.y + triWeights.z;
-    triWeights = triWeights / max(sum, 1e-5);
+    #ifdef _TRIPLANAR_MAPPING
+        triWeights = abs(normalWS);
+        triWeights = saturate(triWeights - triplanarBlendOffset);
+        triWeights = pow(triWeights, triplanarBlendExponent);
+        
+        float sum = triWeights.x + triWeights.y + triWeights.z;
+        triWeights = triWeights / max(sum, 1e-5);
+    #endif
 }
 
-void GetParallaxOffsetUV_float(float3 viewDirTS, float2 uv, UnityTexture2D heightMap, UnitySamplerState heightSampler, float heightmapStrength,
+void GetParallaxOffsetUV_float(float3 viewDirTS, float2 uv, UnityTexture2D heightMap, UnitySamplerState heightSampler, float heightmapStrength, bool useHeightMap,
     out float2 parallaxUV)
 {
     parallaxUV = uv;
+    if (!useHeightMap) return;
     
-    //#ifdef USE_HEIGHTMAP
-        //scale view so that z is 1 no need to /z cause we dont use z
-        //offset the z component so it never approaches zero, which would blow up the xy/z division at shallow (grazing) view angles
-        //this trades a bit of projection accuracy it warps the perspective slightly for much more stable manageable parallax artifacts at those angles
-        //0.42 is Unity's standard-shader value, chosen empirically rather than derived.
-        viewDirTS = normalize(viewDirTS);
-        
-        float parallaxBias = 0.42;
-        viewDirTS.xy /= (viewDirTS.z + parallaxBias); 
+    //scale view so that z is 1 no need to /z cause we dont use z
+    //offset the z component so it never approaches zero, which would blow up the xy/z division at shallow (grazing) view angles
+    //this trades a bit of projection accuracy it warps the perspective slightly for much more stable manageable parallax artifacts at those angles
+    //0.42 is Unity's standard-shader value, chosen empirically rather than derived.
+    viewDirTS = normalize(viewDirTS);
+    
+    float parallaxBias = 0.42;
+    viewDirTS.xy /= (viewDirTS.z + parallaxBias); 
 
-        float height = SAMPLE_TEXTURE2D(heightMap, heightSampler, uv).g;
-        height -= 0.5; //centers height around 0 
-        
-        parallaxUV.xy += viewDirTS.xy * height * heightmapStrength;
-    //#endif
+    float height = SAMPLE_TEXTURE2D(heightMap, heightSampler, uv).g;
+    height -= 0.5; //centers height around 0 
+    
+    parallaxUV.xy += viewDirTS.xy * height * heightmapStrength;
 }
 
 void GetParallaxOffsetTriplanarUV_float(float3 positionWS, float3 viewDirWS, float3 normalWS, UnityTexture2D heightMap, UnitySamplerState heightSampler, 
-    float heightmapStrength, float triplanarTile,
+    float heightmapStrength, float triplanarTile, bool useHeightMap,
     out float2 parallaxTriUV_X, out float2 parallaxTriUV_Y, out float2 parallaxTriUV_Z)
 {
-    float3 triViewX, triViewY, triViewZ;
-    GetTriplanarViewDir_float(viewDirWS, normalWS, triViewX, triViewY, triViewZ);
+    parallaxTriUV_X = 0;
+    parallaxTriUV_Y = 0;
+    parallaxTriUV_Z = 0;
     
-    float2 triUV_X, triUV_Y, triUV_Z;
-    GetTriplanarUV_float(positionWS, normalWS, triplanarTile, triUV_X, triUV_Y, triUV_Z);
-    
-    GetParallaxOffsetUV_float(triViewX, triUV_X, heightMap, heightSampler, heightmapStrength, parallaxTriUV_X);
-    GetParallaxOffsetUV_float(triViewY, triUV_Y, heightMap, heightSampler, heightmapStrength, parallaxTriUV_Y);
-    GetParallaxOffsetUV_float(triViewZ, triUV_Z, heightMap, heightSampler, heightmapStrength, parallaxTriUV_Z);
+    #ifdef _TRIPLANAR_MAPPING
+        float3 triViewX, triViewY, triViewZ;
+        GetTriplanarViewDir_float(viewDirWS, normalWS, triViewX, triViewY, triViewZ);
+        
+        float2 triUV_X, triUV_Y, triUV_Z;
+        GetTriplanarUV_float(positionWS, normalWS, triplanarTile, triUV_X, triUV_Y, triUV_Z);
+        
+        GetParallaxOffsetUV_float(triViewX, triUV_X, heightMap, heightSampler, heightmapStrength, useHeightMap, parallaxTriUV_X);
+        GetParallaxOffsetUV_float(triViewY, triUV_Y, heightMap, heightSampler, heightmapStrength, useHeightMap, parallaxTriUV_Y);
+        GetParallaxOffsetUV_float(triViewZ, triUV_Z, heightMap, heightSampler, heightmapStrength, useHeightMap, parallaxTriUV_Z);
+    #endif
 }
 
 void SigmaTriplanar_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triWeights, UnityTexture2D triTexture, UnitySamplerState triSampler,
@@ -205,7 +220,7 @@ void GetNormal_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW
 }
 
 void GetSmoothness_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
-    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D smoothnessTexture, float smoothnessValue,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D smoothnessTexture, float smoothnessValue, bool convertFromRoughness,
     out float result)
 {
     #ifdef _TRIPLANAR_MAPPING
@@ -218,15 +233,16 @@ void GetSmoothness_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 
     
     result = smoothness * smoothnessValue;
     
-    #ifdef _CONVERT_FROM_ROUGHNESS 
-        result = 1.0 - smoothness;
-    #endif
+    if (convertFromRoughness) result = 1.0 - smoothness;
 }
 
 void GetEmission_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
-    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D emissionTexture, float4 emissionColor,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D emissionTexture, float4 emissionColor, bool useEmission,
     out float3 result)
 {
+    result = float3(0, 0 ,0);
+    if (!useEmission) return;
+    
     #ifdef _TRIPLANAR_MAPPING
         float4 emission;
         SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, emissionTexture, SIGMA_SAMPLER, emission);
@@ -238,9 +254,12 @@ void GetEmission_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 tr
 }
 
 void GetOcclusion_float(float2 triUV_X, float2 triUV_Y, float2 triUV_Z, float3 triW, float2 parallaxUV,
-    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D occlusionTexture, float occlusionStrength,
+    UnitySamplerState SIGMA_SAMPLER, UnityTexture2D occlusionTexture, float occlusionStrength, bool useOccclusion,
     out float result)
 {
+    result = 1;
+    if (!useOccclusion) return;
+    
     #ifdef _TRIPLANAR_MAPPING
         float4 triOcclusion;
         SigmaTriplanar_float(triUV_X, triUV_Y, triUV_Z, triW, occlusionTexture, SIGMA_SAMPLER, triOcclusion);
