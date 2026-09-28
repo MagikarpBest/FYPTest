@@ -15,7 +15,11 @@ public class PlayerStateFactory
     public State Jump { get; private set; }
     public State Fall { get; private set; }
     public State Launch { get; private set; }
-
+    
+    public State Attack { get; private set; }
+    public State BaseAttack { get; private set; }
+    
+    
     public State Dead { get; private set; }
 
     public PlayerStateFactory(HierarchicalStateMachine context, Player player)
@@ -36,5 +40,8 @@ public class PlayerStateFactory
         Jump = new JumpState(context, player, Airborne,this);
         Fall = new FallState(context, player, Airborne,this);
         Launch = new LaunchState(context, player, Airborne, this);
+
+        Attack = new AttackState(context, player, Airborne, this);
+        BaseAttack = new BaseAttackState(context, player, Airborne, this);
     }
 }

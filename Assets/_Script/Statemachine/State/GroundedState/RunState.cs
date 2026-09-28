@@ -34,6 +34,12 @@ public class RunState : State
     protected override void OnEnter()
     {
         movement.StopMove();
+        player.SkillController.SetSkillUsable(false);
+    }
+
+    protected override void OnExit()
+    {
+        player.SkillController.SetSkillUsable(true);
     }
 
     protected override void OnPhysicsTick(float fixedDeltaTime)

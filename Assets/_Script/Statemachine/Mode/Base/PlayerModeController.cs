@@ -6,6 +6,8 @@ public class PlayerModeController : MonoBehaviour
 
     public NormalMode Normal { get; private set; }
     public BuildMode Build { get; private set; }
+    
+    // no need attack?
     public AttackMode Attack { get; private set; }
 
     private void Awake()

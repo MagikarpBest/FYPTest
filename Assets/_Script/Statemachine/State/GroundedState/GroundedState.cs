@@ -1,9 +1,5 @@
 public class GroundedState : State
 {
-    // move to factory
-    // public readonly IdleState Idle;
-    // public readonly RunState Run;
-
     private Player player;
     private PlayerMovementRB movement;
     private PlayerInputManager input;
@@ -35,6 +31,8 @@ public class GroundedState : State
         EventRequestTransition(Factory.Jump);
     } 
 
+    // todo if left click pressed and not skill mode change to attack
+
     protected override State GetTransition()
     {
         if (eventRequestedTransition != null)
@@ -46,6 +44,7 @@ public class GroundedState : State
         {
             return Factory.Airborne;
         }
+        
 
         return null;
     }
@@ -53,11 +52,15 @@ public class GroundedState : State
     protected override void OnEnter()
     {
         input.OnJumpPressed += HandleJump;
+        //player.SkillController.SetSkillUsable(false);
+
     }
 
     protected override void OnExit()
     {
         input.OnJumpPressed -= HandleJump;
+        //player.SkillController.SetSkillUsable(true);
+
     }
 
 }

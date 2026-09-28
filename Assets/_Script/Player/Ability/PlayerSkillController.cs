@@ -46,10 +46,10 @@ public class PlayerSkillController : MonoBehaviour
     private PlayerSkillContext _context;
     private PlayerSkill _cachedSkill;
     private IPlayerSkillHandler _activeHandler;
-    
 
 
-    public bool IsSkillActive => _activeHandler != null;
+
+    public bool IsSkillUsable { get; private set; } = true;
 
     private void Awake()
     {
@@ -99,7 +99,12 @@ public class PlayerSkillController : MonoBehaviour
 
     private void HandleSkillPressed()
     {
-        if (_modeController.CurrentMode.Restrictions.HasFlag(PlayerActionRestrictions.RestrictSkill)) return;
+        //if (_modeController.CurrentMode.Restrictions.HasFlag(PlayerActionRestrictions.RestrictSkill)) return;
+        if (!IsSkillUsable)
+        {
+            Debug.Log("Skill not usable");
+            return;
+        }
         if (_playerStatus == null) return;
         PlayerSkill activeSkill = _playerStatus.ActiveSkill;
         if (activeSkill == null) return;
@@ -143,6 +148,7 @@ public class PlayerSkillController : MonoBehaviour
 
     private void Update()
     {
+        
         _activeHandler?.Update();
     }
 
@@ -163,4 +169,19 @@ public class PlayerSkillController : MonoBehaviour
         _cachedSkill = null;
     }
     
+    // state machine related stuff
+    public void SetSkillUsable(bool value)
+    {
+        if (IsSkillUsable == value)
+        {
+            return;
+        }
+
+        IsSkillUsable = value;
+
+        if (!value && _activeHandler != null)
+        {
+            CancelCurrentSkill();
+        }
+    }
 }
