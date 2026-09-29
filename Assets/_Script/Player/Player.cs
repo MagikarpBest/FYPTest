@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Collider))]
 
+[RequireComponent(typeof(PlayerAttack))]
 [RequireComponent(typeof(PlayerMovementRB))]
 [RequireComponent(typeof(HierarchicalStateMachine))]
 
@@ -17,6 +18,7 @@ public class Player : MonoBehaviour, ICharacter
 {
     public PlayerInputManager Input {get; private set;}
     public PlayerMovementRB Movement {get; private set;}
+    public PlayerAttack AttackSystem { get; private set; }
     
     public PlayerSkillController SkillController {get; private set;}    // Control skill logic
     public PlayerStatus CurrentPlayerStatus {get; private set;}         // Player data
@@ -24,8 +26,7 @@ public class Player : MonoBehaviour, ICharacter
     public PlayerModeController ModeController {get; private set;}      // Control mode switches
     
     private HierarchicalStateMachine stateMachine;
-    public float Health { get; set; } = 100f; // Fake health
-    public bool IsDead => Health <= 0;
+
     
     //I like having all the stuff the shared components need here so u just pass it to the compoenents rather than having to assign or use get compoenent in all the individual scripts
     //get component is expensive so if u can reduce its best
@@ -47,6 +48,7 @@ public class Player : MonoBehaviour, ICharacter
         
         Input = FindFirstObjectByType<PlayerInputManager>(); 
         Movement = GetComponent<PlayerMovementRB>();
+        AttackSystem = GetComponent<PlayerAttack>();
 
         SkillController = GetComponent<PlayerSkillController>();
         CurrentPlayerStatus = GetComponent<PlayerStatus>();
@@ -56,6 +58,7 @@ public class Player : MonoBehaviour, ICharacter
         //all these components can be pure c sharp but then u cant see them in inspector
         
         Movement.Init(Rigidbody, model, cameraTransform, Animator);
+        AttackSystem.Init(Animator);
         
         //u actually want a root state which substates are alive and dead 
         stateMachine = GetComponent<HierarchicalStateMachine>();

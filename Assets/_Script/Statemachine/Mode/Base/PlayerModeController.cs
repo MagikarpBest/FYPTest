@@ -5,7 +5,7 @@ public class PlayerModeController : MonoBehaviour
     public PlayerMode CurrentMode { get; private set; }
 
     public NormalMode Normal { get; private set; }
-    public BuildMode Build { get; private set; }
+    public AbilityMode Ability { get; private set; }
     
     // no need attack?
     public AttackMode Attack { get; private set; }
@@ -13,7 +13,7 @@ public class PlayerModeController : MonoBehaviour
     private void Awake()
     {
         Normal = new NormalMode();
-        Build = new BuildMode();
+        Ability = new AbilityMode();
         Attack = new AttackMode();
         
         ChangeMode(Normal);
@@ -22,7 +22,7 @@ public class PlayerModeController : MonoBehaviour
     public void ChangeMode(PlayerMode newMode)
     {
         CurrentMode?.Exit();
-        Debug.Log($"From {CurrentMode} -> {newMode}");
+        //Debug.Log($"From {CurrentMode} -> {newMode}");
         CurrentMode = newMode;
         
         CurrentMode?.Enter();

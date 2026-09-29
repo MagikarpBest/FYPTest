@@ -19,6 +19,9 @@ GameObject:
   - component: {fileID: 4312036143297442790}
   - component: {fileID: 3494521689093030836}
   - component: {fileID: 2480989323331949965}
+  - component: {fileID: 3858851991293214899}
+  - component: {fileID: 8679312244119648795}
+  - component: {fileID: 7434780427679734062}
   m_Layer: 6
   m_Name: PlayerCharacterWithVIsual (1)
   m_TagString: Untagged
@@ -225,6 +228,56 @@ MonoBehaviour:
   _characterTransform: {fileID: 1119902592115951182}
   _skillHoldPoint: {fileID: 8715915483543194777}
   _aimLineRenderer: {fileID: 0}
+--- !u!114 &3858851991293214899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3785457158607179852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83cb05e867e94674388fdead70d5e23d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  isDebug: 0
+  attackPoint: {fileID: 8715915483543194777}
+  attackRange: 3
+  damage: 2
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 1024
+--- !u!114 &8679312244119648795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3785457158607179852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30de959fb9d11114d8dd41cfd7a8f3f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerModeController
+--- !u!114 &7434780427679734062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3785457158607179852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83cb05e867e94674388fdead70d5e23d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  isDebug: 1
+  attackPoint: {fileID: 8715915483543194777}
+  attackRange: 2.74
+  damage: 20
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!1 &6185786629917224071
 GameObject:
   m_ObjectHideFlags: 0

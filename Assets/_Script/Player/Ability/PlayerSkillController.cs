@@ -132,7 +132,7 @@ public class PlayerSkillController : MonoBehaviour
 
         if (_activeHandler == null)
             return;
-        _modeController.ChangeMode(_modeController.Build);
+        _modeController.ChangeMode(_modeController.Ability);
         _activeHandler.Begin(_context);
         Debug.Log("SelectSkill Success");
     }

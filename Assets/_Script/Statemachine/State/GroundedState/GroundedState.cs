@@ -30,6 +30,10 @@ public class GroundedState : State
 
         EventRequestTransition(Factory.Jump);
     } 
+    private void HandleAttack()
+    {
+        EventRequestTransition(Factory.Attack);
+    }
 
     // todo if left click pressed and not skill mode change to attack
 
@@ -52,9 +56,11 @@ public class GroundedState : State
     protected override void OnEnter()
     {
         input.OnJumpPressed += HandleJump;
-        //player.SkillController.SetSkillUsable(false);
+        input.OnAttackPressed += HandleAttack;
 
     }
+
+
 
     protected override void OnExit()
     {

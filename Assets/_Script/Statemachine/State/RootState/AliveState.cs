@@ -12,10 +12,11 @@ public class AliveState : State
 
     protected override State GetTransition()
     {
-        if (CharacterContext.IsDead)
-        {
-            return Factory.Dead;
-        }
+        // TODO dead
+        // if (CharacterContext.IsDead)
+        // {
+        //     return Factory.Dead;
+        // }
         return null;
     }
 

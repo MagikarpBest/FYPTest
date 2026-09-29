@@ -59,6 +59,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         LaunchCheck();
         CheckGround();
         ApplyExternalVelocity();
+        //Debug.Log(moveVelocity);
 
     }
     
@@ -158,7 +159,6 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
         currentMoveDirection = direction;
 
         moveVelocity = direction * moveSpeed;
-        
         animator.SetFloat("Speed",direction.magnitude);
     }
     
