@@ -20,16 +20,18 @@ public class EnemyStatus : MonoBehaviour, IDamageable
         currentHealth = maxHealth;
     }
 
-    public void TakeDamage(float Damage)
+    public DamageResult TakeDamage(DamageData damageData)
     {
         if (currentHealth <= 0)
         {
-            return;
+            return DamageResult.Ignored;
         }
 
+        float damage = damageData.Damage;
         Debug.Log("Damage receivedw hit");  
-        currentHealth -= Damage;
+        currentHealth -= damage;
         // trigger animation after take damage
-        OnEnemyHealthChange?.Invoke(Damage);
+        OnEnemyHealthChange?.Invoke(damage);
+        return DamageResult.Damaged;
     }
 }

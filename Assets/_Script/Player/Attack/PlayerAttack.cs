@@ -39,7 +39,12 @@ public class PlayerAttack : MonoBehaviour
             IDamageable damageable = hit.GetComponent<IDamageable>();
             if (damageable != null)
             {
-                damageable.TakeDamage(damage);
+                DamageData damageData = new DamageData(
+                    damage,
+                    DamageType.Physical,
+                    AttackPowerLevel.Normal
+                );
+                damageable.TakeDamage(damageData);
                 Debug.Log("attack hit");
             }
         }
