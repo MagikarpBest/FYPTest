@@ -54,12 +54,16 @@ public class PlayerStatus : MonoBehaviour, IPlayerStatus
     public event Action<PlayerSkill> OnActiveSkillChanged;
     public event Action<int, PlayerSkill> OnSkillSlotChanged;
 
+    private PlayerRewardCollector _rewardCollector;
+
     private void Awake()
     {
         CurrentHealth = Mathf.Max(0, _maxHealth);
         CurrentMana = Mathf.Max(0f, _maxMana);
         Currency = Mathf.Max(0, _startingCurrency);
         if (_skillSlots.Count > 0) _activeSkill = _skillSlots.First();
+
+        _rewardCollector = new PlayerRewardCollector(this); // instant create and subscribe to death events(static) to any entities.
     }
 
     private void Update()

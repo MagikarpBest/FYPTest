@@ -1204,6 +1204,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerCharacterWithVIsual (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3785457158607179852, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

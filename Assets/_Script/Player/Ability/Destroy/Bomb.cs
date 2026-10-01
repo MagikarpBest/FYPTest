@@ -49,25 +49,33 @@ public class Bomb : MonoBehaviour
         _hasExploded = true;
 
         Collider[] objects = Physics.OverlapSphere(transform.position, explosionRadius);
+        DamageData damageData = new DamageData(15.0f, DamageType.Explosion, AttackPowerLevel.Explosion);
 
         foreach (var col in objects)
         {
             Rigidbody targetRb = col.GetComponent<Rigidbody>();
             ILaunchable launchable = col.GetComponent<ILaunchable>();
-            IDestroyable destroyable = col.GetComponent<IDestroyable>();
+            // TODO: consider to remove IDestroyable, IDamageable now applicable to map object as in Destructible.cs
+            IDestroyable destroyable = col.GetComponent<IDestroyable>(); 
+            IDamageable damageable = col.GetComponent<IDamageable>();
 
             if (launchable != null)
             {
                 Vector3 direction = (col.transform.position - transform.position).normalized;
                 launchable.Launch(direction * explosionForce);
             }
-            else if(destroyable !=null)
+            else if (destroyable != null)
             {
                 destroyable.DestroySelf();
             }
             else if (targetRb != null)
             {
                 targetRb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 2f, ForceMode.Impulse);
+            }
+
+            if (damageable != null)
+            {
+                damageable.TakeDamage(damageData);
             }
             
         }
