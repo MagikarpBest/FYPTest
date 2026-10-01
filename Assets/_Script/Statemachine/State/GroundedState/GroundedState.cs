@@ -1,32 +1,36 @@
 public class GroundedState : State
 {
-    private Player player;
-    private PlayerMovementRB movement;
-    private PlayerInputManager input;
+    private IHasMovement movement;
+    private IHasInput input;
 
     public GroundedState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
-        PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
+        ICharacterStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
-
-        if (CharacterContext is Player player)
-        {
-            this.player = player;
-            movement = player.Movement;
-            input = player.Input;
-        }
+        movement = characterContext as IHasMovement;
+        input = characterContext as IHasInput;
     }
 
     // Use the factory to set the initial child
-    protected override State GetInitialState() => Factory.Idle;
+    protected override State GetInitialState()
+    {
+        if(movement.IsMoving)
+        {
+            return Factory.Run;
+        }
+        else
+        {
+            return Factory.Idle;
+        }
+    } 
 
     // test restriction
     private void HandleJump()
     {
-        // if current mode is unjumpable then dont let
-        if (player.ModeController.CurrentMode.Restrictions.HasFlag(PlayerActionRestrictions.RestrictJump))
-        {
-            return;
-        }
+        // // if current mode is unjumpable then dont let
+        // if (player.ModeController.CurrentMode.Restrictions.HasFlag(PlayerActionRestrictions.RestrictJump))
+        // {
+        //     return;
+        // }
 
         EventRequestTransition(Factory.Jump);
     } 
@@ -43,30 +47,31 @@ public class GroundedState : State
         {
             return eventRequestedTransition;
         }
-
-        if (!movement.IsGrounded)
+        if(!movement.IsGrounded)
         {
             return Factory.Airborne;
         }
-        
-
         return null;
     }
 
     protected override void OnEnter()
     {
-        input.OnJumpPressed += HandleJump;
-        input.OnAttackPressed += HandleAttack;
-
+        if(input!=null)
+        {
+            input.OnJumpPressed += HandleJump;
+            input.OnAttackPressed += HandleAttack;
+        }
     }
 
 
 
     protected override void OnExit()
     {
-        input.OnJumpPressed -= HandleJump;
-        //player.SkillController.SetSkillUsable(true);
-
+        if (input != null)
+        {
+            input.OnJumpPressed -= HandleJump;
+            input.OnAttackPressed -= HandleAttack;
+        }
     }
 
 }

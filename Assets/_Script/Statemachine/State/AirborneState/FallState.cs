@@ -6,7 +6,7 @@ public class FallState : State
     private PlayerInputManager input;
 
     public FallState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
-        PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
+        ICharacterStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
         if (CharacterContext is Player player)
         {

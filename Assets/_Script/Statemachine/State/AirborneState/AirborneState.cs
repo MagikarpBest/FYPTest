@@ -6,7 +6,7 @@ public class AirborneState : State
     private PlayerInputManager input;
 
     public AirborneState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
-        PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
+        ICharacterStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
 
         if (CharacterContext is Player player)

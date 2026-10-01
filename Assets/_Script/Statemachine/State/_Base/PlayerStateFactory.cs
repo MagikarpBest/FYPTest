@@ -1,8 +1,5 @@
-public class PlayerStateFactory
+public class PlayerStateFactory : ICharacterStateFactory
 {
-    private HierarchicalStateMachine context;
-    private ICharacter player;
-
     // Alive State
     public State Alive { get; private set; }
 
@@ -23,9 +20,6 @@ public class PlayerStateFactory
 
     public PlayerStateFactory(HierarchicalStateMachine context, Player player)
     {
-        this.context = context;
-        this.player = player;
-
         // Initialize the tree structure here
         Alive = new AliveState(context, player, null, this);
         Dead = new DeadState(context, player, null, this);

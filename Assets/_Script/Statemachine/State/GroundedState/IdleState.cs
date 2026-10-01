@@ -2,24 +2,22 @@ using UnityEngine;
 
 public class IdleState : State
 {
-    private PlayerMovementRB movement;
-    private PlayerInputManager input;
+    private IHasMovement movement;
+    private IHasInput input;
 
     public IdleState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
-        PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
+        ICharacterStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
-        if (CharacterContext is Player player)
-        {
-            movement = player.Movement;
-            input = player.Input;
-        }
+        movement = characterContext as IHasMovement;
+        input = characterContext as IHasInput;
+
     }
 
     protected override State GetInitialState() => null;
 
     protected override State GetTransition()
     {
-        if (input.MoveInput != Vector2.zero)
+        if (movement.IsMoving)
         {
             return Factory.Run;
         }

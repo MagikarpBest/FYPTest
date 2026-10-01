@@ -2,21 +2,22 @@
 
 public class BaseAttackState : State
 {
-    private Player player;
+    private IHasAttack attacker;
+    private IHasMovement mover;
+    private ICanUseSkills skills;
 
     public BaseAttackState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
-        PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
+        ICharacterStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
-        if (characterContext is Player player)
-        {
-            this.player = player;
-        }
+        attacker = characterContext as IHasAttack;
+        mover = characterContext as IHasMovement;
+        skills = characterContext as ICanUseSkills;
     }
 
     protected override State GetTransition()
     {
-        if (!player.AttackSystem.isAttacking)
-        {
+        if (attacker != null && !attacker.isAttacking)
+        {   
             return Factory.Grounded;
         }
         return null;
@@ -24,15 +25,13 @@ public class BaseAttackState : State
 
     protected override void OnEnter()
     {
-        player.SkillController.SetSkillUsable(false);
-        player.AttackSystem.HandleAtack();
-        player.Movement.StopMove(); // bandaid fix
-
+        skills?.SetSkillUsable(false);
+        attacker?.HandleAtack();
+        mover?.StopMove();
     }
 
     protected override void OnExit()
     {
-        player.SkillController.SetSkillUsable(true);
+        skills?.SetSkillUsable(true);
     }
-
 }

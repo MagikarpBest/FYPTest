@@ -45,20 +45,20 @@ public class PlayerAttack : MonoBehaviour
                     AttackPowerLevel.Normal
                 );
                 damageable.TakeDamage(damageData);
-                Debug.Log("attack hit");
+                //Debug.Log("attack hit");
             }
         }
         animator.SetTrigger(AnimationParameter.AttackTrigger);
         isAttacking = true;
-        Debug.Log(isAttacking);
+        //Debug.Log(isAttacking);
     }
     
     // gotta change in future
     public void OnAttackAnimationEnd()
     {
         isAttacking = false;
-        Debug.Log("animation ended");
-        Debug.Log(isAttacking);
+        //Debug.Log("animation ended");
+        //Debug.Log(isAttacking);
     }
 
     private void OnDrawGizmos()

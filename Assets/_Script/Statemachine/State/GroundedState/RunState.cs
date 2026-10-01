@@ -2,28 +2,24 @@ using UnityEngine;
 
 public class RunState : State
 {
-    private Player player;
-    private PlayerMovementRB movement;
-    private PlayerInputManager input;
+    private IHasMovement movement;
+    private IHasInput input;
+
 
     public RunState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
-        PlayerStateFactory factory) 
+        ICharacterStateFactory factory)
         : base(stateMachine, characterContext, parent, factory)
-    
+
     {
-        if (CharacterContext is Player player)
-        {
-            this.player = player;
-            movement = player.Movement;
-            input = player.Input;
-        }
+        movement = characterContext as IHasMovement;
+        input = characterContext as IHasInput;
     }
 
     protected override State GetInitialState() => null;
 
     protected override State GetTransition()
     {
-        if (input.MoveInput == Vector2.zero)
+        if (!movement.IsMoving)
         {
             return Factory.Idle;
         }
@@ -33,23 +29,15 @@ public class RunState : State
 
     protected override void OnEnter()
     {
-        player.SkillController.SetSkillUsable(false);
     }
 
     protected override void OnExit()
     {
-        player.SkillController.SetSkillUsable(true);
-        movement.StopMove();
+        //movement.StopMove();
     }
 
     protected override void OnPhysicsTick(float fixedDeltaTime)
     {
-        if (player.ModeController.CurrentMode.Restrictions.HasFlag(PlayerActionRestrictions.RestrictMovement))
-        {
-            movement.StopMove();
-            return;
-        }
-        movement.Move(input.MoveInput);
-        movement.RotateTowardsMovement();
+        movement.Move();
     }
 }
