@@ -132,7 +132,7 @@ Material:
     - _TopSmoothness: 0.5
     - _TriplanarBlend: 0.36
     - _TriplanarBlendExponent: 1
-    - _TriplanarBlendOffset: 0.486
+    - _TriplanarBlendOffset: 0
     - _TriplanarTile: 0.03
     - _ZTest: 4
     - _ZWrite: 1

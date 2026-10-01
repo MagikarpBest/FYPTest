@@ -33,7 +33,9 @@ public class SkyManager : MonoBehaviour
 
     private void Update()
     {
-        cloudDome.position = new Vector3(player.position.x, player.position.y + yOffset, player.position.z);
+        if (player ==null) return;
+        
+        cloudDome.position = new Vector3(player.position.x, yOffset, player.position.z);
         timeOfDay = (timeOfDay + Time.deltaTime * 1 / secondsPerGameHour) % 24f;
         cloudDome.Rotate(Vector3.up * cloudRotationSpeed * Time.deltaTime);
         HandleDirLight();
