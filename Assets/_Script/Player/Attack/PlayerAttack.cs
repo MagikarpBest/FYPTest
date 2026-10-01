@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,11 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private LayerMask enemyLayerMask;
 
     public bool isAttacking { get; private set; }
+    private bool canCombo;
+    public bool comboQueued {get; private set;}
+    private int comboIndex;
+    private float comboResetTimer;
+
     private Animator animator;
 
     public void Init(Animator playerAnimator)
@@ -30,8 +36,25 @@ public class PlayerAttack : MonoBehaviour
     //     }
     // }
 
-    public void HandleAtack()
+    public void RequestAttack()
     {
+        if (!isAttacking)
+        {
+            StartAttack();
+        }
+        else if(canCombo)
+        {
+            comboQueued = true;
+                Debug.Log("Combo Queued!");
+        }
+    }
+    
+    private void StartAttack()
+    {
+        animator.SetTrigger(AnimationParameter.AttackTrigger);
+        isAttacking = true;
+        comboQueued = false;
+        canCombo = false;
         Collider[] hits = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayerMask);
 
         foreach (Collider hit in hits)
@@ -48,14 +71,37 @@ public class PlayerAttack : MonoBehaviour
                 //Debug.Log("attack hit");
             }
         }
-        animator.SetTrigger(AnimationParameter.AttackTrigger);
-        isAttacking = true;
+        
+
+        comboIndex++;
+        if (comboIndex > 4)
+        {
+            comboIndex = 1;
+            Debug.Log($"Combo over 3, reset to base");
+        }
+        Debug.Log($"Current combo{comboIndex}");
+        EnableComboWindow();
         //Debug.Log(isAttacking);
     }
-    
+
+    private void EnableComboWindow()
+    {
+        canCombo = true;
+    }
+    private void DisableComboWindow()
+    {
+        canCombo = false;
+    }
+        
+
     // gotta change in future
     public void OnAttackAnimationEnd()
     {
+        DisableComboWindow();
+        if(!comboQueued)
+        {
+            comboIndex = 0;
+        }
         isAttacking = false;
         //Debug.Log("animation ended");
         //Debug.Log(isAttacking);

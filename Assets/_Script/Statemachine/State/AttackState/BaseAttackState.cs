@@ -16,8 +16,13 @@ public class BaseAttackState : State
 
     protected override State GetTransition()
     {
-        if (attacker != null && !attacker.isAttacking)
-        {   
+        if (attacker != null && !attacker.isAttacking )
+        {
+            if(attacker.isComboQueued)
+            {
+                Debug.Log($"{attacker.isAttacking}, {attacker.isComboQueued}");
+                return Factory.BaseAttack;
+            }
             return Factory.Grounded;
         }
         return null;
@@ -25,13 +30,21 @@ public class BaseAttackState : State
 
     protected override void OnEnter()
     {
+        Debug.Log("On base attackstate enter ");
         skills?.SetSkillUsable(false);
-        attacker?.HandleAtack();
         mover?.StopMove();
+        
+        // If we are entering this state and we have a queue, it means we are continuing a combo
+        if(attacker.isComboQueued||!attacker.isAttacking)
+        {
+            Debug.Log("On base attackstate enter and attack");
+            attacker?.HandleAtack();
+        }
     }
 
     protected override void OnExit()
     {
+        Debug.Log("On base attackstate exit ");
         skills?.SetSkillUsable(true);
     }
 }

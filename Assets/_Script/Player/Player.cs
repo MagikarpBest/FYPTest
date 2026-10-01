@@ -40,7 +40,8 @@ public class Player : MonoBehaviour, ICharacter, IHasMovement, IHasAttack, IHasI
     void IHasMovement.StopMove() => Movement.StopMove();
 
     bool IHasAttack.isAttacking => AttackSystem.isAttacking;
-    void IHasAttack.HandleAtack() => AttackSystem.HandleAtack();
+    bool IHasAttack.isComboQueued => AttackSystem.comboQueued;
+    void IHasAttack.HandleAtack() => AttackSystem.RequestAttack();
 
     void ICanUseSkills.SetSkillUsable(bool usable) => SkillController.SetSkillUsable(usable);
     

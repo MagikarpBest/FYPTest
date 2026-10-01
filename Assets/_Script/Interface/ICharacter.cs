@@ -17,7 +17,8 @@ public interface IHasMovement
 public interface IHasAttack
 {
     bool isAttacking { get; }
-    void HandleAtack();
+    bool isComboQueued { get; }
+    void HandleAtack(); // testing combo time frame, idk enemy need or not
 }
 
 public interface ICanUseSkills
