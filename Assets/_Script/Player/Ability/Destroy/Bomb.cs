@@ -10,7 +10,11 @@ public class Bomb : MonoBehaviour
     [SerializeField] private float explosionForce = 5f;
     private bool _hasExploded;
 
-
+    public void Init(float explosionRadius, float explosionForce)
+    {
+        this.explosionRadius = explosionRadius;
+        this.explosionForce = explosionForce;
+    }
     public void Hold(Transform bombHoldPoint)
     {
         rb.isKinematic = true;
