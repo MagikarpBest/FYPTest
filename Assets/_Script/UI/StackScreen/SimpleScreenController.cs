@@ -1,9 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class SimpleScreenController : MonoBehaviour
 {
+    [SerializeField] private bool _debugMode = false;
     private readonly List<ScreenBase> screens = new();
+
+    public event Action<bool> OnActiveChanged;
 
     public void Push(ScreenBase newScreen, bool instant = false)
     {
@@ -12,6 +16,10 @@ public class SimpleScreenController : MonoBehaviour
         // add new screen to end of collection
         // show the new screen, respecting 'instant'
         // ==========================================================
+        // 'wasEmpty' Check whether thee stack is being from empty to non-empty, to trigger OnActiveChanged event.
+        // So don't put this after the new screen is added, because that would always be true.
+        bool wasEmpty = screens.Count == 0;
+
         if (screens.Count > 0)
         {
             ScreenBase current = screens[^1];
@@ -20,6 +28,9 @@ public class SimpleScreenController : MonoBehaviour
 
         screens.Add(newScreen);
         newScreen.Show(instant);
+
+        if (wasEmpty)
+            OnActiveChanged?.Invoke(true);
     }
 
     public void Pop(bool instant = false)
@@ -38,6 +49,10 @@ public class SimpleScreenController : MonoBehaviour
         if (screens.Count > 0)
         {
             screens[^1].Focus();
+        }
+        else
+        {
+            OnActiveChanged?.Invoke(false); // Trigger OnActiveChanged event when the stack becomes empty.
         }
     }
 
@@ -64,30 +79,15 @@ public class SimpleScreenController : MonoBehaviour
         }
     }
 
-    // The first screen to show, MUST NOT BE NULL
-    [SerializeField] private ScreenBase startingScreen;
-
-    // If true, the starting screen will instantly be shown
-    [SerializeField] private bool instantlyShowStartingScreen = false;
-
     private void Awake() => GameScreenManager.Register(this);
-
     private void OnDestroy() => GameScreenManager.Unregister(this);
-
-    private void Start()
-    {
-        if (startingScreen == null)
-        {
-            Debug.LogError("Starting screen is not assigned in SimpleScreenController!");
-            return;
-        }
-        Push(startingScreen, instantlyShowStartingScreen);
-    }
 
 #if UNITY_EDITOR
 
     private void OnGUI()
     {
+        if (!_debugMode) return;
+
         GUIStyle fontStyle = new GUIStyle();
         fontStyle.fontSize = 36;
         fontStyle.normal.textColor = Color.white;

@@ -501,6 +501,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1037434691}
   - component: {fileID: 1037434690}
+  - component: {fileID: 1037434692}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -521,6 +522,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   _sceneLoader: {fileID: 859178526}
+  _screenController: {fileID: 1037434692}
 --- !u!4 &1037434691
 Transform:
   m_ObjectHideFlags: 0
@@ -536,6 +538,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1037434692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1037434689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fa31c3f033ca454ead8b35c6eb5f0dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleScreenController
+  startingScreen: {fileID: 0}
+  instantlyShowStartingScreen: 0
 --- !u!1 &1176685245
 GameObject:
   m_ObjectHideFlags: 0

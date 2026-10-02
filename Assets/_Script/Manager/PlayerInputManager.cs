@@ -35,11 +35,26 @@ public class PlayerInputManager : MonoBehaviour
     /// <summary>
     /// Track when enter UI input mode.
     /// </summary>
-    /// <param name="active"></param>
     private void ToggleCursor(bool active)
     {
         Cursor.visible = active;
         Cursor.lockState = active ? CursorLockMode.Confined : CursorLockMode.Locked;
+    }
+
+    private void HandleUIActiveChanged(bool isUIActive)
+    {
+        ToggleCursor(isUIActive);
+
+        if (isUIActive)
+        {
+            input.Player.Disable();
+            input.UI.Enable();
+        }
+        else
+        {
+            input.UI.Disable();
+            input.Player.Enable();
+        }
     }
 
     private void Move_Performed(InputAction.CallbackContext obj)
@@ -88,11 +103,14 @@ public class PlayerInputManager : MonoBehaviour
     }
     private void OnEnable()
     {
-        input.Enable();
+        input.Player.Enable();
+        GameScreenManager.OnUIActiveChanged += HandleUIActiveChanged;
     }
 
     private void OnDisable()
     {
-        input.Disable();
+        input.Player.Disable();
+        input.UI.Disable();
+        GameScreenManager.OnUIActiveChanged -= HandleUIActiveChanged;
     }
 }
