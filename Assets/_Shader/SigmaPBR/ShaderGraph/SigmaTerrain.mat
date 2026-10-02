@@ -43,11 +43,11 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseTexture:
-        m_Texture: {fileID: 2800000, guid: e69a5991dcfaf4947b144b7682f6a7ce, type: 3}
+        m_Texture: {fileID: 2800000, guid: 1ff81b60d92d6464cbed120e588c1227, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseTexture_1:
-        m_Texture: {fileID: 2800000, guid: 6c98a29be8676e4468119285547d6d7c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0245f2d48ef5226489cc84b6d37bc5fc, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseTexture_2:
@@ -151,11 +151,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalTexture:
-        m_Texture: {fileID: 2800000, guid: 62df1e932e6f6384ab3af16351209ce2, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalTexture_1:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: c5b055b372b2b6a489850f511b9aef6b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalTexture_2:
@@ -257,6 +257,7 @@ Material:
     - _ConvertFromRoughness_2: 0
     - _ConvertFromRoughness_3: 0
     - _EnableInstancedPerPixelNormal: 1
+    - _HeightBlend: -2
     - _HeightMapStrength: 0.0839
     - _HeightMapStrength1: 0
     - _HeightMapStrength2: 0
@@ -273,7 +274,7 @@ Material:
     - _Metallic_1: 0
     - _Metallic_2: 0
     - _Metallic_3: 0
-    - _NormalStrength: 2
+    - _NormalStrength: 1
     - _NormalStrength_1: 1
     - _NormalStrength_2: 1
     - _NormalStrength_3: 1
@@ -281,7 +282,7 @@ Material:
     - _OcclusionStrength_1: 0
     - _OcclusionStrength_2: 0
     - _OcclusionStrength_3: 0
-    - _Smoothness: 0.585
+    - _Smoothness: 0.036
     - _Smoothness0: 1
     - _Smoothness1: 1
     - _Smoothness2: 1
@@ -294,6 +295,7 @@ Material:
     - _TOPLAYER3: 0
     - _TOPLAYER4: 0
     - _TRIPLANAR_MAPPING: 1
+    - _TopAngleThreshold: 0.136
     - _TriplanarBlendExponent: 1
     - _TriplanarBlendExponent_1: 1
     - _TriplanarBlendExponent_2: 0
@@ -302,7 +304,7 @@ Material:
     - _TriplanarBlendOffset_1: 0
     - _TriplanarBlendOffset_2: 0
     - _TriplanarBlendOffset_3: 0
-    - _TriplanarTile: 0.1
+    - _TriplanarTile: 0.2
     - _TriplanarTile_1: 0.1
     - _TriplanarTile_2: 0.1
     - _TriplanarTile_3: 0
@@ -310,7 +312,7 @@ Material:
     - _UseEmission_1: 0
     - _UseEmission_2: 0
     - _UseEmission_3: 0
-    - _UseHeightMap: 1
+    - _UseHeightMap: 0
     - _UseHeightMap_1: 0
     - _UseHeightMap_2: 0
     - _UseHeightMap_3: 0
@@ -323,7 +325,7 @@ Material:
     - _BaseColor_1: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor_2: {r: 0, g: 0, b: 0, a: 1}
     - _BaseColor_3: {r: 0, g: 0, b: 0, a: 1}
-    - _BaseTint: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseTint: {r: 0.27751184, g: 0.4627451, b: 0.14117648, a: 1}
     - _BaseTint_1: {r: 1, g: 1, b: 1, a: 1}
     - _BaseTint_2: {r: 1, g: 1, b: 1, a: 1}
     - _BaseTint_3: {r: 1, g: 1, b: 1, a: 1}

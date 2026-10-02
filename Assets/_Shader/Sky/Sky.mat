@@ -190,7 +190,7 @@ Material:
     - _DayTopColor: {r: 0.047058824, g: 0.37254903, b: 0.7372549, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GalaxyColor: {r: 0, g: 0, b: 0, a: 1}
-    - _GalaxyColor1: {r: 0.172549, g: 0.49476203, b: 0.7529412, a: 1}
+    - _GalaxyColor1: {r: 0.12348701, g: 0.38942373, b: 0.7075472, a: 1}
     - _GalaxyNoiseSpeed: {r: 0, g: 0.067, b: 0, a: 0}
     - _GalaxyNoiseSpeed2: {r: 0.05, g: 0.067, b: 0, a: 0}
     - _MieColor: {r: 5.992157, g: 4.3492208, b: 1.7806879, a: 1}

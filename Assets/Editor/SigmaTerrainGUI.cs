@@ -11,6 +11,8 @@ public class SigmaTerrainGUI : SigmaPBRGUI
     private const int queueOffsetRange = 50;
     
     private PBRShaderProperty useTriplanarMapping = new("_TRIPLANAR_MAPPING", "Use Triplanar Mapping");
+    private PBRShaderProperty heightBlend = new("_HeightBlend", "Height Blend");
+    private PBRShaderProperty topAngleThresh = new("_TopAngleThreshold", "Top Angle Threshold");
     
     public struct TerrainLayerProperties
     {
@@ -107,6 +109,8 @@ public class SigmaTerrainGUI : SigmaPBRGUI
     private void FindProperties(MaterialProperty[] props)
     {
         useTriplanarMapping.prop = FindProperty(useTriplanarMapping.name, props, true);
+        heightBlend.prop = FindProperty(heightBlend.name, props, true);
+        topAngleThresh.prop = FindProperty(topAngleThresh.name, props, true);
         
         InitTerrainLayerProperties(props);
     }
@@ -141,6 +145,8 @@ public class SigmaTerrainGUI : SigmaPBRGUI
     {
         //Triplanar
         materialEditor.ShaderProperty(useTriplanarMapping.prop, useTriplanarMapping.info);
+        materialEditor.ShaderProperty(heightBlend.prop, heightBlend.info);
+        materialEditor.ShaderProperty(topAngleThresh.prop, topAngleThresh.info);
         
         EditorGUILayout.Separator();
 

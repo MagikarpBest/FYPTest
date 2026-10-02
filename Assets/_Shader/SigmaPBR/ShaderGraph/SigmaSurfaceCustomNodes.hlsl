@@ -331,4 +331,14 @@ void SigmaUnpackSurfaceData_float(float4x4 surfaceData,
     specular = surfaceData[3].yzw;
 }
 
+void SigmaLerpSurfaceData_float(float4x4 a, float4x4 b, float t,
+    out float4x4 result)
+{
+    result = lerp(a, b, t);
+
+    // lerped normals are no longer unit length, so renormalize
+    float3 n = result[1].xyz;
+    result[1].xyz = normalize(result[1].xyz);
+}
+
 #endif
