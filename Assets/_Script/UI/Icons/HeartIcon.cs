@@ -12,7 +12,7 @@ namespace GameIcons
         [SerializeField] private Sprite emptySprite;
         [SerializeField] private Sprite fullSprite;
 
-        public void SetState(int state)
+        public void SetState(float state)
         {
             image.sprite = state switch
             {

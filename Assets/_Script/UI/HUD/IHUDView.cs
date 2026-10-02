@@ -9,7 +9,7 @@ namespace HUD
     {
         event Action<int> OnSkillSwitchInput;
 
-        void SetHealth(int current, int max);
+        void SetHealth(float current, float max);
         void SetMana(float current, float max);
         void SetSkill(int slotIndex, PlayerSkill skill);
         void SetActiveSkill(PlayerSkill skill);

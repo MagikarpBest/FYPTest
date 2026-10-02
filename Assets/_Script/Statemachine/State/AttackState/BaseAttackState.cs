@@ -20,7 +20,7 @@ public class BaseAttackState : State
         {
             if(attacker.isComboQueued)
             {
-                Debug.Log($"{attacker.isAttacking}, {attacker.isComboQueued}");
+                //Debug.Log($"{attacker.isAttacking}, {attacker.isComboQueued}");
                 return Factory.BaseAttack;
             }
             return Factory.Grounded;

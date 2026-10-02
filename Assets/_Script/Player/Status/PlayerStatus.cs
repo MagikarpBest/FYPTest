@@ -5,15 +5,15 @@ using UnityEngine;
 
 // TODO: Note - Currency potentially not involved in this section?
 //          else maybe playerStatus itself composition with inventory which include currency ig.
-public class PlayerStatus : MonoBehaviour, IPlayerStatus
+public class PlayerStatus : MonoBehaviour, IPlayerStatus , IDamageable
 {
     // HP
 
     [Header("Health")]
     [SerializeField]
-    private int _maxHealth = 5;
-    public int CurrentHealth { get; private set; }
-    public int MaxHealth => _maxHealth;
+    private float _maxHealth = 5;
+    public float CurrentHealth { get; private set; }
+    public float MaxHealth => _maxHealth;
 
     [SerializeField]
     private float _invincibilityDuration = 1f;
@@ -48,7 +48,7 @@ public class PlayerStatus : MonoBehaviour, IPlayerStatus
 
     public int SkillSlotCount => _skillSlots.Count;
 
-    public event Action<int, int> OnHealthChanged;
+    public event Action<float, float> OnHealthChanged;
     public event Action<float, float> OnManaChanged;
     public event Action<int> OnCurrencyChanged;
     public event Action<PlayerSkill> OnActiveSkillChanged;
@@ -73,15 +73,16 @@ public class PlayerStatus : MonoBehaviour, IPlayerStatus
 
     // HP
 
-    public void TakeDamage(int amount)
+    public DamageResult TakeDamage(DamageData damageData)
     {
         // TODO: check the damage type to decide whether affect by isInvincible.
-        if (amount <= 0 || IsInvincible)
-            return;
+        if (damageData.Damage <= 0 || IsInvincible)
+            return DamageResult.Blocked;
 
-        CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
+        CurrentHealth = Mathf.Max(0, CurrentHealth - damageData.Damage);
         OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
         StartInvincibility();
+        return DamageResult.Damaged;
     }
 
     public void Heal(int amount)

@@ -76,7 +76,7 @@ namespace HUD
             }
         }
         
-        private void RefreshHealth(int currentHealth, int maxHealth)
+        private void RefreshHealth(float currentHealth, float maxHealth)
         {
             if (_model == null) return;
             _view.SetHealth(currentHealth, maxHealth);

@@ -45,13 +45,13 @@ public class PlayerAttack : MonoBehaviour
         else if (canCombo)
         {
             comboQueued = true;
-            Debug.Log("Combo Queued!");
+            //Debug.Log("Combo Queued!");
         }
     }
 
     private void StartAttack()
     {
-        Debug.Log($"START ATTACK - comboIndex={comboIndex}");
+        //Debug.Log($"START ATTACK - comboIndex={comboIndex}");
 
         if (comboIndex < 1 || comboIndex > 3) comboIndex = 1;
 
@@ -71,7 +71,7 @@ public class PlayerAttack : MonoBehaviour
         if (comboIndex >= 3)
         {
             comboIndex = 1;
-            Debug.Log($"Combo over 3, reset to base");
+            //Debug.Log($"Combo over 3, reset to base");
         }
         else
         {
@@ -126,8 +126,8 @@ public class PlayerAttack : MonoBehaviour
             comboIndex = 1;
         }
         isAttacking = false;
-        Debug.Log($"Attack animation ended. Queued={comboQueued}");
-        Debug.Log($"After end: isAttacking={isAttacking}, comboIndex={comboIndex}");
+        //Debug.Log($"Attack animation ended. Queued={comboQueued}");
+        //Debug.Log($"After end: isAttacking={isAttacking}, comboIndex={comboIndex}");
 
     }
 

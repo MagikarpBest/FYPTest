@@ -3,8 +3,8 @@ using System;
 public interface IPlayerStatus
 {
     // HP
-    int CurrentHealth { get; }
-    int MaxHealth { get; }
+    float CurrentHealth { get; }
+    float MaxHealth { get; }
 
     // Mana
     float CurrentMana { get; }
@@ -20,13 +20,12 @@ public interface IPlayerStatus
     int SkillSlotCount { get; }
     PlayerSkill GetSkill(int slotIndex);
 
-    event Action<int, int> OnHealthChanged;
+    event Action<float, float> OnHealthChanged;
     event Action<float, float> OnManaChanged;
     event Action<int> OnCurrencyChanged;
     event Action<PlayerSkill> OnActiveSkillChanged;
     event Action<int, PlayerSkill> OnSkillSlotChanged;
 
-    void TakeDamage(int amount);
     void Heal(int amount);
 
     void ConsumeMana(float amount);

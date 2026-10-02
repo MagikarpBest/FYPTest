@@ -74,14 +74,14 @@ namespace HUD
             }
         }
 
-        public void SetHealth(int current, int max)
+        public void SetHealth(float current, float max)
         {
-            int heartsNeeded = max;
+            float heartsNeeded = max;
             EnsureHeartCount(heartsNeeded);
 
             for (int i = 0; i < _hearts.Count; i++)
             {
-                int heartValue = Mathf.Clamp(current - i, 0, 1); // 0 empty, 1 full
+                float heartValue = Mathf.Clamp(current - i, 0, 1); // 0 empty, 1 full
                 _hearts[i].SetState(heartValue);
             }
         }
@@ -144,7 +144,7 @@ namespace HUD
             }
         }
 
-        private void EnsureHeartCount(int needed)
+        private void EnsureHeartCount(float needed)
         {
             while (_hearts.Count < needed)
                 _hearts.Add(Instantiate(_heartIconPrefab, _heartContainer));
