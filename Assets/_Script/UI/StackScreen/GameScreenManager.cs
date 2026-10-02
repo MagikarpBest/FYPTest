@@ -49,4 +49,9 @@ public static class GameScreenManager
         }
         current.Pop(instant);
     }
+
+    public static void Reset()
+    {
+        current.Reset();
+    }
 }

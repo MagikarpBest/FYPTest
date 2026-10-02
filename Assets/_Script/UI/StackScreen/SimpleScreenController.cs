@@ -56,6 +56,16 @@ public class SimpleScreenController : MonoBehaviour
         }
     }
 
+    public void Reset()
+    {
+        foreach (ScreenBase screen in screens)
+        {
+            screen.Hide(instant: true);
+        }
+        screens.Clear();
+        OnActiveChanged?.Invoke(false);
+    }
+
     private void Update()
     {
         // ==========================================================

@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
         _sceneLoader.FadeIn(async () =>
         {
             Pause(true);
+            GameScreenManager.Reset();
             await _sceneLoader.LoadSceneGroup(sceneGroupName);
         });
     }
