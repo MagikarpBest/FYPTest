@@ -37,14 +37,14 @@ public class BaseAttackState : State
         // If we are entering this state and we have a queue, it means we are continuing a combo
         if(attacker.isComboQueued||!attacker.isAttacking)
         {
-            Debug.Log("On base attackstate enter and attack");
+           //Debug.Log("On base attackstate enter and attack");
             attacker?.HandleAtack();
         }
     }
 
     protected override void OnExit()
     {
-        Debug.Log("On base attackstate exit ");
+        //Debug.Log("On base attackstate exit ");
         skills?.SetSkillUsable(true);
     }
 }

@@ -8,13 +8,13 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private bool isDebug;
     [SerializeField] private Transform attackPoint;
     [SerializeField] private float attackRange;
-    [SerializeField] private int damage;
+    [SerializeField] private DamageConfig damageConfig;
     [SerializeField] private LayerMask enemyLayerMask;
 
     public bool isAttacking { get; private set; }
     private bool canCombo;
-    public bool comboQueued {get; private set;}
-    private int comboIndex;
+    public bool comboQueued { get; private set; }
+    private int comboIndex = 1;
     private float comboResetTimer;
 
     private Animator animator;
@@ -42,19 +42,48 @@ public class PlayerAttack : MonoBehaviour
         {
             StartAttack();
         }
-        else if(canCombo)
+        else if (canCombo)
         {
             comboQueued = true;
-                Debug.Log("Combo Queued!");
+            Debug.Log("Combo Queued!");
         }
     }
-    
+
     private void StartAttack()
     {
-        animator.SetTrigger(AnimationParameter.AttackTrigger);
+        Debug.Log($"START ATTACK - comboIndex={comboIndex}");
+
+        if (comboIndex < 1 || comboIndex > 3) comboIndex = 1;
+
+        switch (comboIndex)
+        {
+            case 1: animator.SetTrigger(AnimationParameter.AttackTrigger1); break;
+            case 2: animator.SetTrigger(AnimationParameter.AttackTrigger2); break;
+            case 3: animator.SetTrigger(AnimationParameter.AttackTrigger3); break;
+        }
+        
         isAttacking = true;
         comboQueued = false;
         canCombo = false;
+
+        PerformDamageDetection();
+
+        if (comboIndex >= 3)
+        {
+            comboIndex = 1;
+            Debug.Log($"Combo over 3, reset to base");
+        }
+        else
+        {
+            comboIndex++;
+        }
+        //Debug.Log($"Current combo{comboIndex}");
+        EnableComboWindow();
+        //Debug.Log(isAttacking);
+    }
+    
+    private void PerformDamageDetection()
+    {
         Collider[] hits = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayerMask);
 
         foreach (Collider hit in hits)
@@ -62,49 +91,44 @@ public class PlayerAttack : MonoBehaviour
             IDamageable damageable = hit.GetComponent<IDamageable>();
             if (damageable != null)
             {
+                // Testing stuff so its easier to edit damage data than have to come to code to edit,
                 DamageData damageData = new DamageData(
-                    damage,
-                    DamageType.Physical,
-                    AttackPowerLevel.Normal
+                    damageConfig.Damage,
+                    damageConfig.DamageType,
+                    damageConfig.PowerLevel
                 );
+
                 damageable.TakeDamage(damageData);
                 //Debug.Log("attack hit");
             }
         }
-        
-
-        comboIndex++;
-        if (comboIndex > 4)
-        {
-            comboIndex = 1;
-            Debug.Log($"Combo over 3, reset to base");
-        }
-        Debug.Log($"Current combo{comboIndex}");
-        EnableComboWindow();
-        //Debug.Log(isAttacking);
     }
 
     private void EnableComboWindow()
     {
         canCombo = true;
     }
+
     private void DisableComboWindow()
     {
         canCombo = false;
     }
-        
+
 
     // gotta change in future
     public void OnAttackAnimationEnd()
     {
         DisableComboWindow();
-        if(!comboQueued)
+        animator.SetBool(AnimationParameter.IsComboQueued,comboQueued);
+
+        if (!comboQueued)
         {
-            comboIndex = 0;
+            comboIndex = 1;
         }
         isAttacking = false;
-        //Debug.Log("animation ended");
-        //Debug.Log(isAttacking);
+        Debug.Log($"Attack animation ended. Queued={comboQueued}");
+        Debug.Log($"After end: isAttacking={isAttacking}, comboIndex={comboIndex}");
+
     }
 
     private void OnDrawGizmos()
