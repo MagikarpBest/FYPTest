@@ -2,11 +2,12 @@ using FMOD.Studio;
 using FMODUnity;
 using UnityEngine;
 
-// TODO: Actual implement in FMODAudioManager so AudioService can be reach to modify volume of master, music, and sfx bus
-public class FMODAudioController : MonoBehaviour
+/// <summary>
+/// FMODAudioController is used to modify the volume of different audio buses in the FMOD audio system.
+/// This class directly attach to FMODAudioManager.
+/// </summary>
+public sealed class FMODAudioController
 {
-    private static FMODAudioController _instance;
-
     private Bus _masterBus;
     private Bus _musicBus;
     private Bus _uiSFXBus;
@@ -19,49 +20,8 @@ public class FMODAudioController : MonoBehaviour
     private const string World_3D_SFXBusPath = "bus:/World_3D_SFX";
     private const string AmbientBusPath = "bus:/Ambient";
 
-    public static FMODAudioController Instance
+    public FMODAudioController()
     {
-        get
-        {
-            if (_instance == null)
-            {
-                Initialize();
-            }
-
-            return _instance;
-        }
-    }
-
-    private static void Initialize()
-    {
-        _instance = FindFirstObjectByType<FMODAudioController>();
-
-        if (_instance != null)
-        {
-            return;
-        }
-
-        GameObject controllerObject =
-            new GameObject(nameof(FMODAudioController));
-
-        _instance =
-            controllerObject.AddComponent<FMODAudioController>();
-
-        DontDestroyOnLoad(controllerObject);
-    }
-
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        _instance = this;
-
-        DontDestroyOnLoad(gameObject);
-
         InitializeBuses();
     }
 
@@ -72,6 +32,10 @@ public class FMODAudioController : MonoBehaviour
         _uiSFXBus = RuntimeManager.GetBus(UI_SFXBusPath);
         _ambientBus = RuntimeManager.GetBus(AmbientBusPath);
         _world3DSFXBus = RuntimeManager.GetBus(World_3D_SFXBusPath);
+
+        SetMasterVolume(1.0f);
+        SetMusicVolume(1.0f);
+        SetSFXVolume(1.0f);
     }
 
     #region Master

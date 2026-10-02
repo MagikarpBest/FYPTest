@@ -16,10 +16,20 @@ using UnityEngine;
 public class FMODAudioManager : MonoBehaviour, IAudioService
 {
     private readonly HashSet<AudioHandler> _activeHandlers = new();
-    private AudioHandler _musicHandler; 
     // Used to track the currently playing music and allow modifying its parameters. For adaptive music purpose.
+    private AudioHandler _musicHandler;
+
+    private FMODAudioController _audioController;
+    public void SetMasterVolume(float volume) => _audioController.SetMasterVolume(volume);
+    public float GetMasterVolume() => _audioController.GetMasterVolume();
+    public void SetMusicVolume(float volume) => _audioController.SetMusicVolume(volume);
+    public float GetMusicVolume() => _audioController.GetMusicVolume();
+    public void SetSFXVolume(float volume) => _audioController.SetSFXVolume(volume);
+    public float GetSFXVolume() => _audioController.GetSFXVolume();
+
     private void Awake()
     {
+        _audioController = new FMODAudioController();
         AudioService.SetAudioService(this);
         // DontDestroyOnLoad(gameObject);
     }
