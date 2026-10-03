@@ -2,21 +2,27 @@
 
 public class BaseAttackState : State
 {
-    private Player player;
+    private IHasAttack attacker;
+    private IHasMovement mover;
+    private ICanUseSkills skills;
 
     public BaseAttackState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
-        PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
+        ICharacterStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
-        if (characterContext is Player player)
-        {
-            this.player = player;
-        }
+        attacker = characterContext as IHasAttack;
+        mover = characterContext as IHasMovement;
+        skills = characterContext as ICanUseSkills;
     }
 
     protected override State GetTransition()
     {
-        if (!player.AttackSystem.isAttacking)
+        if (attacker != null && !attacker.isAttacking )
         {
+            if(attacker.isComboQueued)
+            {
+                //Debug.Log($"{attacker.isAttacking}, {attacker.isComboQueued}");
+                return Factory.BaseAttack;
+            }
             return Factory.Grounded;
         }
         return null;
@@ -24,15 +30,21 @@ public class BaseAttackState : State
 
     protected override void OnEnter()
     {
-        player.SkillController.SetSkillUsable(false);
-        player.AttackSystem.HandleAtack();
-        player.Movement.StopMove(); // bandaid fix
-
+        Debug.Log("On base attackstate enter ");
+        skills?.SetSkillUsable(false);
+        mover?.StopMove();
+        
+        // If we are entering this state and we have a queue, it means we are continuing a combo
+        if(attacker.isComboQueued||!attacker.isAttacking)
+        {
+           //Debug.Log("On base attackstate enter and attack");
+            attacker?.HandleAtack();
+        }
     }
 
     protected override void OnExit()
     {
-        player.SkillController.SetSkillUsable(true);
+        //Debug.Log("On base attackstate exit ");
+        skills?.SetSkillUsable(true);
     }
-
 }

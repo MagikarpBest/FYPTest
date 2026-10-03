@@ -1,45 +1,54 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyAI : MonoBehaviour, ILaunchable
+public class EnemyMovement : MonoBehaviour, ILaunchable
 {
-    private NavMeshAgent agent;
-    [SerializeField] private Transform player;
-    [SerializeField] private Rigidbody rigidBody;
+    [Header("Enemy Settings")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float recoverDelay = 0.5f;
 
+    private Animator animator;
+    private NavMeshAgent navMeshAgent;
 
+
+    // movement
+    private Rigidbody rigidBody;
     private bool isGrounded = true;
+    private bool isMoving;
     private bool isLaunched;
     private float groundCheckDistance = 0.7f;
-    private Vector3 groundNormal;
     private float launchTimer;
 
+  
 
-    private void Awake()
+    public bool IsGrounded => isGrounded;
+    public bool IsMoving => isMoving;
+
+
+
+    public void Init(NavMeshAgent agent, Rigidbody rb,Animator animator)
     {
-        agent = GetComponent<NavMeshAgent>();
-        // agent.updatePosition = false;
-        // agent.updateRotation = false;
-        agent.enabled = true;
+        navMeshAgent = agent;
+        rigidBody = rb;
+        this.animator = animator;
+        navMeshAgent.enabled = true;
     }
-
 
     private void Update()
     {
         CheckGround();
-
+        
         if (isLaunched)
         {
             launchTimer -= Time.deltaTime;
             LaunchCheck();
         }
-        HandleMovement();
 
-        //Debug.Log(launchTimer);
     }
 
+    // GENERAL STUFF
     private void CheckGround()
     {
         isGrounded = false;
@@ -53,29 +62,41 @@ public class EnemyAI : MonoBehaviour, ILaunchable
             ))
         {
             isGrounded = true;
-            groundNormal = hit.normal;
         }
     }
-
-    private void HandleMovement()
+    
+    
+    // MOVEMENT
+    public void Move(Vector3 target)
     {
-        if (agent.enabled && !isLaunched )
+        if (navMeshAgent == null || isLaunched)
         {
-            agent.SetDestination(player.position);
+            isMoving = false;
+            return;
         }
+        isMoving = true;
+        navMeshAgent.SetDestination(target);
+        animator.SetFloat("Speed", 1.0f);
+
+    }
+    public void StopMove()
+    {
+        isMoving = false;
+        navMeshAgent.ResetPath();
+        animator.SetFloat("Speed", 0.0f); 
     }
 
     private void RecoverFromLaunch()
     {
         rigidBody.isKinematic = true;
 
-        agent.enabled = true;
-        agent.Warp(transform.position);
+        navMeshAgent.enabled = true;
+        navMeshAgent.Warp(transform.position);
     }
 
     public void Launch(Vector3 force)
     {
-        agent.enabled = false;
+        navMeshAgent.enabled = false;
 
         rigidBody.isKinematic = false;
         rigidBody.linearVelocity = force;
@@ -99,5 +120,4 @@ public class EnemyAI : MonoBehaviour, ILaunchable
             RecoverFromLaunch();
         }
     }
-
 }

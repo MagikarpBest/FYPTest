@@ -3,7 +3,7 @@ using UnityEngine;
 public class AliveState : State
 {
     public AliveState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
-        PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
+        ICharacterStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
 
     }

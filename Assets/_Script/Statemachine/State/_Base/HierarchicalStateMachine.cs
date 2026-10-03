@@ -35,9 +35,18 @@ public class HierarchicalStateMachine : MonoBehaviour
 
     public void ChangeState(State from, State to)
     {
-        if (from == to || from == null || to == null) return;
-
+        //if (from == to || from == null || to == null) return;
+        if (from == null || to == null) return;
+        
+        // FIX: If we are transitioning to the same state (Combo/Reset),
+        // we want to exit the current state and re-enter it.
+        // We treat the parent as the LCA so the leaf is included in the exit/enter loops.
         State lca = Lca(from, to);
+        
+        if (from == to)
+        {
+            lca = from.Parent;
+        }
 
         //Exit current branch up to (but not including) LCA
         for (State s = from; s != lca; s = s.Parent) s.Exit();

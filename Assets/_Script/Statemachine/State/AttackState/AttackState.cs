@@ -2,27 +2,40 @@
 
 public class AttackState : State
 {
-    private Player player;
+    private ICanUseSkills skills;
+    private IHasInput input;
+    private IHasAttack attacker;
 
     public AttackState(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
-        PlayerStateFactory factory) : base(stateMachine, characterContext, parent, factory)
+        ICharacterStateFactory factory) : base(stateMachine, characterContext, parent, factory)
     {
-        if(characterContext is Player player)
-        {
-            this.player = player;
-        }
+        skills = characterContext as ICanUseSkills;
+        input = characterContext as IHasInput;
+        attacker = characterContext as IHasAttack;
     }
 
     protected override State GetInitialState() => Factory.BaseAttack;
 
     protected override void OnEnter()
     {
-        player.SkillController.SetSkillUsable(false);
+        skills?.SetSkillUsable(false);
+        if (input != null)
+        {
+            input.OnAttackPressed += HandleAttack;
+        }
     }
 
     protected override void OnExit()
     {
-        player.SkillController.SetSkillUsable(true);
+        skills?.SetSkillUsable(true);
+        if (input != null)
+        {
+            input.OnAttackPressed -= HandleAttack;
+        }
+    }
+    private void HandleAttack()
+    {
+        attacker?.HandleAtack();
     }
 
 }

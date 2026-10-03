@@ -51,6 +51,15 @@ public enum DamageResult
     Destroyed
 }
 
+// i changed so its easier to edit damage
+[System.Serializable]
+public class DamageConfig
+{
+    public float Damage;
+    public DamageType DamageType;
+    public AttackPowerLevel PowerLevel;
+}
+
 public readonly struct DamageData
 {
     public readonly float Damage;

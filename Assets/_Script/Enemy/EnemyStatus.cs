@@ -19,11 +19,14 @@ public class EnemyStatus : MonoBehaviour, IDamageable
     {
         currentHealth = maxHealth;
     }
+    
 
     public DamageResult TakeDamage(DamageData damageData)
     {
         if (currentHealth <= 0)
         {
+            // count as death for now
+            Destroy(gameObject);
             return DamageResult.Ignored;
         }
 

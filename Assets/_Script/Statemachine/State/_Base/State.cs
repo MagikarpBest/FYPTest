@@ -2,19 +2,19 @@ using UnityEngine;
 
 public abstract class State
 {
-    protected PlayerStateFactory Factory;
+    protected ICharacterStateFactory Factory;
     private readonly HierarchicalStateMachine StateMachine;
     public readonly State Parent;
     public State ActiveChild;
     protected readonly ICharacter CharacterContext;
 
     public State(HierarchicalStateMachine stateMachine, ICharacter characterContext, State parent,
-        PlayerStateFactory factory)
+        ICharacterStateFactory factory)
     {
         StateMachine = stateMachine;
         Factory = factory;
-        Parent = parent;
         CharacterContext = characterContext;
+        Parent = parent;
     }
 
     protected virtual State GetInitialState() =>
@@ -31,7 +31,7 @@ public abstract class State
     {
         //set parent 
         if (Parent != null) Parent.ActiveChild = this;
-
+        eventRequestedTransition = null; 
         //run enter logic
         OnEnter();
 
