@@ -12,12 +12,24 @@ public class EnemyAttack : MonoBehaviour
     [SerializeField] private float attackTakeTime = 1f;
     [SerializeField] private LayerMask playerLayerMask;
 
+
+    private Animator animator;
     // attack
     private bool isAttacking;
     private float attackTimer;
 
     public float AttackRange => attackRange;
     public bool IsAttacking => isAttacking;
+
+    public void Init(Animator anim)
+    {
+        animator = anim;
+    }
+    private void Update()
+    {
+        //Debug.Log(isAttacking);
+    }
+
     // ATTACK
     public void RequestAttack()
     {
@@ -36,6 +48,7 @@ public class EnemyAttack : MonoBehaviour
     private IEnumerator Attack()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, attackRange, playerLayerMask);
+        animator.SetTrigger(AnimationParameter.AttackTrigger1);
         foreach (var VARIABLE in hits)
         {
             IDamageable damageable = VARIABLE.GetComponent<IDamageable>();
@@ -56,7 +69,6 @@ public class EnemyAttack : MonoBehaviour
             isAttacking = false;
             Debug.Log($"Enemy attack result: {result}");
         }
-        
     }
 
     private void OnDrawGizmos()

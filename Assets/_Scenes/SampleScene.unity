@@ -11726,29 +11726,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy
       objectReference: {fileID: 0}
-    - target: {fileID: 477466468322070506, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
-      propertyPath: attackRange
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1086482805445020356, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
-      propertyPath: playerLayerMask.m_Bits
-      value: 64
-      objectReference: {fileID: 0}
-    - target: {fileID: 2529706611399307442, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
-      propertyPath: isDebug
+    - target: {fileID: 4302301494679584760, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
+      propertyPath: m_Enabled
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3127605508358971826, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
-      propertyPath: m_Speed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6211738648243291875, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
-      propertyPath: playerLayer.m_Bits
-      value: 64
-      objectReference: {fileID: 0}
-    - target: {fileID: 6627930846477673684, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
-      propertyPath: maxHealth
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8380829158805114627, guid: 48bd915e6632cf74abda0e211e8b475b, type: 3}
       propertyPath: m_LocalPosition.x

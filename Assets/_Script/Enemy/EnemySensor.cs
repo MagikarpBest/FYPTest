@@ -6,20 +6,28 @@ public class EnemySensor : MonoBehaviour
     [SerializeField] private float detectionRadius = 10f;
     [SerializeField] private LayerMask playerLayer;
 
-    private Transform target;
-
-    public Transform Target => target;
-    public bool HasTarget => target != null;
+    public Transform Target { get; private set; }
+    public bool HasTarget => Target != null;
+    public float DistanceToTarget { get; private set; }
 
     private void Update()
     {
         //todo dont let search happen every frame cuz it cost performance make it a scan every ~ second
         // or just a collider detection ontriggerentered
         FindTarget();
+        DistanceCheck();
     }
-    public float DistanceToTarget()
+
+    private void DistanceCheck()
     {
-        return (Vector3.Distance(transform.position, target.position));
+        if (Target != null)
+        {
+            DistanceToTarget = Vector3.Distance(transform.position, Target.position);
+        }
+        else
+        {
+            DistanceToTarget = float.MaxValue;
+        }
     }
 
     private void FindTarget()
@@ -28,17 +36,17 @@ public class EnemySensor : MonoBehaviour
 
         if (hits.Length > 0)
         {
-            target = hits[0].transform;
+            Target = hits[0].transform;
         }
         else
         {
-            target = null;
+            Target = null;
         }
     }
 
     private void OnDrawGizmos()
     {
-        if(isDebug)
+        if (isDebug)
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, detectionRadius);

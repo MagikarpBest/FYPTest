@@ -9,7 +9,8 @@ public class EnemyMovement : MonoBehaviour, ILaunchable
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float recoverDelay = 0.5f;
 
-    NavMeshAgent navMeshAgent;
+    private Animator animator;
+    private NavMeshAgent navMeshAgent;
 
 
     // movement
@@ -27,10 +28,11 @@ public class EnemyMovement : MonoBehaviour, ILaunchable
 
 
 
-    public void Init(NavMeshAgent agent, Rigidbody rb)
+    public void Init(NavMeshAgent agent, Rigidbody rb,Animator animator)
     {
         navMeshAgent = agent;
         rigidBody = rb;
+        this.animator = animator;
         navMeshAgent.enabled = true;
     }
 
@@ -72,17 +74,16 @@ public class EnemyMovement : MonoBehaviour, ILaunchable
             isMoving = false;
             return;
         }
-        // if target is not in range stop/idle
-        {
-            isMoving = true;
-            navMeshAgent.SetDestination(target);
-        }
+        isMoving = true;
+        navMeshAgent.SetDestination(target);
+        animator.SetFloat("Speed", 1.0f);
 
     }
     public void StopMove()
     {
         isMoving = false;
         navMeshAgent.ResetPath();
+        animator.SetFloat("Speed", 0.0f); 
     }
 
     private void RecoverFromLaunch()

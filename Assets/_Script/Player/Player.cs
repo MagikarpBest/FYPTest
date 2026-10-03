@@ -91,7 +91,7 @@ public class Player : MonoBehaviour, ICharacter, IHasMovement, IHasAttack, IHasI
 
     private void Update()
     {
-        Debug.Log($"{ModeController.CurrentMode}");
+        //Debug.Log($"{ModeController.CurrentMode}");
     }
 
     private void Awake()
@@ -118,6 +118,8 @@ public class Player : MonoBehaviour, ICharacter, IHasMovement, IHasAttack, IHasI
         //u actually want a root state which substates are alive and dead 
         stateMachine = GetComponent<HierarchicalStateMachine>();
         PlayerStateFactory factory = new PlayerStateFactory(stateMachine, this);
+        // this have to be last or else error
+
         stateMachine.Init(factory.Alive);
     }
 }
