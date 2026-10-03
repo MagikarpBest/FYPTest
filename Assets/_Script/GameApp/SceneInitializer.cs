@@ -12,6 +12,11 @@ public abstract class SceneInitializer : MonoBehaviour
     public abstract void Initialize(Action onComplete);
     public virtual void OnSceneStart()
     {
+        SkyManager skyManager = FindAnyObjectByType<SkyManager>();
+        if (skyManager != null)
+        {
+            skyManager.InitEnvironment();
+        }
         return;
     }
 }

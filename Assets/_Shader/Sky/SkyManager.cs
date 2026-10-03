@@ -25,10 +25,25 @@ public class SkyManager : MonoBehaviour
     private Transform player; 
     private void Start()
     {
+        // [1] THIS PART ISN'T RUNNING WHEN <ON SWITCH SCENE + Start()>, REQUIRE BUFFER TIME
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
+        // [1] THIS PART ISN'T RUNNING WHEN <ON SWITCH SCENE + Start()>, REQUIRE BUFFER TIME
         player = GameObject.FindWithTag("Player").transform;
         yOffset = cloudDome.position.y; 
+    }
+
+    /// <summary>
+    /// Used to fix when on switch scene and trigger Start(), RenderSettings does not apply correctly
+    /// </summary>
+    public void InitEnvironment()
+    {
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.ExponentialSquared;
+
+        HandleDirLight();
+
+        Shader.SetGlobalMatrix(DirLightLToW, directionalLight.transform.localToWorldMatrix);
     }
 
     private void Update()
