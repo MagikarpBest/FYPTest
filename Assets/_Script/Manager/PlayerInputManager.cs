@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 
-// TODO: IF UI control active, toggle cursor on and off.
 public class PlayerInputManager : MonoBehaviour
 {
     private InputSystem_Actions input;
@@ -12,6 +11,7 @@ public class PlayerInputManager : MonoBehaviour
     public event Action OnSkill3Pressed;
     public event Action OnSkillCancelPressed;
     public event Action OnAttackPressed;
+    public event Action OnEscapePressed;
     public Vector2 MoveInput { get; private set; }
 
 
@@ -27,6 +27,8 @@ public class PlayerInputManager : MonoBehaviour
         input.Player.Skill3.performed += Skill3_Performed;
         input.Player.Attack.performed += Attack_Performed;
         input.Player.SkillCancel.performed += SkillCancel_Performed;
+
+        input.Global.Escape.performed += Escape_Performed; // Handle Escape key for interrupting game interaction or opening the pause menu.
 
         // Assume testing gameplay most of the time. Might remove later.
         ToggleCursor(false);
@@ -55,6 +57,11 @@ public class PlayerInputManager : MonoBehaviour
             input.UI.Disable();
             input.Player.Enable();
         }
+    }
+
+    private void Escape_Performed(InputAction.CallbackContext obj)
+    {
+        OnEscapePressed?.Invoke();
     }
 
     private void Move_Performed(InputAction.CallbackContext obj)
@@ -103,12 +110,14 @@ public class PlayerInputManager : MonoBehaviour
     }
     private void OnEnable()
     {
+        input.Global.Enable();
         input.Player.Enable();
         GameScreenManager.OnUIActiveChanged += HandleUIActiveChanged;
     }
 
     private void OnDisable()
     {
+        input.Global.Disable();
         input.Player.Disable();
         input.UI.Disable();
         GameScreenManager.OnUIActiveChanged -= HandleUIActiveChanged;

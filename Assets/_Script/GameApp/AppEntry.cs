@@ -11,8 +11,8 @@ public static class AppEntry
             Debug.Log("AppEntry: AppBootstrap is already loaded.");
             return;
         }
-
-        //await SceneManager.LoadSceneAsync("AppBootstrap", LoadSceneMode.Additive);
+        
+        await SceneManager.LoadSceneAsync("AppBootstrap", LoadSceneMode.Additive);
     }
 
     private static bool IsSceneLoaded(string sceneName)

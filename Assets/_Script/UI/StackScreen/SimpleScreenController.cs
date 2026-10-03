@@ -5,9 +5,11 @@ using System;
 public class SimpleScreenController : MonoBehaviour
 {
     [SerializeField] private bool _debugMode = false;
-    private readonly List<ScreenBase> screens = new();
+    [SerializeField] private PlayerInputManager _playerInputManager;
 
+    private readonly List<ScreenBase> screens = new();
     public event Action<bool> OnActiveChanged;
+    public bool IsEmpty => screens.Count == 0;
 
     public void Push(ScreenBase newScreen, bool instant = false)
     {
@@ -66,31 +68,44 @@ public class SimpleScreenController : MonoBehaviour
         OnActiveChanged?.Invoke(false);
     }
 
-    private void Update()
+    private void Awake() => GameScreenManager.Register(this);
+    private void Start()
     {
-        // ==========================================================
-        // IMPORTANT: Input System only! No Legacy Input allowed!
-        // if Escape key is pressed...
-        // check if collection has more than 0 screen in it
-        // if yes, check if the current screen should honor back button
-        //      if yes, pop
-        // otherwise, do nothing
-        // ==========================================================
-        if (UnityEngine.InputSystem.Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
-            if (screens.Count > 0)
-            {
-                ScreenBase current = screens[^1];
-                if (current != null && current.ShouldHonorBackButton())
-                {
-                    Pop();
-                }
-            }
-        }
+        _playerInputManager = FindFirstObjectByType<PlayerInputManager>();
+        BindEscapePressedEvent(true);
+    }
+    private void OnDestroy() => GameScreenManager.Unregister(this);
+    private void OnEnable()
+    {
+        BindEscapePressedEvent(true);
     }
 
-    private void Awake() => GameScreenManager.Register(this);
-    private void OnDestroy() => GameScreenManager.Unregister(this);
+    private void OnDisable()
+    {
+        BindEscapePressedEvent(false);
+    }
+
+    private void BindEscapePressedEvent(bool enable = true)
+    {
+        if (_playerInputManager == null)
+            return;
+
+        _playerInputManager.OnEscapePressed -= HandleEscapePressed;
+        if (enable) _playerInputManager.OnEscapePressed += HandleEscapePressed;
+    }
+
+    private void HandleEscapePressed()
+    {
+        if (screens.Count == 0)
+            return;
+
+        ScreenBase current = screens[^1];
+        if (current != null && current.ShouldHonorBackButton())
+        {
+            Debug.Log("pop in controller");
+            Pop();
+        }
+    }
 
 #if UNITY_EDITOR
 

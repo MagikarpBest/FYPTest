@@ -6,7 +6,7 @@ public static class GameScreenManager
     private static SimpleScreenController current;
     // Listener provided for InputManager to know when to enable/disable player input.
     public static event Action<bool> OnUIActiveChanged;
-
+    public static bool IsStackUIActive => current != null && !current.IsEmpty;
 
     public static void Register(SimpleScreenController manager)
     {
