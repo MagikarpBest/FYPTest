@@ -651,7 +651,7 @@ MonoBehaviour:
     FieldOfView: 60.000004
     OrthographicSize: 5
     NearClipPlane: 0.3
-    FarClipPlane: 1000
+    FarClipPlane: 3000
     Dutch: 0
     ModeOverride: 0
     PhysicalProperties:
@@ -1347,6 +1347,14 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1496273215904462427, guid: b05d156ba2114354cb6bca7c1a5fb6d6, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1496273215904462427, guid: b05d156ba2114354cb6bca7c1a5fb6d6, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2019019725574795682, guid: b05d156ba2114354cb6bca7c1a5fb6d6, type: 3}
       propertyPath: m_SizeDelta.x
       value: 48.22
@@ -1731,6 +1739,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2876740861113473171, guid: 5cd544df1f1bdeb478671c4be677b4be, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4266406250232954954, guid: 5cd544df1f1bdeb478671c4be677b4be, type: 3}
+      propertyPath: m_Alpha
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4847730521040182590, guid: 5cd544df1f1bdeb478671c4be677b4be, type: 3}
