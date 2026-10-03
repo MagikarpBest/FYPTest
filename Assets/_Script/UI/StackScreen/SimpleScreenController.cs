@@ -1,9 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class SimpleScreenController : MonoBehaviour
 {
+    [SerializeField] private bool _debugMode = false;
+    [SerializeField] private PlayerInputManager _playerInputManager;
+
     private readonly List<ScreenBase> screens = new();
+    public event Action<bool> OnActiveChanged;
+    public bool IsEmpty => screens.Count == 0;
 
     public void Push(ScreenBase newScreen, bool instant = false)
     {
@@ -12,6 +18,10 @@ public class SimpleScreenController : MonoBehaviour
         // add new screen to end of collection
         // show the new screen, respecting 'instant'
         // ==========================================================
+        // 'wasEmpty' Check whether thee stack is being from empty to non-empty, to trigger OnActiveChanged event.
+        // So don't put this after the new screen is added, because that would always be true.
+        bool wasEmpty = screens.Count == 0;
+
         if (screens.Count > 0)
         {
             ScreenBase current = screens[^1];
@@ -20,6 +30,9 @@ public class SimpleScreenController : MonoBehaviour
 
         screens.Add(newScreen);
         newScreen.Show(instant);
+
+        if (wasEmpty)
+            OnActiveChanged?.Invoke(true);
     }
 
     public void Pop(bool instant = false)
@@ -39,55 +52,67 @@ public class SimpleScreenController : MonoBehaviour
         {
             screens[^1].Focus();
         }
-    }
-
-    private void Update()
-    {
-        // ==========================================================
-        // IMPORTANT: Input System only! No Legacy Input allowed!
-        // if Escape key is pressed...
-        // check if collection has more than 0 screen in it
-        // if yes, check if the current screen should honor back button
-        //      if yes, pop
-        // otherwise, do nothing
-        // ==========================================================
-        if (UnityEngine.InputSystem.Keyboard.current.escapeKey.wasPressedThisFrame)
+        else
         {
-            if (screens.Count > 0)
-            {
-                ScreenBase current = screens[^1];
-                if (current != null && current.ShouldHonorBackButton())
-                {
-                    Pop();
-                }
-            }
+            OnActiveChanged?.Invoke(false); // Trigger OnActiveChanged event when the stack becomes empty.
         }
     }
 
-    // The first screen to show, MUST NOT BE NULL
-    [SerializeField] private ScreenBase startingScreen;
-
-    // If true, the starting screen will instantly be shown
-    [SerializeField] private bool instantlyShowStartingScreen = false;
+    public void Reset()
+    {
+        foreach (ScreenBase screen in screens)
+        {
+            screen.Hide(instant: true);
+        }
+        screens.Clear();
+        OnActiveChanged?.Invoke(false);
+    }
 
     private void Awake() => GameScreenManager.Register(this);
-
-    private void OnDestroy() => GameScreenManager.Unregister(this);
-
     private void Start()
     {
-        if (startingScreen == null)
-        {
-            Debug.LogError("Starting screen is not assigned in SimpleScreenController!");
+        _playerInputManager = FindFirstObjectByType<PlayerInputManager>();
+        BindEscapePressedEvent(true);
+    }
+    private void OnDestroy() => GameScreenManager.Unregister(this);
+    private void OnEnable()
+    {
+        BindEscapePressedEvent(true);
+    }
+
+    private void OnDisable()
+    {
+        BindEscapePressedEvent(false);
+    }
+
+    private void BindEscapePressedEvent(bool enable = true)
+    {
+        if (_playerInputManager == null)
             return;
+
+        _playerInputManager.OnEscapePressed -= HandleEscapePressed;
+        if (enable) _playerInputManager.OnEscapePressed += HandleEscapePressed;
+    }
+
+    private void HandleEscapePressed()
+    {
+        if (screens.Count == 0)
+            return;
+
+        ScreenBase current = screens[^1];
+        if (current != null && current.ShouldHonorBackButton())
+        {
+            Debug.Log("pop in controller");
+            Pop();
         }
-        Push(startingScreen, instantlyShowStartingScreen);
     }
 
 #if UNITY_EDITOR
 
     private void OnGUI()
     {
+        if (!_debugMode) return;
+
         GUIStyle fontStyle = new GUIStyle();
         fontStyle.fontSize = 36;
         fontStyle.normal.textColor = Color.white;

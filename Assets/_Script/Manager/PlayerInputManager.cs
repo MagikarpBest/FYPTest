@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 
-// TODO: IF UI control active, toggle cursor on and off.
 public class PlayerInputManager : MonoBehaviour
 {
     private InputSystem_Actions input;
@@ -12,6 +11,7 @@ public class PlayerInputManager : MonoBehaviour
     public event Action OnSkill3Pressed;
     public event Action OnSkillCancelPressed;
     public event Action OnAttackPressed;
+    public event Action OnEscapePressed;
     public Vector2 MoveInput { get; private set; }
 
 
@@ -28,6 +28,8 @@ public class PlayerInputManager : MonoBehaviour
         input.Player.Attack.performed += Attack_Performed;
         input.Player.SkillCancel.performed += SkillCancel_Performed;
 
+        input.Global.Escape.performed += Escape_Performed; // Handle Escape key for interrupting game interaction or opening the pause menu.
+
         // Assume testing gameplay most of the time. Might remove later.
         ToggleCursor(false);
     }
@@ -35,11 +37,31 @@ public class PlayerInputManager : MonoBehaviour
     /// <summary>
     /// Track when enter UI input mode.
     /// </summary>
-    /// <param name="active"></param>
     private void ToggleCursor(bool active)
     {
         Cursor.visible = active;
         Cursor.lockState = active ? CursorLockMode.Confined : CursorLockMode.Locked;
+    }
+
+    private void HandleUIActiveChanged(bool isUIActive)
+    {
+        ToggleCursor(isUIActive);
+
+        if (isUIActive)
+        {
+            input.Player.Disable();
+            input.UI.Enable();
+        }
+        else
+        {
+            input.UI.Disable();
+            input.Player.Enable();
+        }
+    }
+
+    private void Escape_Performed(InputAction.CallbackContext obj)
+    {
+        OnEscapePressed?.Invoke();
     }
 
     private void Move_Performed(InputAction.CallbackContext obj)
@@ -88,11 +110,16 @@ public class PlayerInputManager : MonoBehaviour
     }
     private void OnEnable()
     {
-        input.Enable();
+        input.Global.Enable();
+        input.Player.Enable();
+        GameScreenManager.OnUIActiveChanged += HandleUIActiveChanged;
     }
 
     private void OnDisable()
     {
-        input.Disable();
+        input.Global.Disable();
+        input.Player.Disable();
+        input.UI.Disable();
+        GameScreenManager.OnUIActiveChanged -= HandleUIActiveChanged;
     }
 }

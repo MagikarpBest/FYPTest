@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     [SerializeField] private SceneLoader _sceneLoader;
+    [SerializeField] private SimpleScreenController _screenController;
 
     private void Awake()
     {
@@ -60,6 +61,7 @@ public class GameManager : MonoBehaviour
         _sceneLoader.FadeIn(async () =>
         {
             Pause(true);
+            GameScreenManager.Reset();
             await _sceneLoader.LoadSceneGroup(sceneGroupName);
         });
     }

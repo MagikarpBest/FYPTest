@@ -76,4 +76,33 @@ public class NullAudioManager : IAudioService
     {
         // Null implementation
     }
+
+    public void SetMasterVolume(float volume)
+    {
+    }
+
+    public float GetMasterVolume()
+    {
+        return 1.0f;
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        
+    }
+
+    public float GetMusicVolume()
+    {
+        return 1.0f;
+    }
+
+    public void SetSFXVolume(float volume)
+    {
+        
+    }
+
+    public float GetSFXVolume()
+    {
+        return 1.0f;
+    }
 }

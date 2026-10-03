@@ -43,4 +43,13 @@ public interface IAudioService
     void StopSnapshot(
         AudioHandler handler,
         bool allowFadeOut = true);
+
+    void SetMasterVolume(float volume);
+    float GetMasterVolume();
+
+    void SetMusicVolume(float volume);
+    float GetMusicVolume();
+
+    void SetSFXVolume(float volume);
+    float GetSFXVolume();
 }

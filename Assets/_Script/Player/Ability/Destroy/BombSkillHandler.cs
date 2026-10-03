@@ -8,7 +8,6 @@ public class BombSkillHandler : IPlayerSkillHandler
     private Bomb _activeBomb;
 
     // Data defined by ScriptableObject.
-    [SerializeField] private float _range = 10f;
     [SerializeField] private float _explosionRadius = 5f;
     [SerializeField] private float _explosionForce = 5f;
     [SerializeField] private float _explodeDelay = 1.5f;
@@ -34,6 +33,7 @@ public class BombSkillHandler : IPlayerSkillHandler
             _context.SkillHoldPoint.rotation
         );
         _activeBomb.Hold(_context.SkillHoldPoint);
+        _activeBomb.Init(_explosionRadius, _explosionForce);
     }
 
     public void Update()
