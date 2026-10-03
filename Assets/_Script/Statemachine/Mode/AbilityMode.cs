@@ -1,4 +1,4 @@
 public class AbilityMode : PlayerMode
 {
-    public override PlayerActionRestrictions Restrictions => PlayerActionRestrictions.None;
+    public override PlayerActionRestrictions Restrictions => PlayerActionRestrictions.RestrictAttack;
 }

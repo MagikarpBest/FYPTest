@@ -15,7 +15,7 @@ using UnityEngine;
 [RequireComponent(typeof(HierarchicalStateMachine))]
 [RequireComponent(typeof(PlayerStatus))]
 [RequireComponent(typeof(PlayerDamageReceiver))]
-public class Player : MonoBehaviour, ICharacter, IHasMovement, IHasAttack, IHasInput,ICanUseSkills
+public class Player : MonoBehaviour, ICharacter, IHasMovement, IHasAttack, IHasInput, ICanUseSkills
 {
     public PlayerInputManager Input { get; private set; }
     public PlayerMovementRB Movement { get; private set; }
@@ -25,39 +25,74 @@ public class Player : MonoBehaviour, ICharacter, IHasMovement, IHasAttack, IHasI
     public PlayerStatus CurrentPlayerStatus { get; private set; } // Player data
     public PlayerDamageReceiver DamageReceiver { get; private set; } // 
     public PlayerModeController ModeController { get; private set; } // Control mode switches
-
+    public PlayerActionRestrictions Restrictions => ModeController.CurrentMode.Restrictions;
+    
     private HierarchicalStateMachine stateMachine;
+
+    #region Movement
 
     // TEST
     // Implementation of state interface so reusable
     bool IHasMovement.IsGrounded => Movement.IsGrounded;
     bool IHasMovement.IsMoving => Input.MoveInput != Vector2.zero;
+    bool IHasMovement.IsFalling => Rigidbody.linearVelocity.y <= 0;
+
     void IHasMovement.Move()
     {
         Movement.Move(Input.MoveInput);
         Movement.RotateTowardsMovement();
     }
+
+    void IHasMovement.Jump()
+    {
+        Movement.Jump();
+    }
+
     void IHasMovement.StopMove() => Movement.StopMove();
 
+    #endregion
+
+    #region Attack
+
+    bool IHasAttack.canAttack => false; // this for enemy only
     bool IHasAttack.isAttacking => AttackSystem.isAttacking;
     bool IHasAttack.isComboQueued => AttackSystem.comboQueued;
     void IHasAttack.HandleAtack() => AttackSystem.RequestAttack();
 
+    #endregion
+
+    #region Skill
+
     void ICanUseSkills.SetSkillUsable(bool usable) => SkillController.SetSkillUsable(usable);
-    
-    public event Action OnJumpPressed { add => Input.OnJumpPressed += value; remove => Input.OnJumpPressed -= value; }
-    public event Action OnAttackPressed { add => Input.OnAttackPressed += value; remove => Input.OnAttackPressed -= value; }
+
+    public event Action OnJumpPressed
+    {
+        add => Input.OnJumpPressed += value;
+        remove => Input.OnJumpPressed -= value;
+    }
+    public event Action OnAttackPressed
+    {
+        add => Input.OnAttackPressed += value;
+        remove => Input.OnAttackPressed -= value;
+    }
+
+    #endregion
 
     //I like having all the stuff the shared components need here so u just pass it to the compoenents rather than having to assign or use get compoenent in all the individual scripts
     //get component is expensive so if u can reduce its best
     //and assigning alot of serialize field is also annoying
 
-    public Collider Collider { get; private set; }
-    public Rigidbody Rigidbody { get; private set; }
-    public Animator Animator { get; private set; }
+    private Collider Collider;
+    private Rigidbody Rigidbody;
+    private Animator Animator;
 
     [SerializeField] private Transform model;
     private Transform cameraTransform;
+
+    private void Update()
+    {
+        Debug.Log($"{ModeController.CurrentMode}");
+    }
 
     private void Awake()
     {

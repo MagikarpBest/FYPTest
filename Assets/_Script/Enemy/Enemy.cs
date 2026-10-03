@@ -1,43 +1,74 @@
-using System;
 using UnityEngine;
 using UnityEngine.AI;
 
-// dont touch yet
+[RequireComponent(typeof(EnemySensor))]
+[RequireComponent(typeof(EnemyMovement))]
+[RequireComponent(typeof(EnemyAttack))]
+[RequireComponent(typeof(EnemyStatus))]
+
+[RequireComponent(typeof(HierarchicalStateMachine))]
 public class Enemy : MonoBehaviour, ICharacter, IHasMovement, IHasAttack
 {
+    private EnemySensor sensor;
+    private EnemyMovement enemyMovement;
+    private EnemyAttack attack;
+    private EnemyStatus enemyStatus;
+
+    private HierarchicalStateMachine stateMachine;
+
+    // todo future for stun etc
+    public PlayerActionRestrictions Restrictions => PlayerActionRestrictions.None;
+
+    #region Movement
+
+    bool IHasMovement.IsGrounded => enemyMovement.IsGrounded;
+    bool IHasMovement.IsMoving => sensor.HasTarget;
+    public bool IsFalling => false;
+
+    public void Jump()
+    {
+        return;
+    }
+
+    // only trigger move if theres target in range
+    // change to check mode future or other stuff cuz if stunned dont want it to move etc
+    void IHasMovement.Move()
+    {
+        if(sensor.Target!=null)
+        {
+            enemyMovement.Move(sensor.Target.position);
+        }
+    }
+
+    void IHasMovement.StopMove() => enemyMovement.StopMove();
+
+    #endregion
+
+    #region Attack
+
+    bool IHasAttack.canAttack => sensor.HasTarget && sensor.DistanceToTarget() <= attack.AttackRange;
+    bool IHasAttack.isAttacking => attack.IsAttacking;
+    bool IHasAttack.isComboQueued => false;
+    void IHasAttack.HandleAtack() => attack.RequestAttack();
+
+    #endregion
+
     private Rigidbody rigidBody;
     private NavMeshAgent navMeshAgent;
-
-    public EnemyAI enemyAI;
-    public bool IsGrounded { get; }
-    public bool IsMoving { get; }
-
-    public void Move()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void StopMove()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public bool isAttacking { get; }
-    public bool isComboQueued { get; }
-
-    public void HandleAtack()
-    {
-        throw new System.NotImplementedException();
-    }
 
     private void Awake()
     {
         rigidBody = GetComponent<Rigidbody>();
         navMeshAgent = GetComponent<NavMeshAgent>();
+        enemyStatus = GetComponent<EnemyStatus>();
 
-        enemyAI = GetComponent<EnemyAI>();
+        sensor = GetComponent<EnemySensor>();
+        enemyMovement = GetComponent<EnemyMovement>();
+        attack = GetComponent<EnemyAttack>();
 
-        enemyAI.Init(navMeshAgent, rigidBody);
-
+        enemyMovement.Init(navMeshAgent, rigidBody);
+        stateMachine = GetComponent<HierarchicalStateMachine>();
+        EnemyStateFactory factory = new EnemyStateFactory(stateMachine, this);
+        stateMachine.Init(factory.Alive);
     }
 }

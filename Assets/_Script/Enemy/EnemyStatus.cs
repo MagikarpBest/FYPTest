@@ -19,11 +19,7 @@ public class EnemyStatus : MonoBehaviour, IDamageable
     {
         currentHealth = maxHealth;
     }
-
-    private void Update()
-    {
-        
-    }
+    
 
     public DamageResult TakeDamage(DamageData damageData)
     {

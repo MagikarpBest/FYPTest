@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public enum SkillConfirmResult
@@ -142,8 +143,8 @@ public class PlayerSkillController : MonoBehaviour
         if (_activeHandler == null) return;
 
         SkillConfirmResult result = _activeHandler.Confirm();
-        _modeController.ChangeMode(_modeController.Normal);
-        if (result == SkillConfirmResult.Finish) FinishSkill();
+        if (result == SkillConfirmResult.Finish) StartCoroutine(FinishSkill());
+
     }
 
     private void Update()
@@ -160,13 +161,16 @@ public class PlayerSkillController : MonoBehaviour
         _modeController.ChangeMode(_modeController.Normal);
     }
 
-    private void FinishSkill()
+    private IEnumerator FinishSkill()
     {
         _playerStatus.ConsumeMana(_cachedSkill.ManaCost);
         _activeHandler?.Cancel();
-        _modeController.ChangeMode(_modeController.Normal);
         _activeHandler = null;
         _cachedSkill = null;
+        
+        // Delay 0.5 so left click doesnt trigger attack at same frame
+        yield return new WaitForSeconds(0.2f);
+        _modeController.ChangeMode(_modeController.Normal);
     }
     
     // state machine related stuff
