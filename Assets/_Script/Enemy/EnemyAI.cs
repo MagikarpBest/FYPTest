@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,22 +10,26 @@ public class EnemyAI : MonoBehaviour, ILaunchable
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float recoverDelay = 0.5f;
-    
+
     [Header("Attack Settings")]
     [SerializeField] private float attackRange = 3f;
     [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private float attackDamage = 1f;
+    [SerializeField] private float attackTakeTime = 1f;
 
-    private float attackTimer;
-
-    private Transform target;
-    private NavMeshAgent navMeshAgent;
+    private float distance;
+    // movement
     private Rigidbody rigidBody;
     private bool isGrounded = true;
     private bool isLaunched;
     private float groundCheckDistance = 0.7f;
-    private Vector3 groundNormal;
     private float launchTimer;
+
+    // attack
+    private bool isAttacking;
+    private Transform target;
+    private NavMeshAgent navMeshAgent;
+    private float attackTimer;
 
     public void Init(NavMeshAgent agent, Rigidbody rb)
     {
@@ -35,20 +41,23 @@ public class EnemyAI : MonoBehaviour, ILaunchable
 
     private void Update()
     {
+
         CheckGround();
         //todo dont let search happen every frame cuz it cost performance make it a scan every ~ second
         // or just a collider detection ontriggerenter
         FindTarget();
+        DistanceCheck();
         if (isLaunched)
         {
             launchTimer -= Time.deltaTime;
             LaunchCheck();
         }
         HandleMovement();
-        HandleAttack();
+        HandleAttackCycle();
         //Debug.Log(launchTimer);
     }
 
+    // GENERAL STUFF
     private void CheckGround()
     {
         isGrounded = false;
@@ -62,16 +71,16 @@ public class EnemyAI : MonoBehaviour, ILaunchable
             ))
         {
             isGrounded = true;
-            groundNormal = hit.normal;
         }
     }
 
-    private void HandleMovement()
+    private void DistanceCheck()
     {
-        if (navMeshAgent.enabled && !isLaunched && target != null)
+        if (target == null)
         {
-            navMeshAgent.SetDestination(target.position);
+            return;
         }
+        distance = Vector3.Distance(transform.position, target.position);
     }
 
     private void FindTarget()
@@ -83,35 +92,31 @@ public class EnemyAI : MonoBehaviour, ILaunchable
             target = hits[0].transform;
         }
     }
-    private void HandleAttack()
+
+    // ATTACK
+    private void HandleAttackCycle()
     {
-        if(target == null)
-            return;
-
-        float distance = Vector3.Distance(
-            transform.position,
-            target.position
-        );
-
-        if(distance > attackRange)
+        if (target == null || isAttacking || distance > attackRange)
             return;
 
 
         attackTimer -= Time.deltaTime;
 
 
-        if(attackTimer <= 0)
+        if (attackTimer <= 0)
         {
             attackTimer = attackCooldown;
-            Attack();
+            isAttacking = true;
+            StartCoroutine(Attack());
         }
     }
-    private void Attack()
+
+    private IEnumerator Attack()
     {
         IDamageable damageable = target.GetComponent<IDamageable>();
 
-        if(damageable == null)
-            return;
+        if (damageable == null)
+            yield break;
 
 
         DamageData damageData = new DamageData(
@@ -119,12 +124,33 @@ public class EnemyAI : MonoBehaviour, ILaunchable
             DamageType.Physical,
             AttackPowerLevel.Normal
         );
-        
+
         DamageResult result = damageable.TakeDamage(damageData);
 
-
+        yield return new WaitForSeconds(attackTakeTime);
+        isAttacking = false;
         Debug.Log($"Enemy attack result: {result}");
     }
+
+    // MOVEMENT
+    private void HandleMovement()
+    {
+        if (navMeshAgent == null || isLaunched)
+        {
+            return;
+        }
+        // if target is not in range stop/idle
+        if (distance >= detectionRadius || isAttacking || attackRange >= distance)
+        {
+            navMeshAgent.ResetPath();
+        }
+        else
+        {
+            navMeshAgent.SetDestination(target.position);
+        }
+
+    }
+
     private void RecoverFromLaunch()
     {
         rigidBody.isKinematic = true;
@@ -160,4 +186,13 @@ public class EnemyAI : MonoBehaviour, ILaunchable
         }
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, detectionRadius);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+
+    }
 }
