@@ -29,7 +29,10 @@ public class SkyManager : MonoBehaviour
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
         // [1] THIS PART ISN'T RUNNING WHEN <ON SWITCH SCENE + Start()>, REQUIRE BUFFER TIME
-        player = GameObject.FindWithTag("Player").transform;
+        if (GameObject.FindWithTag("Player") != null)
+        {
+            player = GameObject.FindWithTag("Player").transform;
+        }
         yOffset = cloudDome.position.y; 
     }
 
@@ -40,7 +43,7 @@ public class SkyManager : MonoBehaviour
     {
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
-
+        if (player == null) player = GameObject.FindWithTag("Player").transform;
         HandleDirLight();
 
         Shader.SetGlobalMatrix(DirLightLToW, directionalLight.transform.localToWorldMatrix);
