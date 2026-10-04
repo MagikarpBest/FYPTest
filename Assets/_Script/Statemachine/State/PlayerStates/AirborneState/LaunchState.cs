@@ -5,10 +5,10 @@ public class LaunchState : State
     private PlayerMovementRB movement;
     private PlayerInputManager input;
 
-    public LaunchState(HierarchicalStateMachine stateMachine, ICharacter enemy, State parent,
-        ICharacterStateFactory factory) : base(stateMachine, enemy, parent, factory)
+    public LaunchState(HierarchicalStateMachine stateMachine, ICharacter character, State parent,
+        ICharacterStateFactory factory) : base(stateMachine, character, parent, factory)
     {
-        if (Enemy is Player player)
+        if (Character is Player player)
         {
             movement = player.Movement;
             input = player.Input;

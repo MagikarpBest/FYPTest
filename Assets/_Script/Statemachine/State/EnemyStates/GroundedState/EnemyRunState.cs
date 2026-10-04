@@ -5,11 +5,11 @@ public class EnemyRunState : State
     private EnemyMovement movement;
     private EnemySensor sensor;
     
-    public EnemyRunState(HierarchicalStateMachine stateMachine, Enemy enemy, State parent,
+    public EnemyRunState(HierarchicalStateMachine stateMachine, Enemy character, State parent,
         ICharacterStateFactory factory)
-        : base(stateMachine, enemy, parent, factory)
+        : base(stateMachine, character, parent, factory)
     {
-        movement = enemy.Movement;
+        movement = character.Movement;
     }
 
     protected override State GetInitialState() => null;

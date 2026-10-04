@@ -4,10 +4,10 @@ public class EnemyIdleState : State
 {
     private EnemyMovement movement;
 
-    public EnemyIdleState(HierarchicalStateMachine stateMachine, Enemy enemy, State parent, 
-        ICharacterStateFactory factory) : base(stateMachine, enemy, parent, factory)
+    public EnemyIdleState(HierarchicalStateMachine stateMachine, Enemy character, State parent, 
+        ICharacterStateFactory factory) : base(stateMachine, character, parent, factory)
     {
-        movement = enemy.Movement;
+        movement = character.Movement;
     }
 
     protected override State GetInitialState() => null;

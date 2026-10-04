@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class EnemyAliveState : State
 {
-    public EnemyAliveState(HierarchicalStateMachine stateMachine, Enemy enemy, State parent,
-        ICharacterStateFactory factory) : base(stateMachine, enemy, parent, factory)
+    public EnemyAliveState(HierarchicalStateMachine stateMachine, Enemy character, State parent,
+        ICharacterStateFactory factory) : base(stateMachine, character, parent, factory)
     {
 
     }

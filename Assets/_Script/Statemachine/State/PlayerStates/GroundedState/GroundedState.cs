@@ -6,12 +6,12 @@ public class GroundedState : State
     private PlayerAttack attackSystem;
     private PlayerInputManager input;
 
-    public GroundedState(HierarchicalStateMachine stateMachine, Player enemy, State parent,
-        ICharacterStateFactory factory) : base(stateMachine, enemy, parent, factory)
+    public GroundedState(HierarchicalStateMachine stateMachine, Player player, State parent,
+        ICharacterStateFactory factory) : base(stateMachine, player, parent, factory)
     {
-        movement = enemy.Movement;
-        attackSystem = enemy.AttackSystem;
-        input = enemy.Input;
+        movement = player.Movement;
+        attackSystem = player.AttackSystem;
+        input = player.Input;
     }
 
     // Use the factory to set the initial child
@@ -31,7 +31,7 @@ public class GroundedState : State
     private void HandleJump()
     {
         // Check if jumping is restricted
-        if (Enemy.Restrictions.HasFlag(PlayerActionRestrictions.RestrictJump))
+        if (Character.Restrictions.HasFlag(PlayerActionRestrictions.RestrictJump))
         {
             return;
         }
@@ -42,7 +42,7 @@ public class GroundedState : State
     private void HandleAttack()
     {
         // Check if attacking is restricted before allowing the transition
-        if (Enemy.Restrictions.HasFlag(PlayerActionRestrictions.RestrictAttack))
+        if (Character.Restrictions.HasFlag(PlayerActionRestrictions.RestrictAttack))
         {
             return;
         }

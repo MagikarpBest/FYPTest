@@ -4,10 +4,10 @@ public class EnemyAttackState : State
 {
     private EnemyAttack attackSystem;
 
-    public EnemyAttackState(HierarchicalStateMachine stateMachine, Enemy enemy, State parent,
-        ICharacterStateFactory factory) : base(stateMachine, enemy, parent, factory)
+    public EnemyAttackState(HierarchicalStateMachine stateMachine, Enemy character, State parent,
+        ICharacterStateFactory factory) : base(stateMachine, character, parent, factory)
     {
-        attackSystem = enemy.AttackSystem;
+        attackSystem = character.AttackSystem;
     }
 
     protected override State GetInitialState() => Factory.BaseAttack;

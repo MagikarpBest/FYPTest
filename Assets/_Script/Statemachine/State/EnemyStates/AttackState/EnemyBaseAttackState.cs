@@ -5,11 +5,11 @@ public class EnemyBaseAttackState : State
     private EnemyAttack attackSystem;
     private EnemyMovement movement;
 
-    public EnemyBaseAttackState(HierarchicalStateMachine stateMachine, Enemy enemy, State parent,
-        ICharacterStateFactory factory) : base(stateMachine, enemy, parent, factory)
+    public EnemyBaseAttackState(HierarchicalStateMachine stateMachine, Enemy character, State parent,
+        ICharacterStateFactory factory) : base(stateMachine, character, parent, factory)
     {
-        attackSystem = enemy.AttackSystem;
-        movement = enemy.Movement;
+        attackSystem = character.AttackSystem;
+        movement = character.Movement;
     }
 
     protected override State GetTransition()

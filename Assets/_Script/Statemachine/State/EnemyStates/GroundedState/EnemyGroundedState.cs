@@ -6,12 +6,12 @@ public class EnemyGroundedState : State
     private EnemyAttack attackSystem;
     private EnemySensor sensor;
 
-    public EnemyGroundedState(HierarchicalStateMachine stateMachine, Enemy enemy, State parent,
-        ICharacterStateFactory factory) : base(stateMachine, enemy, parent, factory)
+    public EnemyGroundedState(HierarchicalStateMachine stateMachine, Enemy character, State parent,
+        ICharacterStateFactory factory) : base(stateMachine, character, parent, factory)
     {
-        movement = enemy.Movement;
-        attackSystem = enemy.AttackSystem;
-        sensor = enemy.Sensor;
+        movement = character.Movement;
+        attackSystem = character.AttackSystem;
+        sensor = character.Sensor;
     }
     
     protected override State GetInitialState()

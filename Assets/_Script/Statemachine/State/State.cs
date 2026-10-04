@@ -6,14 +6,14 @@ public abstract class State
     private readonly HierarchicalStateMachine StateMachine;
     public readonly State Parent;
     public State ActiveChild;
-    protected readonly ICharacter Enemy;
+    protected readonly ICharacter Character;
 
-    public State(HierarchicalStateMachine stateMachine, ICharacter enemy, State parent,
+    public State(HierarchicalStateMachine stateMachine, ICharacter character, State parent,
         ICharacterStateFactory factory)
     {
         StateMachine = stateMachine;
         Factory = factory;
-        Enemy = enemy;
+        Character = character;
         Parent = parent;
     }
 
