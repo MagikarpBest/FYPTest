@@ -12,7 +12,7 @@ namespace GameApp.SceneManagement
         public event Action<SceneGroup> SceneGroupLoaded;
         public event Action<Scene> SceneAdditivelyLoaded;
 
-        [SerializeField] private SceneGroup[] sceneGroups;
+        [SerializeField] private SceneGroup[] _sceneGroups;
 
         private float _targetProgress = 0f;
         private bool _isLoading = false;
@@ -27,8 +27,24 @@ namespace GameApp.SceneManagement
 
         private void Awake()
         {
+            LoadSceneGroupsFromResources();
             sceneGroupManager.OnSceneLoaded += sceneName => Debug.Log("Scene loaded: " + sceneName);
         }
+
+        private void LoadSceneGroupsFromResources()
+        {
+            _sceneGroups = Resources.LoadAll<SceneGroup>("");
+
+            if (_sceneGroups.Length == 0)
+            {
+                Debug.LogWarning($"{nameof(SceneLoader)} could not find any SceneGroup assets " +
+                    "inside a Resources folder.");
+                return;
+            }
+
+            Debug.Log($"Loaded {_sceneGroups.Length} scene groups from Resources.");
+        }
+
 
         private async Task<bool> LoadSceneGroupInternal(SceneGroup group)
         {
@@ -49,17 +65,17 @@ namespace GameApp.SceneManagement
 
         public Task<bool> LoadSceneGroup(int index)
         {
-            if (index < 0 || index >= sceneGroups.Length)
+            if (index < 0 || index >= _sceneGroups.Length)
             {
                 Debug.LogError(this + " Invalid scene group index " + index);
                 return Task.FromResult(false);
             }
-            return LoadSceneGroupInternal(sceneGroups[index]);
+            return LoadSceneGroupInternal(_sceneGroups[index]);
         }
 
         public Task<bool> LoadSceneGroup(string name)
         {
-            var group = Array.Find(sceneGroups, g => g.Name == name);
+            var group = Array.Find(_sceneGroups, g => g.Name == name);
             if (group == null)
             {
                 Debug.LogError(this + " Invalid scene group name: " + name);
@@ -113,7 +129,7 @@ namespace GameApp.SceneManagement
         [InspectorButton("Load First Scene Group", true)]
         private void TestLoadSceneGroup()
         {
-            GameManager.Instance.SwitchScene(sceneGroups[0].Name);
+            GameManager.Instance.SwitchScene(_sceneGroups[0].Name);
         }
     }
 
