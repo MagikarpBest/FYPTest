@@ -1,15 +1,13 @@
 using UnityEngine;
 
-public class LaunchState : State
+public class EnemyLaunchState : State
 {
-    private PlayerMovementRB movement;
-    private PlayerInputManager input;
+    private EnemyMovement movement;
 
-    public LaunchState(HierarchicalStateMachine stateMachine, Player player, State parent,
-        ICharacterStateFactory factory) : base(stateMachine, player, parent, factory)
+    public EnemyLaunchState(HierarchicalStateMachine stateMachine, Enemy enemy, State parent,
+        ICharacterStateFactory factory) : base(stateMachine, enemy, parent, factory)
     { 
-        movement = player.Movement; 
-        input = player.Input;
+        movement = enemy.Movement; 
     }
 
     protected override State GetInitialState() => null;

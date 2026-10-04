@@ -23,13 +23,13 @@ public class EnemyStateFactory : ICharacterStateFactory
         Dead = new EnemyDeadState(context, enemy, null, this);
 
         Grounded = new EnemyGroundedState(context, enemy, Alive, this);
-        Airborne = new AirborneState(context, enemy, Alive, this);
+        Airborne = new EnemyAirborneState(context, enemy, Alive, this);
 
         Idle = new EnemyIdleState(context, enemy, Grounded, this);
         Run = new EnemyRunState(context, enemy, Grounded, this);
 
-        Fall = new FallState(context, enemy, Airborne, this);
-        Launch = new LaunchState(context, enemy, Airborne, this);
+        Fall = new EnemyFallState(context, enemy, Airborne, this);
+        Launch = new EnemyLaunchState(context, enemy, Airborne, this);
 
         Attack = new EnemyAttackState(context, enemy, Alive, this);
         BaseAttack = new EnemyBaseAttackState(context, enemy, Attack, this);

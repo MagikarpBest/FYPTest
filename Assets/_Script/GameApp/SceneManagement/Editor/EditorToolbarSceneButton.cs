@@ -58,6 +58,8 @@ namespace GameApp.SceneManagement.Editor
         {
             SearchWindow.Open(new SearchWindowContext(GUIUtility.GUIToScreenPoint(Event.current.mousePosition)), new SceneSearchableMenu());
         }
+        
+        
         private static void OpenScene(string path)
         {
             if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())

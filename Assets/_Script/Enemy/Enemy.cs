@@ -55,5 +55,6 @@ public class Enemy : MonoBehaviour, ICharacter
         // this have to be last or else error
         stateMachine.Init(factory.Alive);
 
+        Debug.Log("HELLO");
     }
 }

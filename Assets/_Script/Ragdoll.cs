@@ -15,7 +15,7 @@ public class Ragdoll : MonoBehaviour
     {
         foreach (Rigidbody rb in rbs)
         {
-            rb.velocity = velocity;
+            rb.linearVelocity = velocity;
             rb.angularVelocity = angularVelocity;
         }
     }
