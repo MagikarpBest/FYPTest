@@ -29,7 +29,7 @@ public class EnemyRunState : State
     }
 
     protected override void OnEnter()
-    {Debug.Log("Enter Run");
+    {
     }
 
     protected override void OnExit()
