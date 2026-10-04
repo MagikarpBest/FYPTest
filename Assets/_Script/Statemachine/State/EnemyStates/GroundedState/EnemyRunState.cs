@@ -4,19 +4,23 @@ public class EnemyRunState : State
 {
     private EnemyMovement movement;
     private EnemySensor sensor;
+    private EnemyAttack attack;
     
     public EnemyRunState(HierarchicalStateMachine stateMachine, Enemy character, State parent,
         ICharacterStateFactory factory)
         : base(stateMachine, character, parent, factory)
     {
         movement = character.Movement;
+        sensor = character.Sensor;
     }
 
     protected override State GetInitialState() => null;
 
     protected override State GetTransition()
     {
-        if (!movement.IsMoving)
+        bool shouldStop = !sensor.HasTarget || sensor.DistanceToTarget <= attack.AttackRange;
+
+        if (shouldStop)
         {
             return Factory.Idle;
         }
@@ -25,7 +29,7 @@ public class EnemyRunState : State
     }
 
     protected override void OnEnter()
-    {
+    {Debug.Log("Enter Run");
     }
 
     protected override void OnExit()
