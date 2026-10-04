@@ -469,8 +469,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameApp.SceneManagement.SceneLoader
   sceneGroups:
   - {fileID: 11400000, guid: 9f10db004129a7146aeb7421735e0f9f, type: 2}
-  - {fileID: 11400000, guid: 09f7df1a349e2b24f85eea39da50ba72, type: 2}
   - {fileID: 11400000, guid: 38592306e08feb34d83160e8cf8e350b, type: 2}
+  - {fileID: 11400000, guid: 09f7df1a349e2b24f85eea39da50ba72, type: 2}
   _loadingScreen: {fileID: 1569796358}
   _loadingCanvasGroup: {fileID: 1569796360}
   _loadTransitionDuration: 0.5

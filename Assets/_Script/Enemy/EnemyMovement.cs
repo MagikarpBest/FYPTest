@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyMovement : MonoBehaviour, ILaunchable
+public class EnemyMovement : MonoBehaviour, ILaunchable, IMovementController
 {
     [Header("Enemy Settings")]
     [SerializeField] private LayerMask groundLayer;
@@ -11,22 +11,15 @@ public class EnemyMovement : MonoBehaviour, ILaunchable
 
     private Animator animator;
     private NavMeshAgent navMeshAgent;
-
-
-    // movement
     private Rigidbody rigidBody;
-    private bool isGrounded = true;
-    private bool isMoving;
-    private bool isLaunched;
+
+    public bool IsGrounded { get; private set; } = true;
+    public bool IsMoving { get; private set; }
+    public bool IsLaunched { get; private set; }
+    public bool IsFalling { get; private set; }
+    
     private float groundCheckDistance = 0.7f;
     private float launchTimer;
-
-  
-
-    public bool IsGrounded => isGrounded;
-    public bool IsMoving => isMoving;
-
-
 
     public void Init(NavMeshAgent agent, Rigidbody rb,Animator animator)
     {
@@ -40,18 +33,17 @@ public class EnemyMovement : MonoBehaviour, ILaunchable
     {
         CheckGround();
         
-        if (isLaunched)
+        if (IsLaunched)
         {
             launchTimer -= Time.deltaTime;
             LaunchCheck();
         }
 
     }
-
-    // GENERAL STUFF
+    
     private void CheckGround()
     {
-        isGrounded = false;
+        IsGrounded = false;
 
         if (Physics.Raycast(
                 transform.position,
@@ -61,27 +53,25 @@ public class EnemyMovement : MonoBehaviour, ILaunchable
                 groundLayer
             ))
         {
-            isGrounded = true;
+            IsGrounded = true;
         }
     }
     
-    
-    // MOVEMENT
     public void Move(Vector3 target)
     {
-        if (navMeshAgent == null || isLaunched)
+        if (navMeshAgent == null || IsLaunched)
         {
-            isMoving = false;
+            IsMoving = false;
             return;
         }
-        isMoving = true;
+        IsMoving = true;
         navMeshAgent.SetDestination(target);
         animator.SetFloat("Speed", 1.0f);
 
     }
     public void StopMove()
     {
-        isMoving = false;
+        IsMoving = false;
         navMeshAgent.ResetPath();
         animator.SetFloat("Speed", 0.0f); 
     }
@@ -101,22 +91,22 @@ public class EnemyMovement : MonoBehaviour, ILaunchable
         rigidBody.isKinematic = false;
         rigidBody.linearVelocity = force;
 
-        isGrounded = false;
-        isLaunched = true;
+        IsGrounded = false;
+        IsLaunched = true;
 
         launchTimer = recoverDelay;
     }
 
     private void LaunchCheck()
     {
-        if (!isLaunched || launchTimer > 0)
+        if (!IsLaunched || launchTimer > 0)
         {
             return;
         }
 
-        if (isGrounded && rigidBody.linearVelocity.y <= 0)
+        if (IsGrounded && rigidBody.linearVelocity.y <= 0)
         {
-            isLaunched = false;
+            IsLaunched = false;
             RecoverFromLaunch();
         }
     }
