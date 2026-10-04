@@ -1,14 +1,24 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(SphereCollider))]
 public class Bomb : MonoBehaviour
 {
     [Header("Reference")]
-    [SerializeField] Rigidbody rb;
+    private Rigidbody rb;
+    private Collider col;
 
     [SerializeField] private float explosionRadius = 5f;
     [SerializeField] private float explosionForce = 5f;
     private bool _hasExploded;
+
+    private void Awake()
+    {
+        col = GetComponent<Collider>();
+        rb = GetComponent<Rigidbody>();
+    }
 
     public void Init(float explosionRadius, float explosionForce)
     {
@@ -17,6 +27,7 @@ public class Bomb : MonoBehaviour
     }
     public void Hold(Transform bombHoldPoint)
     {
+        col.enabled = false;
         rb.isKinematic = true;
         transform.SetParent(bombHoldPoint);
         
@@ -30,6 +41,7 @@ public class Bomb : MonoBehaviour
     {
         transform.SetParent(null);
         rb.isKinematic = false;
+        col.enabled = true;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         Vector3 force = throwDirection.normalized * throwForce + Vector3.up * upwardForce;
 
