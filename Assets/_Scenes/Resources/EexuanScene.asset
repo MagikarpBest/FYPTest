@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameApp.SceneManagement.SceneGroup
   Name: EexuanScene
   Scenes:
-  - asset: {fileID: 102900000, guid: 26ba1b9a94b60694c8ff7e6d7d4a2a20, type: 3}
-    guid: 26ba1b9a94b60694c8ff7e6d7d4a2a20
+  - asset: {fileID: 102900000, guid: 99c9720ab356a0642a771bea13969a05, type: 3}
+    guid: 99c9720ab356a0642a771bea13969a05
   - asset: {fileID: 102900000, guid: b7792bd95b475ae43a4488902d22a987, type: 3}
     guid: b7792bd95b475ae43a4488902d22a987
   - asset: {fileID: 102900000, guid: 6b4326e8918d9b94d97f922cae975cbe, type: 3}

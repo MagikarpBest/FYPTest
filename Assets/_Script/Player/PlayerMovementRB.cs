@@ -20,9 +20,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable, IMovementController
     
     private Transform cameraTransform;
     public bool IsGrounded { get; private set; } = true;
-    public bool IsMoving { get; private set; }
     public bool IsLaunched { get; private set; }
-    public bool IsFalling { get; private set; }
     
     private Vector3 currentMoveDirection;
     private Vector3 moveVelocity;

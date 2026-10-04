@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class GroundedState : State
 {
     private PlayerMovementRB movement;
@@ -15,7 +17,7 @@ public class GroundedState : State
     // Use the factory to set the initial child
     protected override State GetInitialState()
     {
-        if (movement.IsMoving)
+        if (input.MoveInput != Vector2.zero)
         {
             return Factory.Run;
         }

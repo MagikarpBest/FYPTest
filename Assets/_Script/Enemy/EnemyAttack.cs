@@ -48,12 +48,10 @@ public class EnemyAttack : MonoBehaviour, IAttackSystem
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, attackRange, playerLayerMask);
         animator.SetTrigger(AnimationParameter.AttackTrigger1);
-        foreach (IDamageable damageable in hits)
+        foreach (Collider hit in hits)
         {
-            if (damageable == null)
-                yield break;
-
-
+            if (!hit.TryGetComponent<IDamageable>(out var damageable)) continue;
+            
             DamageData damageData = new DamageData(
                 attackDamage,
                 DamageType.Physical,

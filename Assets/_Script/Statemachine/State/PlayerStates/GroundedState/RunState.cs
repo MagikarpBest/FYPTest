@@ -17,7 +17,7 @@ public class RunState : State
 
     protected override State GetTransition()
     {
-        if (!movement.IsMoving)
+        if (input.MoveInput == Vector2.zero)
         {
             return Factory.Idle;
         }
@@ -33,7 +33,12 @@ public class RunState : State
     {
         //movement.StopMove();
     }
-
+    
+    protected override void OnTick(float deltaTime)
+    {
+         movement.RotateTowardsMovement();
+    }
+    
     protected override void OnPhysicsTick(float fixedDeltaTime)
     {
         movement.Move(input.MoveInput);

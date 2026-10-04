@@ -31,9 +31,9 @@ public class Player : MonoBehaviour, ICharacter
     
     private HierarchicalStateMachine stateMachine;
     
-    private Collider Collider;
-    private Rigidbody Rigidbody;
-    private Animator Animator;
+    public Collider Collider { get; private set; }
+    public Rigidbody Rigidbody { get; private set; }
+    public Animator Animator { get; private set; }
 
     [SerializeField] private Transform model;
     private Transform cameraTransform;
