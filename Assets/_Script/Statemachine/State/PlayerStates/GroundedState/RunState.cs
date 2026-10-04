@@ -36,7 +36,7 @@ public class RunState : State
     
     protected override void OnTick(float deltaTime)
     {
-         movement.RotateTowardsMovement();
+        movement.RotateTowardsMovement();
     }
     
     protected override void OnPhysicsTick(float fixedDeltaTime)

@@ -31,6 +31,11 @@ public class JumpState : State
         movement.Jump();
     }
 
+    protected override void OnTick(float deltaTime)
+    {
+        movement.RotateTowardsMovement();
+    }
+    
     protected override void OnPhysicsTick(float fixedDeltaTime)
     {
         movement.Move(input.MoveInput);
