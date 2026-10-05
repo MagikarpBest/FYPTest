@@ -22,7 +22,7 @@ public class Destructible : MonoBehaviour, IDamageable
 
     [Header("Destroy")]
     [Tooltip("Spawned (unparented) at the moment of destruction. Leave empty for no particle.")]
-    [SerializeField] private ParticleSystem _destroyEffectPrefab;
+    [SerializeField] private GameObject _destroyEffectPrefab;
     [Tooltip("Local-space offset from this object's pivot where the effect spawns.")]
     [SerializeField] private Vector3 _destroyEffectOffset;
     [Tooltip("Seconds before the whole GameObject is removed. Keep it longer than the destroy animation/effect.")]
@@ -100,32 +100,45 @@ public class Destructible : MonoBehaviour, IDamageable
         DOTween.Complete(this);
 
         DeathEvents.Raise(new DeathInfo(transform.position, gameObject, _manaValue, _currencyValue));
-        SetCollidersEnabled(false);
-        SetRenderersEnabled(false);
+        
+        Destroy(gameObject);
+        
+        
         SpawnDestroyEffect();
-
-        if (TryGetComponent<Rigidbody>(out var rb))
-        {
-            rb.isKinematic = true;
-        }
+        
+        
+        //No point 
+        // SetCollidersEnabled(false);
+        // SetRenderersEnabled(false);
+        
+        // if (TryGetComponent<Rigidbody>(out var rb))
+        // {
+        //     rb.isKinematic = true;
+        // }
 
         // Remove the whole thing after the effect has had time to finish.
-        Destroy(gameObject, _destroyDelay);
+        //Destroy(gameObject, _destroyDelay);
     }
 
     protected virtual void SpawnDestroyEffect()
     {
-        if (_destroyEffectPrefab == null)
-            return;
-
-        Vector3 position = transform.TransformPoint(_destroyEffectOffset);
-        ParticleSystem effect = Instantiate(_destroyEffectPrefab, position, transform.rotation);
-
-        ParticleSystem.MainModule main = effect.main;
-        float lifetime = main.duration + main.startLifetime.constantMax;
-
-        effect.Play();
-        Destroy(effect.gameObject, lifetime);
+        
+        
+        
+        //if (_destroyEffectPrefab == null) return
+        //Vector3 position = transform.TransformPoint(_destroyEffectOffset);
+        
+        //VFX Should be its own script and own pooling
+        // ParticleSystem effect = Instantiate(_destroyEffectPrefab, position, transform.rotation);
+        //
+        // ParticleSystem.MainModule main = effect.main;
+        // float lifetime = main.duration + main.startLifetime.constantMax;
+        //
+        // effect.Play();
+        // Destroy(effect.gameObject, lifetime);
+        //Dont handle destruction here
+        //Obj should always handle their own destruction like vfx handle their own cleanup 
+        //Destruction prefab handles their own cleanup
     }
 
     // Set exception when needed like:

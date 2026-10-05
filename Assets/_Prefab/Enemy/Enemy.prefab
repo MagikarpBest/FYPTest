@@ -192,7 +192,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySensor
   isDebug: 0
-  detectionRadius: 10
+  detectionRadius: 20
   playerLayer:
     serializedVersion: 2
     m_Bits: 64

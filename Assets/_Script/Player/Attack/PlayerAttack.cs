@@ -3,7 +3,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerAttack : MonoBehaviour
+public class PlayerAttack : MonoBehaviour, IAttackSystem
 {
     [SerializeField] private bool isDebug;
     [SerializeField] private Transform attackPoint;
@@ -11,9 +11,9 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private DamageConfig damageConfig;
     [SerializeField] private LayerMask enemyLayerMask;
 
-    public bool isAttacking { get; private set; }
+    public bool IsAttacking { get; private set; }
     private bool canCombo;
-    public bool comboQueued { get; private set; }
+    public bool IsComboQueued { get; private set; }
     private int comboIndex = 1;
     private float comboResetTimer;
 
@@ -38,13 +38,13 @@ public class PlayerAttack : MonoBehaviour
 
     public void RequestAttack()
     {
-        if (!isAttacking)
+        if (!IsAttacking)
         {
             StartAttack();
         }
         else if (canCombo)
         {
-            comboQueued = true;
+            IsComboQueued = true;
             //Debug.Log("Combo Queued!");
         }
     }
@@ -62,8 +62,8 @@ public class PlayerAttack : MonoBehaviour
             case 3: animator.SetTrigger(AnimationParameter.AttackTrigger3); break;
         }
         
-        isAttacking = true;
-        comboQueued = false;
+        IsAttacking = true;
+        IsComboQueued = false;
         canCombo = false;
 
         PerformDamageDetection();
@@ -119,13 +119,13 @@ public class PlayerAttack : MonoBehaviour
     public void OnAttackAnimationEnd()
     {
         DisableComboWindow();
-        animator.SetBool(AnimationParameter.IsComboQueued,comboQueued);
+        animator.SetBool(AnimationParameter.IsComboQueued,IsComboQueued);
 
-        if (!comboQueued)
+        if (!IsComboQueued)
         {
             comboIndex = 1;
         }
-        isAttacking = false;
+        IsAttacking = false;
         //Debug.Log($"Attack animation ended. Queued={comboQueued}");
         //Debug.Log($"After end: isAttacking={isAttacking}, comboIndex={comboIndex}");
 

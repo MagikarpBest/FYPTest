@@ -19,7 +19,7 @@ public class MainMenuScreenUI : ScreenBase
     [Tooltip("Pushed via GameScreenManager when clicked. Leave empty if not wired up yet.")]
     [SerializeField] private ScreenBase _optionsScreen;
     [SerializeField] private ScreenBase _creditScreen;
-    [SerializeField] private string _playSceneName = "TestTransition_1";
+    [SerializeField] private string _playSceneName = "EexuanScene";
 
     [Header("Selection Indicator")]
     [Tooltip("The Image/Object that visually highlights the currently selected button.")]

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class EnemyAttack : MonoBehaviour
+public class EnemyAttack : MonoBehaviour, IAttackSystem
 {
     [SerializeField] private bool isDebug = false;
     [Header("Attack Settings")]
@@ -11,8 +11,7 @@ public class EnemyAttack : MonoBehaviour
     [SerializeField] private float attackDamage = 1f;
     [SerializeField] private float attackTakeTime = 1f;
     [SerializeField] private LayerMask playerLayerMask;
-
-
+    
     private Animator animator;
     // attack
     private bool isAttacking;
@@ -49,14 +48,10 @@ public class EnemyAttack : MonoBehaviour
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, attackRange, playerLayerMask);
         animator.SetTrigger(AnimationParameter.AttackTrigger1);
-        foreach (var VARIABLE in hits)
+        foreach (Collider hit in hits)
         {
-            IDamageable damageable = VARIABLE.GetComponent<IDamageable>();
-
-            if (damageable == null)
-                yield break;
-
-
+            if (!hit.TryGetComponent<IDamageable>(out var damageable)) continue;
+            
             DamageData damageData = new DamageData(
                 attackDamage,
                 DamageType.Physical,

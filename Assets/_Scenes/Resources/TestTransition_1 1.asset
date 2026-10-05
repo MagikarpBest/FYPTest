@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dc14f7542b8a9c4b927d04c9390b026, type: 3}
+  m_Name: TestTransition_1 1
+  m_EditorClassIdentifier: Assembly-CSharp::GameApp.SceneManagement.SceneGroup
+  Name: TestTransition_1
+  Scenes:
+  - asset: {fileID: 102900000, guid: 7c72c7eb812324944ad723ab88efec41, type: 3}
+    guid: 7c72c7eb812324944ad723ab88efec41
+  - asset: {fileID: 102900000, guid: b7792bd95b475ae43a4488902d22a987, type: 3}
+    guid: b7792bd95b475ae43a4488902d22a987

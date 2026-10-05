@@ -11,6 +11,8 @@ public class EnemyStatus : MonoBehaviour, IDamageable
     [Header("Hit setting")]
     [SerializeField] private float invincibilityDuration = 1f;
     private float invincibilityTimer;
+    
+    public float CurrentHealth => currentHealth;
 
     // Event
     public event Action<float> OnEnemyHealthChange;
@@ -23,12 +25,12 @@ public class EnemyStatus : MonoBehaviour, IDamageable
 
     public DamageResult TakeDamage(DamageData damageData)
     {
-        if (currentHealth <= 0)
-        {
-            // count as death for now
-            Destroy(gameObject);
-            return DamageResult.Ignored;
-        }
+        // if (currentHealth <= 0)
+        // {
+        //     // count as death for now
+        //     Destroy(gameObject);
+        //     return DamageResult.Ignored;
+        // }
 
         float damage = damageData.Damage;
         Debug.Log("Damage receivedw hit");  
