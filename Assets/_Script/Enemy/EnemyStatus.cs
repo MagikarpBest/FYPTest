@@ -1,7 +1,8 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class EnemyStatus : MonoBehaviour, IDamageable
+public class EnemyStatus : MonoBehaviour
 {
     // move stats to enemy status
     [Header("Health")]
@@ -21,22 +22,30 @@ public class EnemyStatus : MonoBehaviour, IDamageable
     {
         currentHealth = maxHealth;
     }
-    
 
-    public DamageResult TakeDamage(DamageData damageData)
+
+    // this only - hp, all the logic check enemydamagereceiver
+    public DamageResult ReceiveDamage(float damage)
     {
-        // if (currentHealth <= 0)
-        // {
-        //     // count as death for now
-        //     Destroy(gameObject);
-        //     return DamageResult.Ignored;
-        // }
-
-        float damage = damageData.Damage;
-        Debug.Log("Damage receivedw hit");  
+        
+        Debug.Log("Damage received hit");  
+        
         currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            // count as death for now
+            Die();
+            return DamageResult.Blocked;
+        }
+        
         // trigger animation after take damage
-        OnEnemyHealthChange?.Invoke(damage);
+        //OnEnemyHealthChange?.Invoke(damage);
+        
         return DamageResult.Damaged;
+    }
+    
+    private void Die()
+    {
+        Debug.Log("Enemy Die");
     }
 }

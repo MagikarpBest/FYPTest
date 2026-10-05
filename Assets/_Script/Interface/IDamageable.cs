@@ -18,6 +18,9 @@ Use case:
         default: ignore.
     }
 */
+
+using UnityEngine;
+
 public interface IDamageable
 {
     DamageResult TakeDamage(DamageData damageData);
@@ -65,15 +68,26 @@ public readonly struct DamageData
     public readonly float Damage;
     public readonly DamageType DamageType;
     public readonly AttackPowerLevel PowerLevel;
+    public readonly Vector3 SourcePosition;
 
     public DamageData(
         float damage,
         DamageType damageType,
         AttackPowerLevel powerLevel)
+        : this(damage, damageType, powerLevel, Vector3.zero)
+    {
+    }
+    
+    public DamageData(
+        float damage,
+        DamageType damageType,
+        AttackPowerLevel powerLevel,
+        Vector3 sourcePosition)
     {
         Damage = damage;
         DamageType = damageType;
         PowerLevel = powerLevel;
+        SourcePosition = sourcePosition;
     }
 }
 #endregion

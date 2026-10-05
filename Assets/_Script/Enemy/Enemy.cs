@@ -14,6 +14,7 @@ public class Enemy : MonoBehaviour, ICharacter
     public EnemyMovement Movement { get; private set; }
     public EnemyAttack AttackSystem { get; private set; }
     public EnemyStatus Status { get; private set; }
+    public EnemyDamageReceiver DamageReceiver{ get; private set; }
 
     private HierarchicalStateMachine stateMachine;
 
@@ -39,7 +40,9 @@ public class Enemy : MonoBehaviour, ICharacter
         rigidBody = GetComponent<Rigidbody>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        
         Status = GetComponent<EnemyStatus>();
+        DamageReceiver = GetComponent<EnemyDamageReceiver>();
 
         Sensor = GetComponent<EnemySensor>();
         Movement = GetComponent<EnemyMovement>();

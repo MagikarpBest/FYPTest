@@ -17,8 +17,10 @@ GameObject:
   - component: {fileID: 1267947385819199890}
   - component: {fileID: 6627930846477673684}
   - component: {fileID: 6211738648243291875}
+  - component: {fileID: 4227423814130045752}
   - component: {fileID: 1086482805445020356}
   - component: {fileID: 2529706611399307442}
+  - component: {fileID: 562189993477470392}
   - component: {fileID: 6340859883278463331}
   m_Layer: 10
   m_Name: Enemy
@@ -196,6 +198,21 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &4227423814130045752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 396907225012107327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b016a42d38a8c694eac4a426c34a176e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyPhysicalShield
+  owner: {fileID: 8380829158805114627}
+  durability: 5
+  blockAngle: 120
 --- !u!114 &1086482805445020356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,7 +245,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4475712a42f41f48a061e08b034c1f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HierarchicalStateMachine
-  isDebug: 1
+  isDebug: 0
+--- !u!114 &562189993477470392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 396907225012107327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5005686474c346c45951b282c08a1ff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDamageReceiver
 --- !u!114 &6340859883278463331
 MonoBehaviour:
   m_ObjectHideFlags: 0

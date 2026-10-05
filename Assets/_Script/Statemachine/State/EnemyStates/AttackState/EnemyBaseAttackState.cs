@@ -23,8 +23,10 @@ public class EnemyBaseAttackState : State
     }
 
     protected override void OnEnter()
-    {
-        Debug.Log("On base attackstate enter ");
+    {        
+        // theres some enter bug fix later
+
+        //Debug.Log("On base attackstate enter ");
         movement.StopMove();
         
         // If we are entering this state and we have a queue, it means we are continuing a combo
