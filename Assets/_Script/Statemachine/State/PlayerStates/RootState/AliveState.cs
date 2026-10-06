@@ -14,10 +14,10 @@ public class AliveState : State
 
     protected override State GetTransition()
     {
-        if (status.CurrentHealth <= 0)
-        {
-            return Factory.Dead;
-        }
+        // if (status.CurrentHealth <= 0)
+        // {
+        //     return Factory.Dead;
+        // }
         return null;
     }
 

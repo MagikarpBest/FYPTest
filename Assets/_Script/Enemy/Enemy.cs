@@ -78,13 +78,13 @@ public class Enemy : MonoBehaviour, ICharacter
     public void EnableRagdoll()
     {
         if (ragdollRbs == null || ragdollRbs.Length == 0 || ragdollCols == null || ragdollCols.Length == 0) return;
-
-        Collider.enabled = false;
-        Rigidbody.isKinematic = true;
-        Animator.enabled = false;
+        
         Sensor.enabled = false;
         Movement.enabled = false;
         AttackSystem.enabled = false;
+        Collider.enabled = false;
+        Rigidbody.isKinematic = true;
+        Animator.enabled = false;
         
         foreach (Collider col in ragdollCols) col.enabled = true;
         foreach (Rigidbody rb in ragdollRbs) rb.isKinematic = false;

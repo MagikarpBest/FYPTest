@@ -71,6 +71,7 @@ public class Player : MonoBehaviour, ICharacter
     {
         if (ragdollRbs == null || ragdollRbs.Length == 0 || ragdollCols == null || ragdollCols.Length == 0) return;
         
+        Movement.StopMove();
         Animator.enabled = true;
         Rigidbody.isKinematic = false;
         Collider.enabled = true;
@@ -79,7 +80,6 @@ public class Player : MonoBehaviour, ICharacter
         SkillController.enabled = true;
         ModeController.enabled = true;
         DamageReceiver.enabled = true;
-        
         foreach (Collider col in ragdollCols) col.enabled = false;
         foreach (Rigidbody rb in ragdollRbs) rb.isKinematic = true;
     }
