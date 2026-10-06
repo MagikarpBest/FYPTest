@@ -3,13 +3,15 @@ using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;    
+using System.Collections.Generic;
+using System.Reflection;
 
 public class SigmaPBRGUI : ShaderGUI
 {
-    private readonly MaterialHeaderScopeList materialScopeList = new MaterialHeaderScopeList();
-    private MaterialEditor materialEditor;
-    private bool firstTimeOpen = true;
-    private const int queueOffsetRange = 50;
+    protected readonly MaterialHeaderScopeList materialScopeList = new MaterialHeaderScopeList();
+    protected MaterialEditor materialEditor;
+    protected bool firstTimeOpen = true;
+    protected const int queueOffsetRange = 50;
     
     public struct PBRShaderProperty
     {
@@ -74,40 +76,40 @@ public class SigmaPBRGUI : ShaderGUI
         Always,
     }
     
-    private string[] surfaceTypeNames = Enum.GetNames(typeof(SurfaceType));
-    private string[] renderFaceNames = Enum.GetNames(typeof(RenderFace));
-    private string[] blendFunctionNames = Enum.GetNames(typeof(BlendFunction));
-    private string[] zWriteControlNames = Enum.GetNames(typeof(ZWriteControl));
-    private string[] queueControlNames =  Enum.GetNames(typeof(QueueControl));
-    private string[] compareFunctionNames = Enum.GetNames(typeof(CompareFunction));
+    protected string[] surfaceTypeNames = Enum.GetNames(typeof(SurfaceType));
+    protected string[] renderFaceNames = Enum.GetNames(typeof(RenderFace));
+    protected string[] blendFunctionNames = Enum.GetNames(typeof(BlendFunction));
+    protected string[] zWriteControlNames = Enum.GetNames(typeof(ZWriteControl));
+    protected string[] queueControlNames =  Enum.GetNames(typeof(QueueControl));
+    protected string[] compareFunctionNames = Enum.GetNames(typeof(CompareFunction));
     
-    private PBRShaderProperty textureFilter = new("_TextureFilter", "Texture Filter");
-    private PBRShaderProperty textureWrap = new("_TextureWrap", "Texture Wrap");
-        
-    private PBRShaderProperty useTriplanarMapping = new("_UseTriplanarMapping", "Use Triplanar Mapping");
-    private PBRShaderProperty triplanarTile = new("_TriplanarTile", "Triplanar Tile");
-    private PBRShaderProperty triplanarBlendOffset = new("_TriplanarBlendOffset", "Triplanar Blend Offset");
-    private PBRShaderProperty triplanarBlendExponent = new("_TriplanarBlendExponent", "Triplanar Blend Exponent");
-    
+    protected PBRShaderProperty textureFilter = new("_TEXTUREFILTER", "Texture Filter");
+    protected PBRShaderProperty textureWrap = new("_TEXTUREWRAP", "Texture Wrap");
+
+    protected PBRShaderProperty useTriplanarMapping = new("_TRIPLANAR_MAPPING", "Use Triplanar Mapping");
+    protected PBRShaderProperty triplanarTile = new("_TriplanarTile", "Triplanar Tile");
+    protected PBRShaderProperty triplanarBlendOffset = new("_TriplanarBlendOffset", "Triplanar Blend Offset");
+    protected PBRShaderProperty triplanarBlendExponent = new("_TriplanarBlendExponent", "Triplanar Blend Exponent");
+
     //Base map
-    private PBRShaderProperty baseColor = new("_BaseColor", "Base Color");
-    private PBRShaderProperty baseTexture = new("_BaseTexture", "Base Texture");
+    protected PBRShaderProperty baseColor = new("_BaseColor", "Base Color");
+    protected PBRShaderProperty baseTexture = new("_BaseTexture", "Base Texture");
     private PBRShaderProperty useSpecularSetup = new("_UseSpecularSetup", "Use Specular Setup");
-    private PBRShaderProperty metallicMap = new("_MetallicMap", "Metallic Map");
-    private PBRShaderProperty metallic = new("_Metallic", "Metallic");
-    private PBRShaderProperty specularMap = new("_SpecularMap", "Specular Map");
-    private PBRShaderProperty specularColor = new("_SpecularColor", "Specular Color");
-    private PBRShaderProperty smoothnessMap = new("_SmoothnessMap", "Smoothness Map");
-    private PBRShaderProperty smoothness = new("_Smoothness", "Smoothness");
-    private PBRShaderProperty convertFromRoughness = new("_ConvertFromRoughness", "Convert From Roughness");
-    private PBRShaderProperty normalTexture = new("_NormalTexture", "Normal Texture");
-    private PBRShaderProperty normalStrength = new("_NormalStrength", "Normal Strength");
-    private PBRShaderProperty heightMap = new("_HeightMap", "Height Map");
-    private PBRShaderProperty heightMapStrength = new("_HeightMapStrength", "Height Map Strength");
-    private PBRShaderProperty occlusionMap = new("_OcclusionMap", "Occlusion Map");
-    private PBRShaderProperty occlusionStrength = new("_OcclusionStrength", "Occlusion Strength");
-    private PBRShaderProperty emissionMap = new("_EmissionMap", "Emission Map");
-    private PBRShaderProperty emissionColor = new("_EmissionColor", "Emission Color");
+    protected PBRShaderProperty metallicMap = new("_MetallicMap", "Metallic Map");
+    protected PBRShaderProperty metallic = new("_Metallic", "Metallic");
+    protected PBRShaderProperty specularMap = new("_SpecularMap", "Specular Map");
+    protected PBRShaderProperty specularColor = new("_SpecularColor", "Specular Color");
+    protected PBRShaderProperty smoothnessMap = new("_SmoothnessMap", "Smoothness Map");
+    protected PBRShaderProperty smoothness = new("_Smoothness", "Smoothness");
+    protected PBRShaderProperty convertFromRoughness = new("_ConvertFromRoughness", "Convert From Roughness");
+    protected PBRShaderProperty normalTexture = new("_NormalTexture", "Normal Texture");
+    protected PBRShaderProperty normalStrength = new("_NormalStrength", "Normal Strength");
+    protected PBRShaderProperty heightMap = new("_HeightMap", "Height Map");
+    protected PBRShaderProperty heightMapStrength = new("_HeightMapStrength", "Height Map Strength");
+    protected PBRShaderProperty occlusionMap = new("_OcclusionMap", "Occlusion Map");
+    protected PBRShaderProperty occlusionStrength = new("_OcclusionStrength", "Occlusion Strength");
+    protected PBRShaderProperty emissionMap = new("_EmissionMap", "Emission Map");
+    protected PBRShaderProperty emissionColor = new("_EmissionColor", "Emission Color");
 
     //Top map
     private PBRShaderProperty useSeparateTopMap = new("_SeparateTopMap", "Use Top Map");
@@ -130,26 +132,26 @@ public class SigmaPBRGUI : ShaderGUI
     private PBRShaderProperty topEmissionMap = new("_TopEmissionMap", "Emission Map");
     private PBRShaderProperty topEmissionColor = new("_TopEmissionColor", "Emission Color");
     
-    private PBRShaderProperty surface = new("_Surface", "Surface Type");
-    private PBRShaderProperty cutoff = new("_Cutoff", "Alpha Cutoff");
-    private PBRShaderProperty srcBlend = new("_SrcBlend", "Source Blend");
-    private PBRShaderProperty dstBlend = new("_DstBlend", "Destination Blend");
-    private PBRShaderProperty srcBlendAlpha = new("_SrcBlendAlpha", "Source Blend Alpha");
-    private PBRShaderProperty dstBlendAlpha = new("_DstBlendAlpha", "Destination Blend Alpha");
-    private PBRShaderProperty zWrite = new("_ZWrite", "ZWrite");
-    private PBRShaderProperty zTest = new("_ZTest", "ZTest");
-    private PBRShaderProperty cull = new("_Cull", "Render Face");
-    private PBRShaderProperty alphaToMask = new("_AlphaToMask", "Alpha To Mask");
-
-    private PBRShaderProperty castShadows = new("_CastShadows", "Cast Shadows");
-    private PBRShaderProperty receiveShadows = new("_ReceiveShadows", "Receive Shadows");
-    private PBRShaderProperty blend = new("_Blend", "Blend Mode");
-    private PBRShaderProperty alphaClip = new("_AlphaClip", "Alpha Clipping");
-    private PBRShaderProperty zWriteControl = new("_ZWriteControl", "ZWrite Control");
-    private PBRShaderProperty queueOffset = new("_QueueOffset", "Sorting Priority");
-    private PBRShaderProperty queueControl = new("_QueueControl", "Queue Control");
-
-    private void FindProperties(MaterialProperty[] props)
+    protected PBRShaderProperty surface = new("_Surface", "Surface Type");
+    protected PBRShaderProperty cutoff = new("_Cutoff", "Alpha Cutoff");
+    protected PBRShaderProperty srcBlend = new("_SrcBlend", "Source Blend");
+    protected PBRShaderProperty dstBlend = new("_DstBlend", "Destination Blend");
+    protected PBRShaderProperty srcBlendAlpha = new("_SrcBlendAlpha", "Source Blend Alpha");
+    protected PBRShaderProperty dstBlendAlpha = new("_DstBlendAlpha", "Destination Blend Alpha");
+    protected PBRShaderProperty zWrite = new("_ZWrite", "ZWrite");
+    protected PBRShaderProperty zTest = new("_ZTest", "ZTest");
+    protected PBRShaderProperty cull = new("_Cull", "Render Face");
+    protected PBRShaderProperty alphaToMask = new("_AlphaToMask", "Alpha To Mask");
+    
+    protected PBRShaderProperty castShadows = new("_CastShadows", "Cast Shadows");
+    protected PBRShaderProperty receiveShadows = new("_ReceiveShadows", "Receive Shadows");
+    protected PBRShaderProperty blend = new("_Blend", "Blend Mode");
+    protected PBRShaderProperty alphaClip = new("_AlphaClip", "Alpha Clipping");
+    protected PBRShaderProperty zWriteControl = new("_ZWriteControl", "ZWrite Control");
+    protected PBRShaderProperty queueOffset = new("_QueueOffset", "Sorting Priority");
+    protected PBRShaderProperty queueControl = new("_QueueControl", "Queue Control");
+    
+    protected void FindCommonProperties(MaterialProperty[] props)
     {
         textureFilter.prop = FindProperty(textureFilter.name, props, true);
         textureWrap.prop = FindProperty(textureWrap.name, props, true);
@@ -163,7 +165,6 @@ public class SigmaPBRGUI : ShaderGUI
         triplanarBlendExponent.prop = FindProperty(triplanarBlendExponent.name, props, true);
         
         //Base map
-        useSpecularSetup.prop = FindProperty(useSpecularSetup.name, props, true);
         metallicMap.prop = FindProperty(metallicMap.name, props, true);
         metallic.prop = FindProperty(metallic.name, props, true);
         specularMap.prop = FindProperty(specularMap.name, props, true);
@@ -179,6 +180,31 @@ public class SigmaPBRGUI : ShaderGUI
         occlusionStrength.prop = FindProperty(occlusionStrength.name, props, true);
         emissionMap.prop = FindProperty(emissionMap.name, props, true);
         emissionColor.prop = FindProperty(emissionColor.name, props, true);
+        
+        surface.prop = FindProperty(surface.name, props, true);
+        cutoff.prop = FindProperty(cutoff.name, props, true);
+        srcBlend.prop = FindProperty(srcBlend.name, props, true);
+        dstBlend.prop = FindProperty(dstBlend.name, props, true);
+        srcBlendAlpha.prop = FindProperty(srcBlendAlpha.name, props, true);
+        dstBlendAlpha.prop = FindProperty(dstBlendAlpha.name, props, true);
+        zWrite.prop = FindProperty(zWrite.name, props, true);
+        zTest.prop = FindProperty(zTest.name, props, true);
+        cull.prop = FindProperty(cull.name, props, true);
+        alphaToMask.prop = FindProperty(alphaToMask.name, props, true);
+        
+        castShadows.prop = FindProperty(castShadows.name, props, true);
+        receiveShadows.prop = FindProperty(receiveShadows.name, props, true);
+        blend.prop = FindProperty(blend.name, props, true);
+        alphaClip.prop = FindProperty(alphaClip.name, props, true);
+        zWriteControl.prop = FindProperty(zWriteControl.name, props, true);
+        queueOffset.prop = FindProperty(queueOffset.name, props, true);
+        queueControl.prop = FindProperty(queueControl.name, props, true);
+    }
+    protected virtual void FindProperties(MaterialProperty[] props)
+    {
+        FindCommonProperties(props);
+        
+        useSpecularSetup.prop = FindProperty(useSpecularSetup.name, props, true);
         
         //Top map
         useSeparateTopMap.prop = FindProperty(useSeparateTopMap.name, props, true);
@@ -201,25 +227,6 @@ public class SigmaPBRGUI : ShaderGUI
         topEmissionMap.prop = FindProperty(topEmissionMap.name, props, true);
         topEmissionColor.prop = FindProperty(topEmissionColor.name, props, true);
         
-        
-        surface.prop = FindProperty(surface.name, props, true);
-        cutoff.prop = FindProperty(cutoff.name, props, true);
-        srcBlend.prop = FindProperty(srcBlend.name, props, true);
-        dstBlend.prop = FindProperty(dstBlend.name, props, true);
-        srcBlendAlpha.prop = FindProperty(srcBlendAlpha.name, props, true);
-        dstBlendAlpha.prop = FindProperty(dstBlendAlpha.name, props, true);
-        zWrite.prop = FindProperty(zWrite.name, props, true);
-        zTest.prop = FindProperty(zTest.name, props, true);
-        cull.prop = FindProperty(cull.name, props, true);
-        alphaToMask.prop = FindProperty(alphaToMask.name, props, true);
-        
-        castShadows.prop = FindProperty(castShadows.name, props, true);
-        receiveShadows.prop = FindProperty(receiveShadows.name, props, true);
-        blend.prop = FindProperty(blend.name, props, true);
-        alphaClip.prop = FindProperty(alphaClip.name, props, true);
-        zWriteControl.prop = FindProperty(zWriteControl.name, props, true);
-        queueOffset.prop = FindProperty(queueOffset.name, props, true);
-        queueControl.prop = FindProperty(queueControl.name, props, true);
     }
     
     public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
@@ -232,13 +239,17 @@ public class SigmaPBRGUI : ShaderGUI
         this.materialEditor = materialEditor;
         var material = materialEditor.target as Material;
         
+        currentProps = properties;  
         FindProperties(properties);
         
         if (firstTimeOpen)
         {
+            GetDefinedShaderProperties();
+            
             materialScopeList.RegisterHeaderScope(new GUIContent("Surface Options"), 1u << 0, DrawSurfaceProperties);
             materialScopeList.RegisterHeaderScope(new GUIContent("PBR Inputs"), 1u << 1, DrawPBRProperties);
             materialScopeList.RegisterHeaderScope(new GUIContent("Advanced Options"), 1u << 2, DrawAdvancedSettings);
+            materialScopeList.RegisterHeaderScope(new GUIContent("Extra Properties"), 1u << 3, DrawExtraProperties);
             firstTimeOpen = false;
         }   
 
@@ -304,7 +315,7 @@ public class SigmaPBRGUI : ShaderGUI
         material.SetFloat(dstBlendAlpha.id, (float)dstBlendA);
     }
     
-    private void DrawSurfaceProperties(Material material)
+    protected virtual void DrawSurfaceProperties(Material material)
     {
         materialEditor.PopupShaderProperty(surface.prop, surface.info, surfaceTypeNames);
         var surfaceTypeValue = (SurfaceType)material.GetFloat(surface.id);
@@ -442,7 +453,7 @@ public class SigmaPBRGUI : ShaderGUI
         }
     }
 
-    private void DrawPBRProperties(Material material)
+    protected virtual void DrawPBRProperties(Material material)
     {
         materialEditor.ShaderProperty(textureFilter.prop, textureFilter.info);
         materialEditor.ShaderProperty(textureWrap.prop, textureWrap.info);
@@ -515,7 +526,7 @@ public class SigmaPBRGUI : ShaderGUI
         materialEditor.TexturePropertySingleLine(topEmissionMap.info, topEmissionMap.prop, topEmissionColor.prop);
     }
     
-    private void DrawAdvancedSettings(Material material)
+    protected virtual void DrawAdvancedSettings(Material material)
     {
         // If auto queue is used, then use sorting priority field. Otherwise, let user set render queue freely.
         materialEditor.PopupShaderProperty(queueControl.prop, queueControl.info, queueControlNames);
@@ -530,5 +541,34 @@ public class SigmaPBRGUI : ShaderGUI
         }
         
         materialEditor.EnableInstancingField();
+    }
+    
+    protected HashSet<string> definedNames;
+    protected virtual void GetDefinedShaderProperties()
+    {
+        definedNames = new HashSet<string>();
+        
+        FieldInfo[] fields = typeof(SigmaPBRGUI).GetFields( BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        
+        foreach (var f in fields)
+        {
+            if (f.FieldType != typeof(PBRShaderProperty)) continue;
+
+            var p = (PBRShaderProperty)f.GetValue(this);      
+            definedNames.Add(p.name);                    
+        }
+    }
+    
+    protected MaterialProperty[] currentProps;
+    protected void DrawExtraProperties(Material material)
+    {
+        foreach (var prop in currentProps)
+        {
+            if (definedNames.Contains(prop.name)) continue; // already defined, skip
+            if ((prop.flags & (MaterialProperty.PropFlags.HideInInspector | MaterialProperty.PropFlags.PerRendererData)) != 0) continue;
+            if (prop.name.StartsWith("unity_")) continue;
+
+            materialEditor.ShaderProperty(prop, prop.displayName);
+        }
     }
 }

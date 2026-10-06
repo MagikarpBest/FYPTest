@@ -17,7 +17,6 @@ Material:
   - _TEXTUREFILTER_LINEAR
   - _TEXTUREWRAP_REPEAT
   - _TOP_CONVERT_FROM_ROUGHNESS
-  - _TRIPLANAR_MAPPING
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
@@ -97,6 +96,7 @@ Material:
     m_Ints:
     - _ConvertFromRoughness: 1
     - _SeparateTopMap: 1
+    - _TRIPLANAR_MAPPING: 0
     - _TopConvertFromRoughness: 1
     - _TopUseSpecularSetup: 0
     - _UseSpecularSetup: 0
@@ -121,6 +121,8 @@ Material:
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
+    - _TEXTUREFILTER: 0
+    - _TEXTUREWRAP: 0
     - _TextureFilter: 0
     - _TextureWrap: 0
     - _TopBlendExponent: 8

@@ -3,12 +3,12 @@ Shader "SigmaShader/SigmaPBR"
     Properties
     {
     	[KeywordEnum(Linear, Point)]
-	    _TextureFilter ("Texture Filter", Float) = 0
+	    _TEXTUREFILTER ("Texture Filter", Float) = 0
 
 	    [KeywordEnum(Repeat, Clamp)]
-	    _TextureWrap ("Texture Wrap", Float) = 0
+	    _TEXTUREWRAP ("Texture Wrap", Float) = 0
     	
-    	[Toggle(_TRIPLANAR_MAPPING)] _UseTriplanarMapping("Use Triplanar Mapping", Integer) = 0
+    	[Toggle(_TRIPLANAR_MAPPING)] _TRIPLANAR_MAPPING("Use Triplanar Mapping", Integer) = 0
     	_TriplanarTile("Triplanar Tile", Float) = 0.1
     	_TriplanarBlendOffset ("Triplanar Blend Offset", Range(0, 0.5)) = 0
 		_TriplanarBlendExponent ("Triplanar Blend Exponent", Range(1, 8)) = 1
@@ -98,6 +98,7 @@ Shader "SigmaShader/SigmaPBR"
             "Queue" = "Geometry"
         }
 
+        //Forward 
         Pass
         {
             Tags
@@ -141,9 +142,12 @@ Shader "SigmaShader/SigmaPBR"
                 #pragma shader_feature_local _TEXTUREFILTER_LINEAR _TEXTUREFILTER_POINT
 				#pragma shader_feature_local _TEXTUREWRAP_REPEAT _TEXTUREWRAP_CLAMP
                 
+                #pragma multi_compile_fog
+                
                 #pragma multi_compile_instancing
 	            #pragma instancing_options renderinglayer
 	            //#pragma multi_compile _ DOTS_INSTANCING_ON
+                //Could support baked gi later
                 
                 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 				#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -155,7 +159,6 @@ Shader "SigmaShader/SigmaPBR"
                 {
                     v2f o = Initv2f(v);
 					o.dynamicLightmapUV = v.dynamicLightmapUV.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
-
                     return o;
                 }
                 
@@ -208,7 +211,6 @@ Shader "SigmaShader/SigmaPBR"
 					//Unity does not use this I suppose?
 					//Use OneMinusReflectivityMetallic(surface.metallic);
 					//Also unity does not / PI for diffuse
-					
                 	// float HdotV = saturate(dot(halfVector, viewDirWS));
                 	// float3 ks = F_FresnelSchlick(HdotV, F0); //specular coefficient
                 	//  float3 kd = 1.0 - ks; //diffuse coefficient
@@ -283,15 +285,20 @@ Shader "SigmaShader/SigmaPBR"
                 			directLight += (diffuseAdd + specularAdd) * lightColorAdd * NdotLAdd;
 		                LIGHT_LOOP_END
 					#endif
-      
+                	
                 	float3 finalColor = surface.emission + directLight + indirectLight;
                 	float alpha = OutputAlpha(surface.alpha, IsSurfaceTypeTransparent(_Surface));
+                	
+                	float fogFactor = ComputeFogFactor(i.positionCS.z);
+                	finalColor = MixFog(finalColor, fogFactor);
+                	
 					return float4(finalColor, alpha);
                 }
 
             ENDHLSL
         }
 
+		//ShadowCaster
 		Pass
 		{
 			Tags
@@ -359,16 +366,15 @@ Shader "SigmaShader/SigmaPBR"
 				SigmaSurfaceParameters sp;
                 InitSurfaceParameters(i, sp);
 				
-				SigmaSurfaceData surface;
-                InitSurfaceData(sp, surface);
-			
-				AlphaDiscard(surface.alpha, _Cutoff);
+				float4 baseColor = GetBaseColor(sp);
+				AlphaDiscard(baseColor.a, _Cutoff);
 				
 				return 0;
 			}
 			ENDHLSL
 		}
 
+		//Depth
         Pass
         {
             Tags
@@ -413,17 +419,16 @@ Shader "SigmaShader/SigmaPBR"
 					SigmaSurfaceParameters sp;
 	                InitSurfaceParameters(i, sp);
 					
-					SigmaSurfaceData surface;
-                	InitSurfaceData(sp, surface);
-			
-					AlphaDiscard(surface.alpha, _Cutoff);
+					float4 baseColor = GetBaseColor(sp);
+					AlphaDiscard(baseColor.a, _Cutoff);
 				
                     return i.positionCS.z;
                 }
 
             ENDHLSL
         }
-
+		
+		//DepthNormal
         Pass
         {
             Tags
@@ -465,12 +470,12 @@ Shader "SigmaShader/SigmaPBR"
                     SigmaSurfaceParameters sp;
                 	InitSurfaceParameters(i, sp);
                 	
-					SigmaSurfaceData surface;
-                	InitSurfaceData(sp, surface);
+					float4 baseColor = GetBaseColor(sp);
+					AlphaDiscard(baseColor.a, _Cutoff);
+					
+					float3 normal = GetNormal(sp);
 			
-					AlphaDiscard(surface.alpha, _Cutoff);
-			
-					return float4(surface.normal, 0.0);
+					return float4(normal, 0.0);
                 }
 
             ENDHLSL

@@ -1,9 +1,6 @@
-using System;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class PlayerAttack : MonoBehaviour, IAttackSystem
+public class PlayerAttack : MonoBehaviour
 {
     [SerializeField] private bool isDebug;
     [SerializeField] private Transform attackPoint;

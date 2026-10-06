@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class EnemyAttack : MonoBehaviour, IAttackSystem
+public class EnemyAttack : MonoBehaviour
 {
     [SerializeField] private bool isDebug = false;
     [Header("Attack Settings")]

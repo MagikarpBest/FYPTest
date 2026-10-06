@@ -5,4 +5,7 @@ using UnityEngine;
 public interface ICharacter 
 {
     PlayerActionRestrictions Restrictions { get; }
+
+    public void DisableRagdoll();
+    public void EnableRagdoll();
 }
