@@ -36,6 +36,8 @@ public class EnemyDamageReceiver : MonoBehaviour, IDamageable
         }
 
 
-        return status.ReceiveDamage(damageData.Damage);
+        // status doesnt need to know about what damage result, it sohuld be in EnemyCombatReaction or state machine or mode controller whatever stuff
+        status.ReceiveDamage(damageData.Damage);
+        return DamageResult.Damaged;
     }
 }

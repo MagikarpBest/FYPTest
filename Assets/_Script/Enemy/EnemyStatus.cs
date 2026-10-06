@@ -25,7 +25,7 @@ public class EnemyStatus : MonoBehaviour
 
 
     // this only - hp, all the logic check enemydamagereceiver
-    public DamageResult ReceiveDamage(float damage)
+    public void ReceiveDamage(float damage)
     {
         
         Debug.Log("Damage received hit");  
@@ -35,13 +35,11 @@ public class EnemyStatus : MonoBehaviour
         {
             // count as death for now
             Die();
-            return DamageResult.Blocked;
         }
         
         // trigger animation after take damage
         //OnEnemyHealthChange?.Invoke(damage);
         
-        return DamageResult.Damaged;
     }
     
     private void Die()
