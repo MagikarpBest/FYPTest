@@ -159,7 +159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8aafce6ecaeaa7645981bfaccc3e43a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InGameBootstrapper
-  _playerStatus: {fileID: 1972560995}
+  playerStats: {fileID: 1369378387}
   _hudView: {fileID: 2031095858}
   _pauseMenuScreen: {fileID: 6113829}
 --- !u!4 &130685918
@@ -824,6 +824,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1369378387 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4312036143297442790, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
+  m_PrefabInstance: {fileID: 5098699589358167010}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a4d9f40c1e26c498019813c7b50754, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStatus
 --- !u!1 &1397139263
 GameObject:
   m_ObjectHideFlags: 0
@@ -1013,17 +1024,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6737659263713671626, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
   m_PrefabInstance: {fileID: 5098699589358167010}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1972560995 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4312036143297442790, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
-  m_PrefabInstance: {fileID: 5098699589358167010}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21a4d9f40c1e26c498019813c7b50754, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerStatus
 --- !u!1 &2031095856
 GameObject:
   m_ObjectHideFlags: 0
@@ -1215,6 +1215,10 @@ PrefabInstance:
     - target: {fileID: 3785457158607179852, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
       propertyPath: m_Name
       value: PlayerCharacterWithVIsual (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3858851991293214899, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
+      propertyPath: damageConfig.Array.size
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5048073394504075005, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
       propertyPath: m_ExcludeLayers.m_Bits

@@ -1462,6 +1462,7 @@ GameObject:
   - component: {fileID: 6926886357301440499}
   - component: {fileID: 7128448198930328985}
   - component: {fileID: 51937074751717293}
+  - component: {fileID: 5830152244414490934}
   m_Layer: 10
   m_Name: Enemy
   m_TagString: Untagged
@@ -1671,6 +1672,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HierarchicalStateMachine
   isDebug: 1
+--- !u!114 &5830152244414490934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4257721992354101266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5005686474c346c45951b282c08a1ff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDamageReceiver
 --- !u!1 &4421131059947322757
 GameObject:
   m_ObjectHideFlags: 0
