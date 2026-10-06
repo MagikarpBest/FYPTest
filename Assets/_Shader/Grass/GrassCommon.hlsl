@@ -31,18 +31,22 @@ float3 GetGrassPosition(float3 positionOS, float2 uv, uint instanceID)
     //position from buffer
     GrassData grass = _GrassDataBuffer[instanceID];
     
-    //forward direction is randomized and grass alligned to surface normal
-    float4 facingRot = from_to_rotation(float3(0, 0, 1), grass.forward);
-    //float4 upRot = from_to_rotation(float3(0, 1, 0), grass.up);
-    //float4 grassRot = qmul(upRot, facingRot);
-    float3 localPosition = rotate_vector(positionOS, facingRot);
+    float3 localPosition = positionOS;
     
     //scale
     localPosition.xz *= grass.scale.x;
     localPosition.y  *= grass.scale.y;
     
-    float3 positionWS = grass.position.xyz + localPosition.xyz; //final 
+    //forward direction is randomized and grass alligned to surface normal
+    //float4 upRot = from_to_rotation(float3(0, 1, 0), grass.up);
+    //float4 grassRot = qmul(upRot, facingRot);
     
+    float4 facingRot = from_to_rotation(float3(0, 0, 1), grass.forward);
+    localPosition = rotate_vector(localPosition, facingRot);
+    
+    float3 positionWS = grass.position.xyz + localPosition.xyz; 
+    
+    //wind
     float2 windDir = normalize(_WindDirection);
     float2 windUV = positionWS.xz + _Time.y * _WindSpeed * windDir * _WindScale;
     windUV = TRANSFORM_TEX(windUV, _WindTexture);
@@ -57,10 +61,15 @@ float3 GetGrassPosition(float3 positionOS, float2 uv, uint instanceID)
 float3 GetMeshNormal(float3 normalOS, uint instanceID)
 {
     GrassData grass = _GrassDataBuffer[instanceID];
-    float4 facingRot = from_to_rotation(float3(0, 0, 1), grass.forward);
-    float3 normalWS = normalize(rotate_vector(normalOS, facingRot));
+    float3 normalWS = normalOS;
     
-    return normalWS;
+    normalWS.xz /= grass.scale.x;
+    normalWS.y  /= grass.scale.y;
+    
+    float4 facingRot = from_to_rotation(float3(0, 0, 1), grass.forward);
+    normalWS = rotate_vector(normalWS, facingRot);
+    
+    return normalize(normalWS);
 }
 
 #endif
