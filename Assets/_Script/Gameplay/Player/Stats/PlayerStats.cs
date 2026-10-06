@@ -5,7 +5,7 @@ using UnityEngine;
 
 // TODO: Note - Currency potentially not involved in this section?
 //          else maybe playerStatus itself composition with inventory which include currency ig.
-public class PlayerStats : MonoBehaviour, IPlayerStatus , IDamageable
+public class PlayerStats : MonoBehaviour, IPlayerStats , IDamageable
 {
     // HP
 

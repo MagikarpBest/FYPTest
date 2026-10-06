@@ -15,9 +15,9 @@ namespace HUD
     public class HUDPresenter : IDisposable
     {
         private readonly IHUDView _view;
-        private readonly IPlayerStatus _model;
+        private readonly IPlayerStats _model;
 
-        public HUDPresenter(IHUDView view, IPlayerStatus model)
+        public HUDPresenter(IHUDView view, IPlayerStats model)
         {
             _view = view;
             _model = model;

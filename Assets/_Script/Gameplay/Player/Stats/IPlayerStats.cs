@@ -1,6 +1,6 @@
 using System;
 
-public interface IPlayerStatus
+public interface IPlayerStats
 {
     // HP
     float CurrentHealth { get; }
