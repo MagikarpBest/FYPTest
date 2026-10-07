@@ -565,7 +565,7 @@ public class SigmaPBRGUI : ShaderGUI
         foreach (var prop in currentProps)
         {
             if (definedNames.Contains(prop.name)) continue; // already defined, skip
-            if ((prop.flags & (MaterialProperty.PropFlags.HideInInspector | MaterialProperty.PropFlags.PerRendererData)) != 0) continue;
+            if ((prop.propertyFlags & (ShaderPropertyFlags.HideInInspector | ShaderPropertyFlags.PerRendererData)) != 0) continue;
             if (prop.name.StartsWith("unity_")) continue;
 
             materialEditor.ShaderProperty(prop, prop.displayName);
