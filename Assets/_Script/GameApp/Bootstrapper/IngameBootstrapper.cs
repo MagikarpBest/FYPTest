@@ -14,6 +14,7 @@ public class InGameBootstrapper : MonoBehaviour
         InitializeHUD();
         _playerInputManager = FindFirstObjectByType<PlayerInputManager>();
         BindInputEvents();
+        GameplayTagDatabase.Init(Resources.Load<GameplayTagDatabaseSO>("GameplayTagDatabase"));
     }
     
     /// <summary>

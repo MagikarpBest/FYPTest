@@ -12,7 +12,7 @@ public struct GameplayTag : IEquatable<GameplayTag>
     }
     
     public string Name => name == null ? string.Empty : name;
-    public bool IsValid => !string.IsNullOrEmpty(name);
+    public bool IsValid => !string.IsNullOrEmpty(name) && GameplayTagDatabase.Contains(this);
     
     public bool Equals(GameplayTag other) => string.Equals(name, other.name, StringComparison.Ordinal);
     

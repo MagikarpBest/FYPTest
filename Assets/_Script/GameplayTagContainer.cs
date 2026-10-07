@@ -17,9 +17,19 @@ public class GameplayTagContainer
         }
     }
 
+    public void AddTag(string tag)
+    {
+        AddTag(new GameplayTag(tag));
+    }
+
     public void RemoveTag(GameplayTag tag)
     {
         tags.Remove(tag);
+    }
+
+    public void RemoveTag(string tag)
+    {
+        RemoveTag(new GameplayTag(tag));
     }
 
     public void Clear()
@@ -28,25 +38,38 @@ public class GameplayTagContainer
     }
 
     //True if any owned tag is the query tag or a child of it
-    public bool HasTag(GameplayTag query)
+    public bool HasTag(GameplayTag tag)
     {
         foreach (GameplayTag t in tags)
         {
-            if (t.IsChildOf(query))
+            if (t.IsChildOf(tag))
             {
                 return true;
             }
         }
+
         return false;
     }
 
-    //True only if the exact tag was added
-    public bool HasTagExact(GameplayTag query)
+    public bool HasTag(string tag)
     {
-        if (!query.IsValid)
+        return HasTag(new GameplayTag(tag));
+    }
+
+    //True only if the exact tag was added
+    public bool HasTagExact(GameplayTag tag)
+    {
+        if (!tag.IsValid)
         {
             return false;
         }
-        return tags.Contains(query);
+
+        return tags.Contains(tag);
+    }
+
+    public bool HasTagExact(string tag)
+    {
+        return HasTagExact(new GameplayTag(tag));
     }
 }
+
