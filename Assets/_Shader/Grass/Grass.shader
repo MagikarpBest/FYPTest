@@ -4,25 +4,16 @@ Shader "SigmaShader/Grass"
     {
         _TopColor("Top Color", Color) = (0.25, 0.55, 0.12, 1)
         _BottomColor("Bottom Color", Color) = (0.08, 0.25, 0.04, 1)
-        _HighlightColor("Highlight Color", Color) = (1, 1, 1, 1)
-        _TipHighlightColor("Tip Highlight Color", Color) = (1, 1, 1, 1)
-        _TipHighlightPower("Tip Highlight Power", Float) = 1
         _ColorVariation("Color Variation", Color) = (1, 1, 1, 1)
         _ColorNoiseIntensity("Color Noise Intensity", Float) = 1
-        _ColorNoiseScale("Color Noise Scale", Float) = 1
-        _Roughness("Roughness", Float) = 1
-        _SpecularFade("SpecularFade", Float) = 1
-        
-        _FresnelPower("Fresnel Power", Range(1.0, 20.0)) = 4.0
-        _FresnelStrength("Fresnel Strength", Range(0.0, 1.0)) = 0.15
-        
+    	_ColorNoiseScale("Color Noise Scale", Float) = 1
+        _Roughness("Roughness", Range(0.0, 1.0)) = 1
         _WindTexture("Wind Texture", 2D) = "white" {}
         _WindDirection("Wind Direction", Vector) = (1, 0 ,0)
         _WindStrength("Wind Strength", Float) = 0.5
         _WindSpeed("Wind Speed", Float) = 1
-         _WindScale("Wind Scale", Float) = 1
-          _GrassBend("Grass Bend", Float) = 0.5
-        
+	    _WindScale("Wind Scale", Float) = 1
+	    _GrassBend("Grass Bend", Float) = 0.5
     }
     SubShader
     {
@@ -42,6 +33,7 @@ Shader "SigmaShader/Grass"
             }
             
             Cull Off
+            ZTest LEqual
             Zwrite On
             
             HLSLPROGRAM
@@ -60,28 +52,22 @@ Shader "SigmaShader/Grass"
             #pragma multi_compile _ _ADDITIONAL_LIGHTS
 			#pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile _ _CLUSTER_LIGHT_LOOP // Use _CLUSTER_LIGHT_LOOP in Unity 6.1 and above.
-
+            
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-            #include "GrassCommon.hlsl"
-            #include "LightingCommon.hlsl"
+			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
+			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+			#include "GrassCommon.hlsl"
+			#include "Assets/_Shader/SigmaPBR/HLSL/SigmaPBRCommon.hlsl"
             
             CBUFFER_START(UnityPerMaterial)
-            float4 _TopColor;
-            float4 _BottomColor;
-            float4 _HighlightColor;
-            float4 _TipHighlightColor;
-            float _TipHighlightPower;
-            float4 _ColorVariation;
-            float _ColorNoiseIntensity;
-            float _ColorNoiseScale;
-            float _Roughness;
-            float _SpecularFade;
-            
-            float _FresnelPower;
-            float _FresnelStrength;
-            CBUFFER_END
-            
+			float4 _TopColor;
+			float4 _BottomColor;
+			float4 _ColorVariation;
+			float _ColorNoiseIntensity;
+			float _ColorNoiseScale;
+			float _Roughness;
+			CBUFFER_END
+			            
             struct appdata
             {
                 float4 positionOS : POSITION;
@@ -99,8 +85,10 @@ Shader "SigmaShader/Grass"
                 float3 normalWS : TEXCOORD1;
                 float3 positionWS : TEXCOORD2;
                 float3 viewWS : TEXCOORD3;
-                float2 dynamicLightmapUV : TEXCOORD5;
-                float edgeMask : TEXCOORD6;
+                float2 dynamicLightmapUV : TEXCOORD4;
+                float edgeMask : TEXCOORD5;
+            	float4 tangentWS : TEXCOORD6;
+            	float3 meshNormal : TEXCOORD7;
             };
             
             v2f vert(appdata v, uint instanceID : SV_INSTANCEID)
@@ -110,78 +98,128 @@ Shader "SigmaShader/Grass"
                 
                 o.positionWS = GetGrassPosition(v.positionOS, o.uv, instanceID);
                 o.positionCS = TransformWorldToHClip(o.positionWS);
-                
-                o.normalWS = TransformObjectToWorldNormal(_GrassDataBuffer[instanceID].up);
+            	
+                o.normalWS = normalize(_GrassDataBuffer[instanceID].up);
+            	o.meshNormal = GetMeshNormal(v.normalOS, instanceID);
+            	
                 o.viewWS = GetWorldSpaceViewDir(o.positionWS);
                 o.dynamicLightmapUV = v.dynamicLightmapUV.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;
                 
                 o.edgeMask = v.color.r; 
-                
+                o.tangentWS = float4(TransformObjectToWorldDir(v.tangentOS.xyz), v.tangentOS.w);
                 return o;
             }
             
-            float4 frag(v2f i) : SV_TARGET
+            float4 frag(v2f i, bool isFrontFace : SV_IsFrontFace) : SV_TARGET
             {
                 float3 normalWS = NormalizeNormalPerPixel(i.normalWS);
-                float3 viewWS = normalize(i.viewWS);
+            	float3 meshNormal = NormalizeNormalPerPixel(i.meshNormal);
+
+            	if (!isFrontFace)
+				meshNormal = -meshNormal;
+            
+                float3 viewDirWS = normalize(i.viewWS);
+                float3 viewDirTS = GetViewDirectionTangentSpace(i.tangentWS, i.normalWS, viewDirWS);
                 float4 shadowCoord = TransformWorldToShadowCoord(i.positionWS);
-                float4 shadowMask = SAMPLE_SHADOWMASK(i.dynamicLightmapUV);
-                
-                // Calculate lighting from main light.
-                Light mainLight = GetMainLight(shadowCoord);
-                float3 lightColor = mainLight.distanceAttenuation * mainLight.shadowAttenuation * mainLight.color;
-
-                float3 ambient = SampleSH(normalWS);
-
-                float3 diffuse = saturate(dot(normalWS, mainLight.direction)) * lightColor;
-                
-                float distanceToCamera = distance(i.positionWS, _WorldSpaceCameraPos);
-                float distanceFade = 1.0 - exp(-distanceToCamera * _SpecularFade);
-                float3 specular = GGX_DistanceFade(normalWS, viewWS, mainLight.direction, _Roughness, distanceFade) * _HighlightColor * mainLight.distanceAttenuation * mainLight.shadowAttenuation;
-                float3 specularTip = GGX_DistanceFade(normalWS, viewWS, mainLight.direction,_Roughness, distanceFade) * _TipHighlightColor * mainLight.distanceAttenuation * mainLight.shadowAttenuation;
-                
-#ifdef _ADDITIONAL_LIGHTS
-
-                InputData inputData = (InputData)0;
-                inputData.positionWS = i.positionWS;
-                inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(i.positionCS);
-
-                uint lightCount = GetAdditionalLightsCount();
-
-                LIGHT_LOOP_BEGIN(lightCount)
-
-                    Light light = GetAdditionalLight(lightIndex, i.positionWS, shadowMask);
-                    lightColor = light.distanceAttenuation * light.shadowAttenuation * light.color;
-
-                    diffuse += saturate(dot(normalWS, light.direction)) * lightColor;
-                    
-                    float3 specular2 =  GGX_DistanceFade(normalWS, viewWS, light.direction,_Roughness, distanceFade) * lightColor;
-                    float3 specularTip2 =  GGX_DistanceFade(normalWS, viewWS, light.direction,_Roughness, distanceFade) * lightColor;
-                    specular += specular2;
-                    specularTip += specularTip2;
-                
-                LIGHT_LOOP_END
-#endif
-                
-                // Combine Base Color with lighting.
-                float3 grassGradient = lerp(_BottomColor.rgb , _TopColor.rgb, i.uv.y);
-                
-                float3 fresnel = pow(1.0f - saturate(dot(normalWS, viewWS)), _FresnelPower) * _FresnelStrength * _TipHighlightColor;
-                
-                float heightMask = pow(i.uv.y, _TipHighlightPower);
-                float3 highLights = (specularTip + fresnel) * heightMask;
-                highLights += specular;
-                highLights = smoothstep(0, 1, highLights); //this fixes HDR overexposure
-                
-                float  colorNoise = SimplexNoise(i.positionWS.xz * 0.06);
+				float4 shadowMask = SAMPLE_SHADOWMASK(i.dynamicLightmapUV);
+            
+                float3 baseColor = lerp(_BottomColor.rgb , _TopColor.rgb, i.uv.y);
+                float  colorNoise = SimplexNoise(i.positionWS.xz * _ColorNoiseScale);
                 colorNoise = colorNoise * 0.5 + 0.5;
                 colorNoise *= _ColorNoiseIntensity;
-                grassGradient = lerp(grassGradient, _ColorVariation, colorNoise);
+                baseColor = lerp(baseColor, _ColorVariation, colorNoise);
+            
+            	float roughness = max(_Roughness, 0.04);
+            	float metallic = 0;
+            	float3 F0 = lerp(0.04, baseColor, metallic);
+				half oneMinusReflectivity = OneMinusReflectivityMetallic(metallic); 
+            
+                //Main light
+                Light mainLight = GetMainLight(shadowCoord);
+				float3 lightColor = mainLight.distanceAttenuation * mainLight.shadowAttenuation * mainLight.color;
+            
+            	#if defined(_SCREEN_SPACE_OCCLUSION)
+	                AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(GetNormalizedScreenSpaceUV(i.positionCS));
+	                lightColor *= aoFactor.directAmbientOcclusion;
+	            #endif
+                	
+                float3 halfVector = normalize(mainLight.direction + viewDirWS);
                 
-                float3 finalColor = (ambient + diffuse) * grassGradient + highLights;
-      
-                return float4(finalColor, 1);
+                //Direct light
+				//Cook-Torrance BRDF
+            
+                //Specular
+            	float heightMask = pow(saturate(i.uv.y), 2.0);
+                float3 specular = SpecularGGX(mainLight.direction, normalWS, viewDirWS, halfVector, F0, roughness) * heightMask;
+       
+                //Diffuse
+                float3 diffuse = baseColor * oneMinusReflectivity;
+            
+                float NdotL = saturate(dot(normalWS, mainLight.direction));
+                float3 directLight = (diffuse + specular) * lightColor * NdotL;
                 
+                //Indirect light
+                float NdotV = saturate(dot(normalWS, viewDirWS)); //no single light dir/half vector we can use since its from all angles
+                half3 R = reflect(-viewDirWS, normalWS); 
+                
+                //Indirect specular
+                //The Split Sum: 1nd Stage
+                half3 envSpecularPrefilted = GlossyEnvironmentReflection(R, i.positionWS, roughness, 1.0h, GetNormalizedScreenSpaceUV(i.positionCS));
+                
+                //The Split Sum: 2nd Stage
+                float2 envBRDF = EnvBRDFApprox_UE4(roughness, NdotV);
+                
+            	#if defined(_SCREEN_SPACE_OCCLUSION)
+            		float specularOcclusion = GetSpecularOcclusionFromAmbientOcclusion(NdotV, aoFactor.indirectAmbientOcclusion, roughness);
+					float3 specularAO = GTAOMultiBounce(specularOcclusion, F0);
+            		float3 diffuseAO = GTAOMultiBounce(aoFactor.indirectAmbientOcclusion, surface.albedo);
+				#endif
+            	float3 specularAO = 1.0;
+            	float3 diffuseAO = 1.0;
+            
+                float3 specularIndirect = envSpecularPrefilted * (F0 * envBRDF.r + envBRDF.g) * specularAO * heightMask;
+                
+                //Indirect diffuse
+                float3 irradianceSH = SampleSH(normalWS); //irradiance spherical harmonics
+                float3 diffuseIndirect = irradianceSH * baseColor * oneMinusReflectivity * diffuseAO;
+                
+                float3 indirectLight = diffuseIndirect + specularIndirect;
+            	
+				#ifdef _ADDITIONAL_LIGHTS
+	                InputData inputData = (InputData)0;
+	                inputData.positionWS = i.positionWS;
+	                inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(i.positionCS);
+	                uint lightCount = GetAdditionalLightsCount();
+
+	                LIGHT_LOOP_BEGIN(lightCount)
+	                    Light light = GetAdditionalLight(lightIndex, i.positionWS, shadowMask);
+            			float3 lightColorAdd = light.distanceAttenuation * light.shadowAttenuation * light.color;
+	            
+            			#if defined(_SCREEN_SPACE_OCCLUSION)
+            				AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(GetNormalizedScreenSpaceUV(i.positionCS));
+				            lightColorAdd *= aoFactor.directAmbientOcclusion;
+                		#endif
+	            
+                		float3 halfVectorAdd = normalize(light.direction + viewDirWS);
+	                
+                		//Specular
+                		float3 specularAdd = SpecularGGX(light.direction, normalWS, viewDirWS, halfVectorAdd, F0, roughness);
+	   
+                		//Diffuse
+                		float3 diffuseAdd = baseColor * oneMinusReflectivity;
+	            
+                		float NdotLAdd = saturate(dot(normalWS, light.direction));
+                		
+                		directLight += (diffuseAdd + specularAdd) * lightColorAdd * NdotLAdd;
+	                LIGHT_LOOP_END
+				#endif
+            	
+            	float3 finalColor = directLight + indirectLight;
+            	
+            	float fogFactor = ComputeFogFactor(i.positionCS.z);
+                finalColor = MixFog(finalColor, fogFactor);
+            	
+				return float4(finalColor, 1);
             }
             ENDHLSL
         }
@@ -273,7 +311,7 @@ Shader "SigmaShader/Grass"
                 
                 o.positionWS = GetGrassPosition(v.positionOS, v.uv, instanceID);
                 o.positionCS = TransformWorldToHClip(o.positionWS);
-                o.normalWS = TransformObjectToWorldNormal(_GrassDataBuffer[instanceID].up);
+            	o.normalWS = normalize(_GrassDataBuffer[instanceID].up);
 
                 return o;
             }

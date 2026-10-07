@@ -126,7 +126,7 @@ float3 SpecularGGX(float3 L, float3 N, float3 V, float3 H, float3 F0, float roug
     float D = D_GGX_UE5(roughness, NdotH);
     //float Vis = Vis_SmithJointApprox(roughness, NdotV, NdotL); //Vis is just the denom (4 · NoL · NoV) built in Vis = G / (4 · NoL · NoV)
     float Vis = Vis_Unity(roughness, LdotH);
-    float3 F = F_Schlick_UE5(HdotV, F0); //Unity seems to drop this?
+    //float3 F = F_Schlick_UE5(HdotV, F0); //Unity seems to drop this?
 
     return (D * Vis) * F0;
 }
