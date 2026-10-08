@@ -7,12 +7,13 @@ public class EnemyStats : MonoBehaviour
     // move stats to enemy status
     [Header("Health")]
     [SerializeField] private float maxHealth = 10f;
+    public bool IsDead { get; private set; }
     private float currentHealth;
 
     [Header("Hit setting")]
     [SerializeField] private float invincibilityDuration = 1f;
     private float invincibilityTimer;
-    
+
     public float CurrentHealth => currentHealth;
 
     // Event
@@ -27,21 +28,17 @@ public class EnemyStats : MonoBehaviour
     // this only - hp, all the logic check enemydamagereceiver
     public void ReceiveDamage(float damage)
     {
-        Debug.Log("Damage received hit");  
-        
+        Debug.Log("Damage received hit");
+
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
             // count as death for now
-            Die();
+            IsDead = true;
+            Debug.Log("Enemy Die");
         }
-        
+
         // trigger animation after take damage
         //OnEnemyHealthChange?.Invoke(damage);
-    }
-    
-    private void Die()
-    {
-        Debug.Log("Enemy Die");
     }
 }

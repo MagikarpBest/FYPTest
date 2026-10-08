@@ -5,10 +5,14 @@ using System.Linq;
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Collider))]
+
 [RequireComponent(typeof(EnemySensor))]
 [RequireComponent(typeof(EnemyMovement))]
 [RequireComponent(typeof(EnemyAttack))]
 [RequireComponent(typeof(EnemyStats))]
+[RequireComponent(typeof(EnemyDamageReceiver))]
+[RequireComponent(typeof(EnemyCombatReaction))]
+
 [RequireComponent(typeof(HierarchicalStateMachine))]
 public class Enemy : MonoBehaviour, ICharacter
 {
@@ -21,6 +25,8 @@ public class Enemy : MonoBehaviour, ICharacter
     public EnemyMovement Movement { get; private set; }
     public EnemyAttack AttackSystem { get; private set; }
     public EnemyStats Stats { get; private set; }
+    public EnemyCombatReaction CombatReaction { get; private set; }
+    public EnemyDamageReceiver DamageReceiver { get; private set; }
 
     private HierarchicalStateMachine stateMachine;
     
@@ -38,18 +44,22 @@ public class Enemy : MonoBehaviour, ICharacter
         Rigidbody = GetComponent<Rigidbody>();
         NavMeshAgent = GetComponent<NavMeshAgent>();
         Animator = GetComponent<Animator>();
+        
         Stats = GetComponent<EnemyStats>();
-
         Sensor = GetComponent<EnemySensor>();
         Movement = GetComponent<EnemyMovement>();
         AttackSystem = GetComponent<EnemyAttack>();
-
+        CombatReaction = GetComponent<EnemyCombatReaction>();
+        DamageReceiver = GetComponent<EnemyDamageReceiver>();
+        
         stateMachine = GetComponent<HierarchicalStateMachine>();
 
         // INIT
         EnemyStateFactory factory = new EnemyStateFactory(stateMachine, this);
         Movement.Init(NavMeshAgent, Rigidbody, Animator);
         AttackSystem.Init(Animator);
+        CombatReaction.Init(Stats,Animator);
+        DamageReceiver.Init(Stats,CombatReaction);
         
         // this have to be last or else error
         stateMachine.Init(factory.Alive);

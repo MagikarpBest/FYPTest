@@ -2,29 +2,38 @@ using UnityEngine;
 
 public class EnemyAliveState : State
 {
-    private EnemyStats _stats;
-    private Enemy enemy;
+    private EnemyStats stats;
+    private EnemyCombatReaction combatReaction;
+    private Enemy character;
     
-    public EnemyAliveState(HierarchicalStateMachine stateMachine, Enemy enemy, State parent,
-        ICharacterStateFactory factory) : base(stateMachine, enemy, parent, factory)
+    public EnemyAliveState(HierarchicalStateMachine stateMachine, Enemy character, State parent,
+        ICharacterStateFactory factory) : base(stateMachine, character, parent, factory)
     {
-        _stats = enemy.Stats;
-        this.enemy = enemy;
+        stats = character.Stats;
+        combatReaction = character.CombatReaction;
+        this.character = character;
     }
 
     protected override State GetInitialState() => Factory.Grounded;
 
     protected override State GetTransition()
     {
-        if (_stats.CurrentHealth <= 0)
+        switch (combatReaction.PendingReaction)
         {
-            return Factory.Dead;
+            case EnemyReactionType.Dead:
+                return Factory.Dead;
+
+            case EnemyReactionType.Launch:
+                return Factory.Launch;
+
+            case EnemyReactionType.Hit:
+                return Factory.Hit;
         }
         return null;
     }
     
     protected override void OnEnter()
     {
-        enemy.DisableRagdoll();
+        character.DisableRagdoll();
     }
 }

@@ -5,6 +5,7 @@ public interface ICharacterStateFactory
     public State Grounded { get; }
     public State Idle { get; }
     public State Run { get; }
+    public State Hit { get; }
 
     public State Airborne { get; }
     public State Jump { get; }
