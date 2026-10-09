@@ -17,14 +17,13 @@ MonoBehaviour:
   ManaCost: 0
   Restrictions: 0
   _handler:
-    rid: 602641825280819272
+    rid: 5525606888536014942
   references:
     version: 2
     RefIds:
-    - rid: 602641825280819272
+    - rid: 5525606888536014942
       type: {class: BombSkillHandler, ns: , asm: Assembly-CSharp}
       data:
-        _range: 10
         _explosionRadius: 5
         _explosionForce: 5
         _explodeDelay: 1.5
