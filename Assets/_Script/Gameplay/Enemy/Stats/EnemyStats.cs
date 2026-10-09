@@ -2,7 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class EnemyStats : MonoBehaviour
+public class EnemyStats : MonoBehaviour, IHealthSource
 {
     // move stats to enemy status
     [Header("Health")]
@@ -14,9 +14,11 @@ public class EnemyStats : MonoBehaviour
     private float invincibilityTimer;
     
     public float CurrentHealth => currentHealth;
+    public float MaxHealth => maxHealth;
 
     // Event
-    public event Action<float> OnEnemyHealthChange;
+    public event Action<float, float> OnHealthChanged;
+    public event Action OnDamageBlocked; // Required for IHealthSource interface, but not used in EnemyStats
 
     private void Awake()
     {
@@ -37,7 +39,7 @@ public class EnemyStats : MonoBehaviour
         }
         
         // trigger animation after take damage
-        //OnEnemyHealthChange?.Invoke(damage);
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
     
     private void Die()

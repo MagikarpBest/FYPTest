@@ -2,10 +2,10 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DestructibleWorldHealthBar : MonoBehaviour
+public sealed class EntityWorldHealthBar : MonoBehaviour
 {
     [Header("References")]
-    private Destructible _destructible;
+    private IHealthSource _healthSource;
     [Tooltip("Main (foreground) bar. Min 0, Max 1.")]
     [SerializeField] private Slider _slider;
     [Tooltip("White trailing bar drawn BEHIND the main slider. Min 0, Max 1.")]
@@ -61,8 +61,8 @@ public class DestructibleWorldHealthBar : MonoBehaviour
         if (_content == null)
             _content = (RectTransform)transform;
 
-        if (_destructible == null)
-            _destructible = GetComponentInParent<Destructible>();
+        if (_healthSource == null)
+            _healthSource = GetComponentInParent<IHealthSource>();
 
         _basePosition = _content.anchoredPosition;
 
@@ -76,26 +76,26 @@ public class DestructibleWorldHealthBar : MonoBehaviour
     {
         // Sync once here instead of relying on the Destructible's initial event,
         // because Start order between the two scripts isn't guaranteed.
-        if (!_initialized && _destructible != null)
-            SnapTo(Normalize(_destructible.CurrentHealth, _destructible.MaxHealth));
+        if (!_initialized && _healthSource != null)
+            SnapTo(Normalize(_healthSource.CurrentHealth, _healthSource.MaxHealth));
     }
 
     private void OnEnable()
     {
-        if (_destructible == null)
+        if (_healthSource == null)
             return;
 
-        _destructible.OnHealthChanged += HandleHealthChanged;
-        _destructible.OnDamageBlocked += HandleDamageBlocked;
+        _healthSource.OnHealthChanged += HandleHealthChanged;
+        _healthSource.OnDamageBlocked += HandleDamageBlocked;
     }
 
     private void OnDisable()
     {
-        if (_destructible == null)
+        if (_healthSource == null)
             return;
 
-        _destructible.OnHealthChanged -= HandleHealthChanged;
-        _destructible.OnDamageBlocked -= HandleDamageBlocked;
+        _healthSource.OnHealthChanged -= HandleHealthChanged;
+        _healthSource.OnDamageBlocked -= HandleDamageBlocked;
     }
 
     private void OnDestroy()
@@ -129,7 +129,7 @@ public class DestructibleWorldHealthBar : MonoBehaviour
         ScheduleHide(destroyed ? _destroyedHideDelay : _visibleDuration);
     }
 
-    private void HandleDamageBlocked(DamageData damageData)
+    private void HandleDamageBlocked()
     {
         Show();
         ScheduleHide(_visibleDuration);
