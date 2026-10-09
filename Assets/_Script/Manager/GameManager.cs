@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
         _sceneLoader.SceneGroupLoaded += OnSceneGroupLoaded;
         _sceneLoader.SceneAdditivelyLoaded += OnSceneAdditivelyLoaded;
     }
-
+    
     private void OnDisable()
     {
         if (_sceneLoader == null) return;

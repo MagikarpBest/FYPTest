@@ -71,5 +71,27 @@ public class GameplayTagContainer
     {
         return HasTagExact(new GameplayTag(tag));
     }
+
+    public bool HasAny(GameplayTagContainer other)
+    {
+        if (other == null) return false;
+
+        foreach (GameplayTag tag in other.tags)
+        {
+            if (HasTag(tag)) return true;
+        }
+        return false;
+    }
+    
+    public bool HasAll(GameplayTagContainer other)
+    {
+        if (other == null) return true;
+
+        foreach (GameplayTag tag in other.tags)
+        {
+            if (!HasTag(tag)) return false;
+        }
+        return true;
+    }
 }
 
