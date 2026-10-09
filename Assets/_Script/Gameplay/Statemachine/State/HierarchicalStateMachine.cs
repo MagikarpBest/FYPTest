@@ -5,7 +5,7 @@ using UnityEngine;
 public class HierarchicalStateMachine : MonoBehaviour
 {
     [SerializeField] private bool isDebug;
-    public State Root {  get; private set; }
+    public State Root { get; private set; }
     private bool started;
 
     public void Init(State root)
@@ -33,20 +33,22 @@ public class HierarchicalStateMachine : MonoBehaviour
         }
     }
 
-    public void ChangeState(State from, State to)
+    public bool ChangeState(State from, State to)
     {
-        //if (from == to || from == null || to == null) return;
-        if (from == null || to == null) return;
-        
+        // added to prevent state parent keep reenter child
+        // bool to fix tick
+        if (from == to || from == null || to == null || from.ActiveChild == to) return false;
+        //if (from == null || to == null) return;
+
         // FIX: If we are transitioning to the same state (Combo/Reset),
         // we want to exit the current state and re-enter it.
         // We treat the parent as the LCA so the leaf is included in the exit/enter loops.
         State lca = Lca(from, to);
-        
-        if (from == to)
-        {
-            lca = from.Parent;
-        }
+
+        // if (from == to)
+        // {
+        //     lca = from.Parent;
+        // }
 
         //Exit current branch up to (but not including) LCA
         for (State s = from; s != lca; s = s.Parent) s.Exit();
@@ -57,12 +59,12 @@ public class HierarchicalStateMachine : MonoBehaviour
         while (stack.Count > 0) stack.Pop().Enter();
 
         //Print hierarchy after the transition
-        if(isDebug)
+        if (isDebug)
         {
             PrintActiveHierarchy();
         }
 
-
+        return true;
     }
 
     //Compute the Lowest Common Ancestor of two states.
@@ -74,7 +76,8 @@ public class HierarchicalStateMachine : MonoBehaviour
 
         //Find the first parent of 'b' that is also a parent of 'a'
         for (var s = b; s != null; s = s.Parent)
-            if (ap.Contains(s)) return s;
+            if (ap.Contains(s))
+                return s;
 
         //If no common ancestor found, return null
         return null;

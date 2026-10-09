@@ -11,9 +11,7 @@ public enum EnemyReactionType
 }
 public class EnemyCombatReaction : MonoBehaviour
 {
-    public EnemyReactionType PendingReaction { get; private set; } = EnemyReactionType.None;
-    public bool HasPendingReaction { get; private set; }
-    public DamageData LastHit { get; private set; }
+    public event Action<EnemyReactionType> OnReactionRequested;
 
     private EnemyStats stats;
     private Animator animator;
@@ -25,32 +23,28 @@ public class EnemyCombatReaction : MonoBehaviour
 
     public void OnDamaged(DamageData damageData)
     {
-        LastHit = damageData;
-        if(stats.IsDead)
+        if (stats.IsDead)
         {
-            PendingReaction = EnemyReactionType.Dead;
+            OnReactionRequested?.Invoke(EnemyReactionType.Dead);
+            return;
         }
 
         switch (damageData.PowerLevel)
         {
-            case AttackPowerLevel.Normal:
-                PendingReaction = EnemyReactionType.Hit;
-                break;
-            
             case AttackPowerLevel.Heavy:
-                PendingReaction = EnemyReactionType.Launch;
+                OnReactionRequested?.Invoke(EnemyReactionType.Launch);
                 break;
-            
+
             default:
-                PendingReaction = EnemyReactionType.Hit;
+                OnReactionRequested?.Invoke(EnemyReactionType.Hit);
                 break;
         }
-        HasPendingReaction = true;
     }
     
     public void HitAnimation()
     {
-        //animator.SetTrigger("Hit");
+        animator.SetTrigger("HitTrigger");
+        StartCoroutine(ConsumeReaction());
         Debug.Log("enemy hit");
     }
     
@@ -63,11 +57,18 @@ public class EnemyCombatReaction : MonoBehaviour
     {
         Debug.Log("enemy dead");
     }
+
+    // private void ConsumeReaction()
+    // {
+    //     OnReactionRequested?.Invoke(EnemyReactionType.None);
+    // }
     
+        
     // animation call this when finished
     public IEnumerator ConsumeReaction()
     {
         yield return new WaitForSeconds(1.5f);
-        PendingReaction = EnemyReactionType.None;
+        OnReactionRequested?.Invoke(EnemyReactionType.None);
+    
     }
 }

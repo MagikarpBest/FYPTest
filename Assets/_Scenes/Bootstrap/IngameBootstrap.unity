@@ -1212,6 +1212,10 @@ PrefabInstance:
       propertyPath: _aimLineRenderer
       value: 
       objectReference: {fileID: 1238242762}
+    - target: {fileID: 2916035605863832669, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
+      propertyPath: m_LinearDamping
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3785457158607179852, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
       propertyPath: m_Name
       value: PlayerCharacterWithVIsual (1)

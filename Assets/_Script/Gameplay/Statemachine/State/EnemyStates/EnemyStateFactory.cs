@@ -26,7 +26,7 @@ public class EnemyStateFactory : ICharacterStateFactory
         Grounded = new EnemyGroundedState(context, enemy, Alive, this);
         Idle = new EnemyIdleState(context, enemy, Grounded, this);
         Run = new EnemyRunState(context, enemy, Grounded, this);
-        Hit = new EnemyHitState(context, enemy, Grounded, this);
+        Hit = new EnemyHitState(context, enemy, Alive, this);
         
         Airborne = new EnemyAirborneState(context, enemy, Alive, this);
         Fall = new EnemyFallState(context, enemy, Airborne, this);

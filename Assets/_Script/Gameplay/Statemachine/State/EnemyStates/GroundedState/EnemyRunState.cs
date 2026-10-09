@@ -12,6 +12,7 @@ public class EnemyRunState : State
     {
         movement = character.Movement;
         sensor = character.Sensor;
+        attack = character.AttackSystem;
     }
 
     protected override State GetInitialState() => null;
@@ -35,6 +36,11 @@ public class EnemyRunState : State
     protected override void OnExit()
     {
         //movement.StopMove();
+    }
+
+    protected override void OnTick(float deltaTime)
+    {
+        Debug.Log("running");
     }
 
     protected override void OnPhysicsTick(float fixedDeltaTime)

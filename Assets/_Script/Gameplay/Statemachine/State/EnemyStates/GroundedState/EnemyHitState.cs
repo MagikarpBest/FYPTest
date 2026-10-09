@@ -16,6 +16,6 @@ public class EnemyHitState : State
         movement.StopMove();
         //test only
         reaction.HitAnimation();
-        reaction.StartCoroutine(reaction.ConsumeReaction());
+        //reaction.StartCoroutine(reaction.ConsumeReaction());
     }
 }

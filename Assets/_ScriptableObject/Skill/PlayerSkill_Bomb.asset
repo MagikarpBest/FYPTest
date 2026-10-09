@@ -24,9 +24,8 @@ MonoBehaviour:
     - rid: 6373183367691632713
       type: {class: BombSkillHandler, ns: , asm: Assembly-CSharp}
       data:
-        _range: 10
         _explosionRadius: 5
-        _explosionForce: 5
+        _explosionForce: 20
         _explodeDelay: 1.5
         _bombPrefab: {fileID: 6375996512068800576, guid: 5f36c46b1d34e07418876dd936ee679f, type: 3}
         _throwForce: 15

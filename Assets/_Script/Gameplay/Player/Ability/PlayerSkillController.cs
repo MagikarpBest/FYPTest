@@ -48,8 +48,6 @@ public class PlayerSkillController : MonoBehaviour
     private PlayerSkill _cachedSkill;
     private IPlayerSkillHandler _activeHandler;
 
-
-
     public bool IsSkillUsable { get; private set; } = true;
 
     private void Awake()

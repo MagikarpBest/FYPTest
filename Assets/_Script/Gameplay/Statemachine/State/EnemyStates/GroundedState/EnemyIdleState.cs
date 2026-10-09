@@ -29,6 +29,12 @@ public class EnemyIdleState : State
 
     protected override void OnEnter()
     {
+        Debug.Log("enemy idle enter");
         movement.StopMove();
+    }
+
+    protected override void OnTick(float deltaTime)
+    {
+        Debug.Log("enemy idling");
     }
 }
