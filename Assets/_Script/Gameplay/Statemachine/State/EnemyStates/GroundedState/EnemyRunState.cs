@@ -40,7 +40,7 @@ public class EnemyRunState : State
 
     protected override void OnTick(float deltaTime)
     {
-        Debug.Log("running");
+        //Debug.Log("running");
     }
 
     protected override void OnPhysicsTick(float fixedDeltaTime)

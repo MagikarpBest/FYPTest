@@ -68,14 +68,14 @@ public class GroundedState : State
     protected override void OnEnter()
     {
         input.OnJumpPressed += HandleJump;
-        input.OnAttackPressed += HandleAttack;
+        //input.OnAttackPressed += HandleAttack;
     }
 
 
     protected override void OnExit()
     {
         input.OnJumpPressed -= HandleJump;
-        input.OnAttackPressed -= HandleAttack;
+        //input.OnAttackPressed -= HandleAttack;
     }
 
 }

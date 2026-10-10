@@ -54,7 +54,7 @@ public class Player : MonoBehaviour, ICharacter
         ModeController = GetComponent<PlayerModeController>();
 
         Movement.Init(Rigidbody, model, cameraTransform, Animator);
-        AttackSystem.Init(Animator);
+        AttackSystem.Init(Animator,Input);
         
         stateMachine = GetComponent<HierarchicalStateMachine>();
         PlayerStateFactory factory = new PlayerStateFactory(stateMachine, this);

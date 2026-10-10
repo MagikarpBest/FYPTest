@@ -35,6 +35,6 @@ public class EnemyIdleState : State
 
     protected override void OnTick(float deltaTime)
     {
-        Debug.Log("enemy idling");
+        //Debug.Log("enemy idling");
     }
 }
