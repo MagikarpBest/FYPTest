@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HierarchicalStateMachine : MonoBehaviour
 {
-    [SerializeField] private bool isDebug;
+    [SerializeField] private bool isDebug = false;
     public State Root {  get; private set; }
     private bool started;
 

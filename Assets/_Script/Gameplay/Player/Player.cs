@@ -56,10 +56,10 @@ public class Player : MonoBehaviour, ICharacter
         Movement.Init(Rigidbody, model, cameraTransform, Animator);
         AttackSystem.Init(Animator);
         
-        // stateMachine = GetComponent<HierarchicalStateMachine>();
-        // PlayerStateFactory factory = new PlayerStateFactory(stateMachine, this);
-        //
-        // stateMachine.Init(factory.Alive);
+        stateMachine = GetComponent<HierarchicalStateMachine>();
+        PlayerStateFactory factory = new PlayerStateFactory(stateMachine, this);
+        
+        stateMachine.Init(factory.Alive);
         
         renderer = GetComponent<SkinnedMeshRenderer>();
         

@@ -14,7 +14,7 @@ public abstract class MovementController : MonoBehaviour
     
     public MovementMode Mode {get; private set; } = MovementMode.Normal;
 
-    [SerializeField] protected float rotationSmoothTime = 0.05f;
+    [SerializeField] protected float rotationSpeed = 727f;
     [SerializeField] protected float groundCheckDistance = 0.5f;
     [SerializeField] protected float groundCheckPosOffset = -0.14f;
     [SerializeField] protected float groundCheckRadius = 0.28f;
@@ -34,7 +34,6 @@ public abstract class MovementController : MonoBehaviour
 
     protected float targetYaw;
     protected Vector3 moveDir = Vector3.zero;
-    protected float rotationVelocity = 0f;
     protected RaycastHit groundHit;
     protected float cosMaxSlopeAngle;
     
@@ -48,13 +47,7 @@ public abstract class MovementController : MonoBehaviour
         targetYaw = transform.eulerAngles.y;
         cosMaxSlopeAngle = Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad);
     }
- 
-    protected virtual void Update()
-    {
-        GroundCheck();
-        HandleRotation();
-    }
-
+    
     protected virtual void ApplyVelocity()
     {
         rb.linearVelocity = SlopeCorrection(targetVelocity) + externalVelocity;
@@ -83,8 +76,9 @@ public abstract class MovementController : MonoBehaviour
         {
             targetYaw = Mathf.Atan2(moveDir.x, moveDir.z) * Mathf.Rad2Deg;
         }
-        float smoothedYaw = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetYaw, ref rotationVelocity, rotationSmoothTime);
-        transform.rotation = Quaternion.Euler(0f, smoothedYaw, 0f);
+
+        Quaternion targetRotation = Quaternion.Euler(0f, targetYaw, 0f);
+        rb.MoveRotation( Quaternion.RotateTowards( rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime));
     }
     
     protected virtual void GroundCheck()
@@ -105,11 +99,11 @@ public abstract class MovementController : MonoBehaviour
     {
         if (!IsGrounded || velocity.y > 0f) return velocity;
         
-        //flat ground
+        //nearly flat ground dont correct for optimiztion
         if (Vector3.Dot(Vector3.up, groundHit.normal) > 0.999f) return velocity;
         
         Vector3 horizontalVelocity = new Vector3(velocity.x, 0f, velocity.z);
-        if (horizontalVelocity.sqrMagnitude < 0.01f) return Vector3.zero; //standing still prevent sliding
+        if (horizontalVelocity.sqrMagnitude < 1e-4f) return Vector3.zero; //standing still prevent sliding
         
         return Vector3.ProjectOnPlane(horizontalVelocity, groundHit.normal).normalized * horizontalVelocity.magnitude;
     }
