@@ -58,7 +58,6 @@ public abstract class MovementController : MonoBehaviour
     {
         GroundCheck();
         
-        //abit scuffed
         if (IsWalking)
         {
             abilitySystem.AddTagUnique("Movement.Walking");
@@ -157,6 +156,12 @@ public abstract class MovementController : MonoBehaviour
         Mode = mode;
     }
 
+    public void EnableMovement()
+    {
+        Mode = MovementMode.Normal;
+        StopMovement();
+    }
+    
     public void DisableMovement()
     {
         Mode = MovementMode.Disabled;
@@ -173,6 +178,7 @@ public abstract class MovementController : MonoBehaviour
     public void Jump()
     {
         if (!IsGrounded || Mode != MovementMode.Normal) return;
+        if (abilitySystem.HasTag("Block.Jump")) return;
         moveVelocity.y = Mathf.Sqrt(2f * (Physics.gravity.magnitude * gravityMultiplier) * jumpHeight);
     }
     
