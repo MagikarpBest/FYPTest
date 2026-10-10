@@ -23,11 +23,6 @@ public class PlayerMovement : MovementController
         input.OnJumpPressed -= Jump;
     }
 
-    private void Update()
-    {
-        // HandleRotation();
-    }
-
     private void FixedUpdate()
     {
         GroundCheck();
