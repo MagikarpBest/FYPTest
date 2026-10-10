@@ -6,7 +6,7 @@ using UnityEngine;
 /// Use this class for prototype purpose, ideally all the object define their own destroyed behaviour.
 /// Normally attach with object that has collider.
 /// </summary>
-public class Destructible : MonoBehaviour, IDamageable
+public class Destructible : MonoBehaviour, IDamageable, IHealthSource
 {
     [SerializeField] protected float _maxHealth;
     [SerializeField] private AttackPowerLevel _requiredPowerLevel = AttackPowerLevel.Normal;
@@ -36,7 +36,7 @@ public class Destructible : MonoBehaviour, IDamageable
     public float MaxHealth => _maxHealth;
 
     public event Action<float, float> OnHealthChanged;
-    public event Action<DamageData> OnDamageBlocked;
+    public event Action OnDamageBlocked;
 
     protected virtual void Awake()
     {
@@ -56,7 +56,7 @@ public class Destructible : MonoBehaviour, IDamageable
         if (!CanReceiveDamage(damageData))
         {
             OnBlocked(damageData);
-            OnDamageBlocked?.Invoke(damageData);
+            OnDamageBlocked?.Invoke();
             return DamageResult.Blocked;
         }
 

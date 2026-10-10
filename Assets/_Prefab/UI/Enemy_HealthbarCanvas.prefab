@@ -587,7 +587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.52160966, g: 0.754717, b: 0.40939838, a: 1}
+  m_Color: {r: 0.754717, g: 0.26359499, b: 0.23139909, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -656,7 +656,7 @@ GameObject:
   - component: {fileID: 2602819890220173154}
   - component: {fileID: 7426963425661442862}
   m_Layer: 10
-  m_Name: Destructible_HealthbarCanvas
+  m_Name: Enemy_HealthbarCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -727,7 +727,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &7182415868359087362
 MonoBehaviour:
   m_ObjectHideFlags: 0
