@@ -2,43 +2,51 @@ using System;
 using System.Threading;
 using UnityEngine;
 
-public class Ability : MonoBehaviour
+public class Ability
 {
-    readonly AbilityDefinitionSO def;
+    public readonly AbilityDefinitionSO Definition;
     private AbilitySystem ctx;
     private CancellationTokenSource cts;
-    
     public bool IsRunning => cts != null;
 
-    public Ability(AbilityDefinitionSO def, AbilitySystem ctx)
+    public Ability(AbilityDefinitionSO definition, AbilitySystem ctx)
     {
-        this.def = def; 
+        Definition = definition; 
         this.ctx = ctx;
     }
     
     public bool CanActivateAbility() => 
         !IsRunning 
-        && ctx.Tags.HasAll(def.ActivationRequiredTags)
-        && !ctx.Tags.HasAny(def.ActivationBlockedTags);
+        && ctx.HasAllTags(Definition.ActivationRequiredTags)
+        && !ctx.HasAnyTags(Definition.ActivationBlockedTags)
+        && !ctx.AreAbilityTagsBlocked(Definition.AbilityTags);
     
     public async void Activate()
     {
         if (!CanActivateAbility()) return;
 
         cts = new CancellationTokenSource();
+        bool cancelled = false;
         try
         {
-            await def.OnActivate(ctx, cts.Token); 
-            def.OnEnd(ctx);
+            ctx.AddTags(Definition.GrantedTags);  
+            ctx.NotifyAbilityActivated(this);
+            await Definition.OnActivate(ctx, cts.Token); 
+            Definition.OnEnd(ctx);
         }
         catch (OperationCanceledException)
         {
-            def.OnCancel(ctx);
+            cancelled = true;
+            Definition.OnCancel(ctx);
         }
         finally
         {
             cts.Dispose();
             cts = null;
+            ctx.RemoveTags(Definition.GrantedTags);
+            
+            if (cancelled) ctx.NotifyAbilityCancelled(this);
+            else ctx.NotifyAbilityFinished(this);
         }
     }
 

@@ -6,30 +6,21 @@ using UnityEngine;
 public class GameplayTagContainer
 {
     [SerializeField] private List<GameplayTag> tags = new List<GameplayTag>();
+    public IReadOnlyList<GameplayTag> Tags => tags;
     
     public int Count => tags.Count;
 
-    public void AddTag(GameplayTag tag)
+    public void Add(GameplayTag tag)
     {
         if (tag.IsValid && !tags.Contains(tag))
         {
             tags.Add(tag);
         }
     }
-
-    public void AddTag(string tag)
-    {
-        AddTag(new GameplayTag(tag));
-    }
-
-    public void RemoveTag(GameplayTag tag)
+    
+    public void Remove(GameplayTag tag)
     {
         tags.Remove(tag);
-    }
-
-    public void RemoveTag(string tag)
-    {
-        RemoveTag(new GameplayTag(tag));
     }
 
     public void Clear()
@@ -50,12 +41,7 @@ public class GameplayTagContainer
 
         return false;
     }
-
-    public bool HasTag(string tag)
-    {
-        return HasTag(new GameplayTag(tag));
-    }
-
+    
     //True only if the exact tag was added
     public bool HasTagExact(GameplayTag tag)
     {
@@ -66,12 +52,7 @@ public class GameplayTagContainer
 
         return tags.Contains(tag);
     }
-
-    public bool HasTagExact(string tag)
-    {
-        return HasTagExact(new GameplayTag(tag));
-    }
-
+    
     public bool HasAny(GameplayTagContainer other)
     {
         if (other == null) return false;
@@ -93,5 +74,10 @@ public class GameplayTagContainer
         }
         return true;
     }
+    
+    public void Add(string tag) => Add(new GameplayTag(tag));
+    public void Remove(string tag) => Remove(new GameplayTag(tag));
+    public bool HasTag(string tag) => HasTag(new GameplayTag(tag));
+    public bool HasTagExact(string tag) => HasTagExact(new GameplayTag(tag));
 }
 

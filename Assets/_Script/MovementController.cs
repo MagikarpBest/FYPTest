@@ -48,7 +48,7 @@ public abstract class MovementController : MonoBehaviour
         targetYaw = transform.eulerAngles.y;
         cosMaxSlopeAngle = Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad);
     }
-
+ 
     protected virtual void Update()
     {
         GroundCheck();
