@@ -7,4 +7,3 @@ public class GameplayTagDatabaseSO : ScriptableObject
     [SerializeField] private List<string> tags = new List<string>();
     public IReadOnlyList<string> Tags => tags;
 }
-

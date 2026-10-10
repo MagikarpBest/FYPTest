@@ -28,4 +28,3 @@ public static class GameplayTagDatabase
         return tags.Contains(tag);
     }
 }
-

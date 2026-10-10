@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: f71626fc7ead8244eaabac588b897a36, type: 3}
   m_Name: GameplayTagDatabase
   m_EditorClassIdentifier: Assembly-CSharp::GameplayTagDatabaseSO
   tags:
