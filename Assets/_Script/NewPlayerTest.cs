@@ -8,6 +8,7 @@ public class NewPlayerTest : MonoBehaviour
     public Animator Animator { get; private set; }
     public PlayerInputManager Input { get; private set; }
     public PlayerMovement Movement { get; private set; }
+    public AbilitySystem AbilitySystem { get; private set; }
     
     private SkinnedMeshRenderer renderer;
     
@@ -22,6 +23,7 @@ public class NewPlayerTest : MonoBehaviour
 
         Input = FindFirstObjectByType<PlayerInputManager>();
         Movement = GetComponent<PlayerMovement>();
+        AbilitySystem = GetComponent<AbilitySystem>();
         
         renderer = GetComponent<SkinnedMeshRenderer>();
         

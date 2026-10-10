@@ -6,11 +6,15 @@ public class PlayerMovement : MovementController
     private Camera mainCamera;
     private PlayerInputManager input;
     
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         mainCamera = Camera.main;
         input = GetComponent<PlayerInputManager>();
+    }
+
+    private void OnEnable()
+    {
         input.OnJumpPressed += Jump;
     }
 

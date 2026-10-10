@@ -40,7 +40,7 @@ public abstract class MovementController : MonoBehaviour
     
     public bool IsGrounded { get; private set; } = true;
     
-    protected virtual void Start()
+    protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();

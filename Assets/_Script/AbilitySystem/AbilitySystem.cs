@@ -4,9 +4,14 @@ using System.Collections.Generic;
 
 public class AbilitySystem : MonoBehaviour
 {
+    public MovementController Movement { get; private set; }  
+    public Animator Animator { get; private set; }
+    public PlayerInputManager Input { get; private set; }
+        
     [SerializeField] private GameplayTagCountContainer tags;
     [SerializeField] private List<AbilityDefinitionSO> startingAbilities = new List<AbilityDefinitionSO>();
     private List<Ability> abilities = new List<Ability>();
+    
     public event Action<GameplayTag, int> TagCountChanged;
     public event Action<Ability> AbilityGained;
     public event Action<Ability> AbilityRemoved;
@@ -16,6 +21,10 @@ public class AbilitySystem : MonoBehaviour
     
     private void Awake()
     {
+        Movement = GetComponent<MovementController>();
+        Animator = GetComponent<Animator>();
+        Input = GetComponent<PlayerInputManager>(); //null for enemies just do null check passing input here is easier for some stuff
+        
         foreach (var def in startingAbilities)
         {
             GiveAbility(def);

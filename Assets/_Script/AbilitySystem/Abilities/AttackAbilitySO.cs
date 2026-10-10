@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "AbilitySystem/Abilities/Attack")]
+[CreateAssetMenu(fileName = "Attack", menuName = "AbilitySystem/Abilities/Attack")]
 public class AttackAbilitySO : AbilityDefinitionSO
 {
     [SerializeField] private float firstHitTime = 1f;

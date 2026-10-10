@@ -6855,21 +6855,6 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.000000029802322, y: 0.1007646, z: 0.025631398}
     m_Extent: {x: 0.28296927, y: 0.16344476, z: 0.20481168}
   m_DirtyAABB: 0
---- !u!114 &1067238667833520995
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1740936432862000802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9600d97c73b2aa041b6f5c0b0e7ffda9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerSkillController
-  _characterTransform: {fileID: 2534145833929515168}
-  _skillHoldPoint: {fileID: 6076639821601745527}
-  _aimLineRenderer: {fileID: 1238242762}
 --- !u!137 &1075409516430205155
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -8691,26 +8676,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5088484030962266964}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1690757832000427272
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1740936432862000802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21a4d9f40c1e26c498019813c7b50754, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerStatus
-  _maxHealth: 5
-  _invincibilityDuration: 1
-  _maxMana: 500
-  _startingCurrency: 0
-  _activeSkill: {fileID: 0}
-  _skillSlots:
-  - {fileID: 11400000, guid: 2193578baef56d74492459eb1aa33efc, type: 2}
-  - {fileID: 11400000, guid: 93796f0e7a633d8438711869de45fa85, type: 2}
 --- !u!4 &1699405079785328242
 Transform:
   m_ObjectHideFlags: 0
@@ -8994,13 +8959,10 @@ GameObject:
   - component: {fileID: 348606363479079603}
   - component: {fileID: 7687632801583063059}
   - component: {fileID: 2122274049434840497}
-  - component: {fileID: 1690757832000427272}
-  - component: {fileID: 2080277901754901850}
-  - component: {fileID: 1067238667833520995}
-  - component: {fileID: 6112147535278169333}
   - component: {fileID: 7687632801583063062}
-  - component: {fileID: 7687632801583063061}
   - component: {fileID: 7687632801583063060}
+  - component: {fileID: 7687632801583063061}
+  - component: {fileID: 7687632801583063063}
   m_Layer: 6
   m_Name: PlayerCharacterWithVIsual (2)
   m_TagString: Player
@@ -10370,18 +10332,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5088484030635576707}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2080277901754901850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1740936432862000802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3279f870b0be8714fb9a2d62970f60f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageReceiver
 --- !u!137 &2084341520171169482
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -24630,18 +24580,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &6112147535278169333
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1740936432862000802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30de959fb9d11114d8dd41cfd7a8f3f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerModeController
 --- !u!1 &6122161471962709856
 GameObject:
   m_ObjectHideFlags: 0
@@ -31021,6 +30959,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dbf9f2dcf2134c469e26f5b0ecb960d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputManager
+--- !u!114 &7687632801583063063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740936432862000802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c849c7a31a2bd140a426ef6c26a911e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AbilitySystem
+  tags:
+    tags:
+      tags: []
+  startingAbilities: []
 --- !u!1 &7688967331717005262
 GameObject:
   m_ObjectHideFlags: 0
