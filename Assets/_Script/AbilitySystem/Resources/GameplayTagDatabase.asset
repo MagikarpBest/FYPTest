@@ -22,7 +22,6 @@ MonoBehaviour:
   - State.Performing
   - Movement
   - Movement.Walking
-  - Movement.Jump
   - Ability.Attack
   - Status.Burning
   - Status.Stunned

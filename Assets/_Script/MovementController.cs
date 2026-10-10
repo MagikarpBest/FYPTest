@@ -72,7 +72,6 @@ public abstract class MovementController : MonoBehaviour
         {
             abilitySystem.RemoveTag("State.Airborne");
             abilitySystem.AddTagUnique("State.Grounded");
-            abilitySystem.RemoveTag("Movement.Jump");
         }
         else
         {
@@ -175,8 +174,6 @@ public abstract class MovementController : MonoBehaviour
     {
         if (!IsGrounded || Mode != MovementMode.Normal) return;
         moveVelocity.y = Mathf.Sqrt(2f * (Physics.gravity.magnitude * gravityMultiplier) * jumpHeight);
-        
-        abilitySystem.AddTagUnique("Movement.Jump");
     }
     
     protected virtual void OnDrawGizmosSelected()
