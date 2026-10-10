@@ -15,8 +15,8 @@ MonoBehaviour:
   tags:
   - State.Dead
   - State.Grounded
-  - State.Launched
   - State.Airborne
+  - State.Launched
   - State.Combat
   - State.Build
   - State.Performing

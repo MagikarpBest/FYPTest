@@ -28,8 +28,9 @@ public abstract class MovementController : MonoBehaviour
 
     protected Rigidbody rb;
     protected Animator animator;
-
-    protected Vector3 targetVelocity = Vector3.zero;
+    protected AbilitySystem abilitySystem;
+    
+    protected Vector3 moveVelocity = Vector3.zero;
     protected Vector3 externalVelocity = Vector3.zero;
 
     protected float targetYaw;
@@ -38,7 +39,11 @@ public abstract class MovementController : MonoBehaviour
     protected float cosMaxSlopeAngle;
     
     public bool IsGrounded { get; private set; } = true;
-    
+    public bool IsWalking =>
+        Mode == MovementMode.Normal
+        && IsGrounded
+        && (moveVelocity.x * moveVelocity.x + moveVelocity.z * moveVelocity.z) > 0.01f;
+
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -46,27 +51,55 @@ public abstract class MovementController : MonoBehaviour
         rb.useGravity = false;
         targetYaw = transform.eulerAngles.y;
         cosMaxSlopeAngle = Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad);
+        abilitySystem = GetComponent<AbilitySystem>();
+    }
+    
+    private void Update()
+    {
+        GroundCheck();
+        
+        //abit scuffed
+        if (IsWalking)
+        {
+            abilitySystem.AddTagUnique("Movement.Walking");
+        }
+        else
+        {
+            abilitySystem.RemoveTag("Movement.Walking");
+        }
+
+        if (IsGrounded)
+        {
+            abilitySystem.RemoveTag("State.Airborne");
+            abilitySystem.AddTagUnique("State.Grounded");
+            abilitySystem.RemoveTag("Movement.Jump");
+        }
+        else
+        {
+            abilitySystem.RemoveTag("State.Grounded");
+            abilitySystem.AddTagUnique("State.Airborne");
+        }
     }
     
     protected virtual void ApplyVelocity()
     {
-        rb.linearVelocity = SlopeCorrection(targetVelocity) + externalVelocity;
-        Vector3 horizontalVelocity = new Vector3(targetVelocity.x, 0f, targetVelocity.z);
+        rb.linearVelocity = SlopeCorrection(moveVelocity) + externalVelocity;
+        Vector3 horizontalVelocity = new Vector3(moveVelocity.x, 0f, moveVelocity.z);
         animator.SetFloat("Speed", horizontalVelocity.magnitude);
     }
     
     protected virtual void HandleGravity()
     {
         //stop velocity from dropping infinitely while grounded
-        if (IsGrounded && targetVelocity.y < 0f)
+        if (IsGrounded && moveVelocity.y < 0f)
         {
-            targetVelocity.y = -2f; //keeps you pressed onto the ground and slopes
+            moveVelocity.y = -2f; //keeps you pressed onto the ground and slopes
         }
         else
         {
             //apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-            targetVelocity.y += Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
-            targetVelocity.y = Mathf.Max(targetVelocity.y, -terminalVelocity);
+            moveVelocity.y += Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
+            moveVelocity.y = Mathf.Max(moveVelocity.y, -terminalVelocity);
         }
     }
 
@@ -111,7 +144,7 @@ public abstract class MovementController : MonoBehaviour
     public void ApplyForce(Vector3 force)
     {
         externalVelocity += new Vector3(force.x, 0f, force.z);
-        targetVelocity.y = force.y;
+        moveVelocity.y = force.y;
     }
 
     public void OverrideMovement(Vector3 movement)
@@ -133,15 +166,17 @@ public abstract class MovementController : MonoBehaviour
 
     public void StopMovement()
     {
-        targetVelocity.x = 0f;
-        targetVelocity.z = 0f;
+        moveVelocity.x = 0f;
+        moveVelocity.z = 0f;
         animator.SetFloat("Speed", 0);
     }
     
     public void Jump()
     {
         if (!IsGrounded || Mode != MovementMode.Normal) return;
-        targetVelocity.y = Mathf.Sqrt(2f * (Physics.gravity.magnitude * gravityMultiplier) * jumpHeight);
+        moveVelocity.y = Mathf.Sqrt(2f * (Physics.gravity.magnitude * gravityMultiplier) * jumpHeight);
+        
+        abilitySystem.AddTagUnique("Movement.Jump");
     }
     
     protected virtual void OnDrawGizmosSelected()

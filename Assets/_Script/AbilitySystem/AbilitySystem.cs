@@ -68,6 +68,19 @@ public class AbilitySystem : MonoBehaviour
         foreach (GameplayTag tag in c.Tags) tags.Remove(tag);
     }
     
+    public bool AddTagUnique(GameplayTag tag)
+    {
+        if (tags.HasTagExact(tag))
+        {
+            return false; //already there, do nothing
+        }
+
+        tags.Add(tag);
+        return true;
+    }
+
+    public bool AddTagUnique(string tag) => AddTagUnique(new GameplayTag(tag));
+    
     //string overloads
     public int GetTagCount(string tag) => tags.GetTagCount(tag);
     public void AddTag(string tag) => tags.Add(tag);

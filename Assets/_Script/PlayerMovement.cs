@@ -25,7 +25,6 @@ public class PlayerMovement : MovementController
 
     private void FixedUpdate()
     {
-        GroundCheck();
         HandleGravity();
         Move();
         HandleRotation();
@@ -41,7 +40,7 @@ public class PlayerMovement : MovementController
         float cameraYaw = mainCamera.transform.eulerAngles.y;
         moveDir = Quaternion.Euler(0f, cameraYaw, 0f) * inputDir; //rotates inputDir by cameraYaw
         
-        targetVelocity.x = moveDir.x * moveSpeed;
-        targetVelocity.z = moveDir.z * moveSpeed;
+        moveVelocity.x = moveDir.x * moveSpeed;
+        moveVelocity.z = moveDir.z * moveSpeed;
     }
 }
