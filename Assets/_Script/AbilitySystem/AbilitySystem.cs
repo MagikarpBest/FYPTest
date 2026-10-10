@@ -10,7 +10,7 @@ public class AbilitySystem : MonoBehaviour
         
     [SerializeField] private GameplayTagCountContainer tags;
     [SerializeField] private List<AbilityDefinitionSO> startingAbilities = new List<AbilityDefinitionSO>();
-    private List<Ability> abilities = new List<Ability>();
+    [SerializeField] private List<Ability> abilities = new List<Ability>();
     
     public event Action<GameplayTag, int> TagCountChanged;
     public event Action<Ability> AbilityGained;

@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using UnityEditor.IMGUI.Controls;
+using System.Linq;
 
 public class GameplayTagDropdown : AdvancedDropdown
 {
@@ -17,11 +18,9 @@ public class GameplayTagDropdown : AdvancedDropdown
     protected override AdvancedDropdownItem BuildRoot()
     {
         var root = new AdvancedDropdownItem("Gameplay Tags");
-        var dropdownItemDict =
-            new Dictionary<string, AdvancedDropdownItem>(); //key is all the tags then the coresponding dropdownitem
+        var dropdownItemDict = new Dictionary<string, AdvancedDropdownItem>(); //key is all the tags then the coresponding dropdownitem
         var hasChildren = new HashSet<string>();
-        var registeredTags = new HashSet<string>(tagNames); //which tags are actually registered
-
+        
         foreach (string tag in tagNames)
         {
             if (string.IsNullOrEmpty(tag)) continue;
@@ -34,7 +33,7 @@ public class GameplayTagDropdown : AdvancedDropdown
             {
                 string parentTag = currentTag;
 
-                //set current tag
+                //build the tag from left to right
                 currentTag = currentTag.Length == 0 ? segment : currentTag + "." + segment;
                 
                 //create new item if it doesnt exist then add to dict
@@ -51,14 +50,20 @@ public class GameplayTagDropdown : AdvancedDropdown
             }
         }
 
-        foreach (string path in hasChildren)
+        foreach (string tag in hasChildren)
         {
-            if (registeredTags.Contains(path))
+            //prevent non registered tags
+            if (tagNames.Contains(tag))
             {
-                dropdownItemDict[path].AddChild(new AdvancedDropdownItem(path));
+                dropdownItemDict[tag].AddChild(new AdvancedDropdownItem(tag));
             }
         }
 
         return root;
+    }
+    
+    protected override void ItemSelected(AdvancedDropdownItem item)
+    {
+        onSelected(item.name);
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using UnityEngine;
 
+[Serializable]
 public class Ability
 {
     public readonly AbilityDefinitionSO Definition;

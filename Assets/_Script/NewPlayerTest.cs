@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Linq;
 
@@ -30,5 +31,19 @@ public class NewPlayerTest : MonoBehaviour
         ragdollRbs = GetComponentsInChildren<Rigidbody>().Where(rb => rb.gameObject != gameObject).ToArray();
         ragdollCols = GetComponentsInChildren<Collider>() .Where(col => col.gameObject != gameObject) .ToArray();
     }
-    
+
+    private void OnEnable()
+    {
+        Input.OnAttackPressed += HandleAttack;
+    }
+
+    private void OnDisable()
+    {
+        Input.OnAttackPressed -= HandleAttack;
+    }
+
+    void HandleAttack()
+    {
+        AbilitySystem.TryActivateAbilityWithTag("Ability.Attack");
+    }
 }
