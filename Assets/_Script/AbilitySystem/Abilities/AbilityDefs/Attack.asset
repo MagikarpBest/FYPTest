@@ -18,7 +18,8 @@ MonoBehaviour:
   activationRequiredTags:
     tags: []
   activationBlockedTags:
-    tags: []
+    tags:
+    - name: 
   cancelAbilitiesWithTag:
     tags: []
   blockAbilitiesWithTag:

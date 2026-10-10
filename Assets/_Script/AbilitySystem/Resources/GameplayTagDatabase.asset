@@ -19,6 +19,8 @@ MonoBehaviour:
   - State.Airborne
   - State.Combat
   - State.Build
+  - State.Performing
+  - Movement
   - Movement.Walking
   - Movement.Jump
   - Ability.Attack

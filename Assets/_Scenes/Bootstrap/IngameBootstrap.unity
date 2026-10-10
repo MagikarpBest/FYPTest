@@ -30946,7 +30946,9 @@ MonoBehaviour:
   tags:
     tags:
       tags: []
-  startingAbilities: []
+  startingAbilities:
+  - {fileID: 11400000, guid: aa99bec5cb3058d4890776a00a0eb36d, type: 2}
+  abilities: []
 --- !u!1 &7688967331717005262
 GameObject:
   m_ObjectHideFlags: 0
