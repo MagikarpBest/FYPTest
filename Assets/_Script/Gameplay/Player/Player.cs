@@ -58,7 +58,7 @@ public class Player : MonoBehaviour, ICharacter
         
         stateMachine = GetComponent<HierarchicalStateMachine>();
         PlayerStateFactory factory = new PlayerStateFactory(stateMachine, this);
-
+        
         stateMachine.Init(factory.Alive);
         
         renderer = GetComponent<SkinnedMeshRenderer>();

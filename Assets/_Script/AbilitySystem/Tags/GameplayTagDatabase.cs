@@ -1,13 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "GameplayTagDatabase", menuName = "Scriptable Objects/GameplayTagDatabase")]
-public class GameplayTagDatabaseSO : ScriptableObject
-{
-    [SerializeField] private List<string> tags = new List<string>();
-    public IReadOnlyList<string> Tags => tags;
-}
-
 public static class GameplayTagDatabase
 {
     private static GameplayTagDatabaseSO tagDatabase;

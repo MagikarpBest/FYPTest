@@ -13,7 +13,17 @@ MonoBehaviour:
   m_Name: GameplayTagDatabase
   m_EditorClassIdentifier: Assembly-CSharp::GameplayTagDatabaseSO
   tags:
+  - State.Dead
   - State.Grounded
   - State.Airborne
-  - Movement.Run
-  - Movement.Jump
+  - State.Launched
+  - State.Combat
+  - State.Build
+  - State.Performing
+  - Movement
+  - Movement.Walking
+  - Ability.Attack
+  - Status.Burning
+  - Status.Stunned
+  - Block.Movement
+  - Block.Jump
