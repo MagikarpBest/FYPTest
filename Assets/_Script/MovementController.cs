@@ -31,18 +31,20 @@ public abstract class MovementController : MonoBehaviour
     protected AbilitySystem abilitySystem;
     
     protected Vector3 moveVelocity = Vector3.zero;
+    protected Vector2 horizontalVelocity => new Vector2(moveVelocity.x, moveVelocity.z);
+    private float verticalVelocity => moveVelocity.y;
+    
     protected Vector3 externalVelocity = Vector3.zero;
+    protected Vector3 gravity = Vector3.zero;
 
     protected float targetYaw;
-    protected Vector3 moveDir = Vector3.zero;
     protected RaycastHit groundHit;
     protected float cosMaxSlopeAngle;
     
     public bool IsGrounded { get; private set; } = true;
-    public bool IsWalking =>
-        Mode == MovementMode.Normal
-        && IsGrounded
-        && (moveVelocity.x * moveVelocity.x + moveVelocity.z * moveVelocity.z) > 0.01f;
+    public bool IsWalking => IsGrounded && horizontalVelocity.sqrMagnitude > 0.01f;
+    public bool IsFalling => !IsGrounded && moveVelocity.y + gravity.y + externalVelocity.y < 0;
+    public bool IsJumping { get; private set; } = false;
 
     protected virtual void Awake()
     {
@@ -71,45 +73,53 @@ public abstract class MovementController : MonoBehaviour
         {
             abilitySystem.RemoveTag("State.Airborne");
             abilitySystem.AddTagUnique("State.Grounded");
+            
+            if (IsJumping && rb.linearVelocity.y < 0f)
+            { 
+                moveVelocity.y = 0f; 
+                IsJumping = false;
+            }
         }
         else
         {
             abilitySystem.RemoveTag("State.Grounded");
             abilitySystem.AddTagUnique("State.Airborne");
         }
+        
+        animator.SetBool("IsFalling", IsFalling);
     }
     
     protected virtual void ApplyVelocity()
     {
-        rb.linearVelocity = SlopeCorrection(moveVelocity) + externalVelocity;
-        Vector3 horizontalVelocity = new Vector3(moveVelocity.x, 0f, moveVelocity.z);
-        animator.SetFloat("Speed", horizontalVelocity.magnitude);
+        rb.linearVelocity = SlopeCorrection(moveVelocity) + externalVelocity + gravity;
+        animator.SetFloat("Speed",  Mathf.Clamp01(horizontalVelocity.magnitude / moveSpeed));
+        Debug.Log(Mathf.Clamp01(horizontalVelocity.magnitude / moveSpeed));
     }
     
     protected virtual void HandleGravity()
     {
         //stop velocity from dropping infinitely while grounded
-        if (IsGrounded && moveVelocity.y < 0f)
+        if (IsGrounded && moveVelocity.y + gravity.y + externalVelocity.y < 0f)
         {
-            moveVelocity.y = -2f; //keeps you pressed onto the ground and slopes
+            gravity.y = -2f; //keeps you pressed onto the ground and slopes
         }
         else
         {
             //apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-            moveVelocity.y += Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
-            moveVelocity.y = Mathf.Max(moveVelocity.y, -terminalVelocity);
+            gravity.y += Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
+            gravity.y = Mathf.Max(gravity.y, -terminalVelocity);
         }
     }
 
     protected virtual void HandleRotation()
     { 
-        if (moveDir.sqrMagnitude > 0.01f)
+        if (horizontalVelocity.sqrMagnitude > 0.01f)
         {
-            targetYaw = Mathf.Atan2(moveDir.x, moveDir.z) * Mathf.Rad2Deg;
+            targetYaw = Mathf.Atan2(horizontalVelocity.x, horizontalVelocity.y) * Mathf.Rad2Deg;
         }
 
         Quaternion targetRotation = Quaternion.Euler(0f, targetYaw, 0f);
-        rb.MoveRotation( Quaternion.RotateTowards( rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime));
+        rb.MoveRotation( Quaternion.RotateTowards(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime));
     }
     
     protected virtual void GroundCheck()
@@ -132,23 +142,28 @@ public abstract class MovementController : MonoBehaviour
         
         //nearly flat ground dont correct for optimiztion
         if (Vector3.Dot(Vector3.up, groundHit.normal) > 0.999f) return velocity;
+
+        Vector3 hVel = new Vector3(velocity.x, 0f, velocity.z);
+        if (hVel.sqrMagnitude < 1e-4f) return Vector3.zero; //standing still prevent sliding
         
-        Vector3 horizontalVelocity = new Vector3(velocity.x, 0f, velocity.z);
-        if (horizontalVelocity.sqrMagnitude < 1e-4f) return Vector3.zero; //standing still prevent sliding
-        
-        return Vector3.ProjectOnPlane(horizontalVelocity, groundHit.normal).normalized * horizontalVelocity.magnitude;
+        return Vector3.ProjectOnPlane(hVel, groundHit.normal).normalized * hVel.magnitude;
     }
 
     public void ApplyForce(Vector3 force)
     {
-        externalVelocity += new Vector3(force.x, 0f, force.z);
-        moveVelocity.y = force.y;
+        externalVelocity += force;
     }
 
     public void OverrideMovement(Vector3 movement)
     {
         Mode = MovementMode.Override;
-        rb.MovePosition(transform.position + movement);
+        moveVelocity = movement;
+    }
+
+    public void EndOverrideMovement()
+    {
+        Mode = MovementMode.Normal;
+        StopMovement();
     }
 
     public void SetMovementMode(MovementMode mode)
@@ -170,8 +185,7 @@ public abstract class MovementController : MonoBehaviour
 
     public void StopMovement()
     {
-        moveVelocity.x = 0f;
-        moveVelocity.z = 0f;
+        moveVelocity = Vector3.zero;
         animator.SetFloat("Speed", 0);
     }
     
@@ -180,6 +194,8 @@ public abstract class MovementController : MonoBehaviour
         if (!IsGrounded || Mode != MovementMode.Normal) return;
         if (abilitySystem.HasTag("Block.Jump")) return;
         moveVelocity.y = Mathf.Sqrt(2f * (Physics.gravity.magnitude * gravityMultiplier) * jumpHeight);
+        IsJumping = true;
+        animator.CrossFade("Jump", 0.1f);
     }
     
     protected virtual void OnDrawGizmosSelected()
