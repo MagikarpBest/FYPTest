@@ -101,23 +101,17 @@ public class Destructible : MonoBehaviour, IDamageable, IHealthSource
 
         DeathEvents.Raise(new DeathInfo(transform.position, gameObject, _manaValue, _currencyValue));
         
-        Destroy(gameObject);
+        SetCollidersEnabled(false);
+        SetRenderersEnabled(false);
+        
+        if (TryGetComponent<Rigidbody>(out var rb))
+        {
+            rb.isKinematic = true;
+        }
+        Destroy(gameObject, _destroyDelay);
         
         
         SpawnDestroyEffect();
-        
-        
-        //No point 
-        // SetCollidersEnabled(false);
-        // SetRenderersEnabled(false);
-        
-        // if (TryGetComponent<Rigidbody>(out var rb))
-        // {
-        //     rb.isKinematic = true;
-        // }
-
-        // Remove the whole thing after the effect has had time to finish.
-        //Destroy(gameObject, _destroyDelay);
     }
 
     protected virtual void SpawnDestroyEffect()
@@ -160,9 +154,6 @@ public class Destructible : MonoBehaviour, IDamageable, IHealthSource
     private void SetCollidersEnabled(bool enabled)
     {
         foreach (Collider col in GetComponentsInChildren<Collider>())
-            col.enabled = enabled;
-
-        foreach (Collider2D col in GetComponentsInChildren<Collider2D>())
             col.enabled = enabled;
     }
 

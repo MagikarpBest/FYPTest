@@ -4,7 +4,7 @@ public interface IPlayerSkillHandler
     void Begin(PlayerSkillContext context);
 
     // Player left-click to execute skill
-    SkillConfirmResult Confirm();
+    SkillConfirmResult Confirm(out ISummonedObject summonedObject);
 
     // Player right-click to cancel skill
     void Cancel();

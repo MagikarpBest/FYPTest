@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 098f2f46aa6b53147948d40a55c645f0, type: 3}
+  m_Name: PlayerSkill_Rock
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerSkill
+  SkillName: Rock
+  Icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  ManaCost: 1
+  Restrictions: 1
+  _handler:
+    rid: 7671557824421822535
+  references:
+    version: 2
+    RefIds:
+    - rid: 7671557824421822535
+      type: {class: RockSkillHandler, ns: , asm: Assembly-CSharp}
+      data:
+        _range: 15
+        _summonLayer:
+          serializedVersion: 2
+          m_Bits: 256
+        _maxGroundAngle: 45
+        _groundSearchUp: 10
+        _groundSearchDown: 40
+        _clearanceRadius: 2
+        _probeHeight: 0.5
+        _probeCount: 12
+        _resolveIterations: 4
+        _rockPrefab: {fileID: 4495816944594737043, guid: 4d97f723aeaac754fb6d8b856d33d30a, type: 3}
+        _impactMarkerPrefab: {fileID: 4759799111209701313, guid: bef36bdfe66aefd49b543bb2e51f34c7, type: 3}
+        _spawnHeight: 8
+        _minSpawnHeight: 3
+        _ceilingMargin: 1
+        _materializeDuration: 0.4
+        _hoverDuration: 0.2
+        _initialFallSpeed: 15
+        _damage: 3
+        _impactRadius: 4.5
+        _impactForce: 500
+        _damageType: 0
+        _attackPowerLevel: 2

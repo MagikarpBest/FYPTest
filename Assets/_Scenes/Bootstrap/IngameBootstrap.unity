@@ -1220,6 +1220,14 @@ PrefabInstance:
       propertyPath: damageConfig.Array.size
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4312036143297442790, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
+      propertyPath: _skillSlots.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312036143297442790, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
+      propertyPath: '_skillSlots.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 6b135734a5e778e43a16d26e5ee22d91, type: 2}
     - target: {fileID: 5048073394504075005, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
       propertyPath: m_ExcludeLayers.m_Bits
       value: 1024

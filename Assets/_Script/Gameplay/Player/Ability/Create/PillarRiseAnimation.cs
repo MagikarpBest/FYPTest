@@ -2,7 +2,7 @@ using DG.Tweening;
 using System;
 using UnityEngine;
 
-public class PillarRiseAnimation : MonoBehaviour
+public class PillarRiseAnimation : MonoBehaviour, ISummonedObject
 {
     [SerializeField] private Rigidbody rigidBody;
     [Header("Settings")]
@@ -19,27 +19,16 @@ public class PillarRiseAnimation : MonoBehaviour
 
     public event Action OnPillarRising;
     public event Action OnPillarFalling;
-
-
-
+    public event Action<ISummonedObject> OnRemoved;
 
     public void SetSpawnSurface(Vector3 surfacePoint, Vector3 normal)
     {
         surfaceNormal = normal;
-
         startPosition = rigidBody.position;
-
-        rigidBody.rotation =
-            Quaternion.FromToRotation(
-                Vector3.up,
-                normal
-            );
-
-        targetPosition =
-            startPosition + normal * pillarHeight;
+        rigidBody.rotation = Quaternion.FromToRotation(Vector3.up, normal );
+        targetPosition = startPosition + normal * pillarHeight;
 
         initialized = true;
-
         Rise();
     }
 
@@ -54,7 +43,11 @@ public class PillarRiseAnimation : MonoBehaviour
                 .SetEase(Ease.OutCubic).SetUpdate(UpdateType.Fixed)
         );
         sequence.AppendInterval(existDuration);
+    }
 
+    public void Despawn()
+    {
+        Sequence sequence = DOTween.Sequence();
         sequence.AppendCallback(() => OnPillarFalling?.Invoke());
         sequence.Append(
             rigidBody.DOMove(startPosition, riseDuration)
@@ -64,5 +57,8 @@ public class PillarRiseAnimation : MonoBehaviour
         sequence.OnComplete(() => Destroy(gameObject));
     }
 
-
+    private void OnDestroy()
+    {
+        OnRemoved?.Invoke(this);
+    }
 }

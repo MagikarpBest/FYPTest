@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum SkillConfirmResult
@@ -43,12 +44,14 @@ public class PlayerSkillController : MonoBehaviour
     [SerializeField] private Transform _skillHoldPoint;
     [SerializeField] private LineRenderer _aimLineRenderer;
 
+    [Header("Skill Limitation")]
+    [SerializeField] private int _maximumActiveObject = 3;
+    private readonly LinkedList<ISummonedObject> _summonedObjects = new();
+
     private PlayerModeController _modeController;
     private PlayerSkillContext _context;
     private PlayerSkill _cachedSkill;
     private IPlayerSkillHandler _activeHandler;
-
-
 
     public bool IsSkillUsable { get; private set; } = true;
 
@@ -142,9 +145,13 @@ public class PlayerSkillController : MonoBehaviour
     {
         if (_activeHandler == null) return;
 
-        SkillConfirmResult result = _activeHandler.Confirm();
-        if (result == SkillConfirmResult.Finish) StartCoroutine(FinishSkill());
-
+        SkillConfirmResult result = _activeHandler.Confirm(out ISummonedObject obj);
+        
+        if (result == SkillConfirmResult.Finish)
+        {
+            if (obj != null) RegisterSummonedObject(obj);
+            StartCoroutine(FinishSkill());
+        }
     }
 
     private void Update()
@@ -187,5 +194,43 @@ public class PlayerSkillController : MonoBehaviour
         {
             CancelCurrentSkill();
         }
+    }
+
+    private void RegisterSummonedObject(ISummonedObject summonedObject)
+    {
+        if (summonedObject == null || _summonedObjects.Contains(summonedObject))
+            return;
+
+        _summonedObjects.AddLast(summonedObject);
+        summonedObject.OnRemoved += HandleSummonedRemove;
+
+        while (_summonedObjects.Count > _maximumActiveObject)
+        {
+            ISummonedObject oldestObject = _summonedObjects.First.Value;
+            UnregisterSummonedObject(oldestObject);
+            oldestObject.Despawn();
+        }
+    }
+    
+    public void UnregisterSummonedObject(ISummonedObject summonedObject)
+    {
+        if (summonedObject == null)
+            return;
+
+        summonedObject.OnRemoved -= HandleSummonedRemove;
+        _summonedObjects.Remove(summonedObject);
+    }
+
+    private void HandleSummonedRemove(ISummonedObject summonedObject)
+    {
+        UnregisterSummonedObject(summonedObject);
+    }
+
+    private void OnDestroy()
+    {
+        foreach (ISummonedObject obj in _summonedObjects)
+            obj.OnRemoved -= HandleSummonedRemove;
+
+        _summonedObjects.Clear();
     }
 }
