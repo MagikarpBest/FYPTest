@@ -33,7 +33,7 @@ MonoBehaviour:
   secondHitDelay: 0.5
   endDelay: 0.5
   comboWindow: 1
-  attackRange: 4
+  attackRange: 5
   damageConfig:
     Damage: 1
     DamageType: 0

@@ -20,6 +20,8 @@ public class AttackAbilitySO : AbilityDefinitionSO
 
     public override async Awaitable OnActivate(AbilitySystem ctx, CancellationToken token)
     {
+        DebugDraw(ctx);
+
         ctx.Input.OnAttackPressed += QueueCombo;
 
         int combo = 1;
@@ -28,7 +30,6 @@ public class AttackAbilitySO : AbilityDefinitionSO
             // Do base attack + damage
             PerformDamageDetection(ctx);
             ctx.Animator.SetTrigger($"AttackTrigger{combo}");
-
             // Combo logic
             comboQueued = false;
             Debug.Log($"Combo : {combo}");
@@ -106,7 +107,33 @@ public class AttackAbilitySO : AbilityDefinitionSO
             }
         }
     }
-    
+    //chatgpt circle line, ignore
+    public void DebugDraw(AbilitySystem ctx)
+    {
+        Vector3 center = ctx.Character.Transform.position;
+
+        int segments = 32;
+
+        for (int i = 0; i < segments; i++)
+        {
+            float angle1 = i * Mathf.PI * 2 / segments;
+            float angle2 = (i + 1) * Mathf.PI * 2 / segments;
+
+            Vector3 point1 = center + new Vector3(
+                Mathf.Cos(angle1),
+                0,
+                Mathf.Sin(angle1)
+            ) * attackRange;
+
+            Vector3 point2 = center + new Vector3(
+                Mathf.Cos(angle2),
+                0,
+                Mathf.Sin(angle2)
+            ) * attackRange;
+
+            Debug.DrawLine(point1, point2, Color.red,2f);
+        }
+    }
     
     public override void OnEnd(AbilitySystem ctx)
     {
