@@ -21,5 +21,6 @@ public abstract class AbilityDefinitionSO : ScriptableObject
     public virtual Awaitable OnActivate(AbilitySystem ctx, CancellationToken token) => Awaitable.NextFrameAsync(token);
     public virtual void OnEnd(AbilitySystem ctx) {}
     public virtual void OnCancel(AbilitySystem ctx) {}
+    public virtual void Cleanup(AbilitySystem ctx) {}
 
 }

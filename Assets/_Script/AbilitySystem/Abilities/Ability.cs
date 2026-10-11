@@ -45,7 +45,7 @@ public class Ability
             cts.Dispose();
             cts = null;
             ctx.RemoveTags(Definition.GrantedTags);
-            
+            Definition.Cleanup(ctx);
             if (cancelled) ctx.NotifyAbilityCancelled(this);
             else ctx.NotifyAbilityFinished(this);
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class AbilitySystem : MonoBehaviour
 {
+    public ICharacter Character { get; private set; } 
     public MovementController Movement { get; private set; }  
     public Animator Animator { get; private set; }
     public PlayerInputManager Input { get; private set; }
@@ -11,16 +12,18 @@ public class AbilitySystem : MonoBehaviour
     [SerializeField] private GameplayTagCountContainer tags;
     [SerializeField] private List<AbilityDefinitionSO> startingAbilities = new List<AbilityDefinitionSO>();
     [SerializeField] private List<Ability> abilities = new List<Ability>();
-    
-    public event Action<GameplayTag, int> TagCountChanged;
-    public event Action<Ability> AbilityGained;
-    public event Action<Ability> AbilityRemoved;
-    public event Action<Ability> AbilityActivated;
-    public event Action<Ability> AbilityFinished;     
-    public event Action<Ability> AbilityCancelled; 
+
+    public event Action<string> OnAnimationEvent;
+    public event Action<GameplayTag, int> OnTagCountChanged;
+    public event Action<Ability> OnAbilityGained;
+    public event Action<Ability> OnAbilityRemoved;
+    public event Action<Ability> OnAbilityActivated;
+    public event Action<Ability> OnAbilityFinished;     
+    public event Action<Ability> OnAbilityCancelled; 
     
     private void Awake()
     {
+        Character = GetComponent<ICharacter>();
         Movement = GetComponent<MovementController>();
         Animator = GetComponent<Animator>();
         Input = GetComponent<PlayerInputManager>(); //null for enemies just do null check passing input here is easier for some stuff
@@ -33,20 +36,21 @@ public class AbilitySystem : MonoBehaviour
     
     private void OnEnable()
     {
-        tags.CountChanged += OnTagCountChanged;
+        tags.CountChanged += HandleTagCountChanged;
     }
 
     private void OnDisable()
     {
-        tags.CountChanged -= OnTagCountChanged;
+        tags.CountChanged -= HandleTagCountChanged;
     }
 
     private void OnDestroy() => CancelAllAbilities();
     
-    private void OnTagCountChanged(GameplayTag tag, int newCount) => TagCountChanged?.Invoke(tag, newCount);
-    public void NotifyAbilityActivated(Ability ability) => AbilityActivated?.Invoke(ability);
-    public void NotifyAbilityCancelled(Ability ability) => AbilityCancelled?.Invoke(ability);
-    public void NotifyAbilityFinished(Ability ability) => AbilityFinished?.Invoke(ability);
+    private void NotifyAnimationEvent(string eventName) => OnAnimationEvent?.Invoke(eventName);
+    private void HandleTagCountChanged(GameplayTag tag, int newCount) => OnTagCountChanged?.Invoke(tag, newCount);
+    public void NotifyAbilityActivated(Ability ability) => OnAbilityActivated?.Invoke(ability);
+    public void NotifyAbilityCancelled(Ability ability) => OnAbilityCancelled?.Invoke(ability);
+    public void NotifyAbilityFinished(Ability ability) => OnAbilityFinished?.Invoke(ability);
     
     #region GameplayTags
     public int GetTagCount(GameplayTag tag) => tags.GetTagCount(tag);
@@ -99,7 +103,7 @@ public class AbilitySystem : MonoBehaviour
 
         Ability ability = new Ability(abilityDef, this);
         abilities.Add(ability);
-        AbilityGained?.Invoke(ability);
+        OnAbilityGained?.Invoke(ability);
         return ability;
     }
     
@@ -109,7 +113,7 @@ public class AbilitySystem : MonoBehaviour
         if (!abilities.Remove(ability)) return;  
 
         ability.Cancel(); //cancel if it running
-        AbilityRemoved?.Invoke(ability);
+        OnAbilityRemoved?.Invoke(ability);
     }
 
     public void RemoveAbility(AbilityDefinitionSO def)
