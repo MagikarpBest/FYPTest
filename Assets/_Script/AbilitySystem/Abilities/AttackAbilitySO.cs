@@ -107,6 +107,7 @@ public class AttackAbilitySO : AbilityDefinitionSO
             }
         }
     }
+
     //chatgpt circle line, ignore
     public void DebugDraw(AbilitySystem ctx)
     {
