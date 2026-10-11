@@ -39,7 +39,7 @@ public class PlayerMovement : MovementController
 
         Vector3 inputDir = new Vector3(input.MoveInput.x, 0, input.MoveInput.y);
         float cameraYaw = mainCamera.transform.eulerAngles.y;
-        moveDir = Quaternion.Euler(0f, cameraYaw, 0f) * inputDir; //rotates inputDir by cameraYaw
+        Vector3 moveDir = Quaternion.Euler(0f, cameraYaw, 0f) * inputDir; //rotates inputDir by cameraYaw
         
         moveVelocity.x = moveDir.x * moveSpeed;
         moveVelocity.z = moveDir.z * moveSpeed;
