@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class AbilitySystem : MonoBehaviour
 {
+    public ICharacter Character;
     public MovementController Movement { get; private set; }  
     public Animator Animator { get; private set; }
     public PlayerInputManager Input { get; private set; }
@@ -21,6 +22,7 @@ public class AbilitySystem : MonoBehaviour
     
     private void Awake()
     {
+        Character = GetComponent<ICharacter>();
         Movement = GetComponent<MovementController>();
         Animator = GetComponent<Animator>();
         Input = GetComponent<PlayerInputManager>(); //null for enemies just do null check passing input here is easier for some stuff

@@ -16,6 +16,7 @@ public class Player : MonoBehaviour, ICharacter
     [SerializeField] private Transform model;
     private Transform cameraTransform;
     
+    public Transform Transform { get; }
     public Collider Collider { get; private set; }
     public Rigidbody Rigidbody { get; private set; }
     public Animator Animator { get; private set; }

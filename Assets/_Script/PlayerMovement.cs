@@ -35,7 +35,11 @@ public class PlayerMovement : MovementController
     private void Move()
     {
         if (Mode != MovementMode.Normal) return;
-        if (abilitySystem.HasTag("Block.Movement")) return;
+        if (abilitySystem.HasTag("Block.Movement"))
+        {
+            StopMovement();
+            return;
+        }
 
         Vector3 inputDir = new Vector3(input.MoveInput.x, 0, input.MoveInput.y);
         float cameraYaw = mainCamera.transform.eulerAngles.y;

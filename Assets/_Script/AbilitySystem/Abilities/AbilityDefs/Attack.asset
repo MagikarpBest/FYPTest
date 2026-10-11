@@ -16,7 +16,8 @@ MonoBehaviour:
     tags:
     - name: Ability.Attack
   activationRequiredTags:
-    tags: []
+    tags:
+    - name: State.Grounded
   activationBlockedTags:
     tags:
     - name: 
@@ -25,7 +26,18 @@ MonoBehaviour:
   blockAbilitiesWithTag:
     tags: []
   grantedTags:
-    tags: []
+    tags:
+    - name: Block.Jump
+    - name: Block.Movement
   firstHitTime: 1
   secondHitDelay: 0.5
   endDelay: 0.5
+  comboWindow: 1
+  attackRange: 4
+  damageConfig:
+    Damage: 1
+    DamageType: 0
+    PowerLevel: 1
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 1536

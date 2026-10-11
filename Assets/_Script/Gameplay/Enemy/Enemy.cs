@@ -16,6 +16,8 @@ using System.Linq;
 [RequireComponent(typeof(HierarchicalStateMachine))]
 public class Enemy : MonoBehaviour, ICharacter
 {
+    public Transform Transform { get; }
+
     public Collider Collider { get; private set; }
     public Rigidbody Rigidbody { get; private set; }
     public Animator Animator { get; private set; }
