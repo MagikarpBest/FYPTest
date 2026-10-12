@@ -13,7 +13,6 @@ using System.Linq;
 [RequireComponent(typeof(EnemyDamageReceiver))]
 [RequireComponent(typeof(EnemyCombatReaction))]
 
-[RequireComponent(typeof(HierarchicalStateMachine))]
 public class Enemy : MonoBehaviour, ICharacter
 {
     public Transform Transform { get; }
@@ -54,7 +53,7 @@ public class Enemy : MonoBehaviour, ICharacter
         CombatReaction = GetComponent<EnemyCombatReaction>();
         DamageReceiver = GetComponent<EnemyDamageReceiver>();
         
-        stateMachine = GetComponent<HierarchicalStateMachine>();
+        stateMachine = new HierarchicalStateMachine();
 
         // INIT
         EnemyStateFactory factory = new EnemyStateFactory(stateMachine, this);
@@ -70,6 +69,16 @@ public class Enemy : MonoBehaviour, ICharacter
         
         ragdollRbs = GetComponentsInChildren<Rigidbody>().Where(rb => rb.gameObject != gameObject).ToArray();
         ragdollCols = GetComponentsInChildren<Collider>() .Where(col => col.gameObject != gameObject) .ToArray();
+    }
+    
+    private void Update()
+    {
+        stateMachine.Tick(Time.deltaTime);
+    }
+
+    private void FixedUpdate()
+    {
+        stateMachine.PhysicsTick(Time.fixedDeltaTime);
     }
     
     public void DisableRagdoll()

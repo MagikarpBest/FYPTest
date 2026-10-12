@@ -20,10 +20,8 @@ MonoBehaviour:
   - State.Combat
   - State.Build
   - State.Performing
-  - Movement
-  - Movement.Walking
   - Ability.Attack
   - Status.Burning
   - Status.Stunned
   - Block.Movement
-  - Block.Jump
+  - Block.Movement.Jump

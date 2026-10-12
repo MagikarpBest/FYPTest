@@ -25,7 +25,7 @@ public class Ability
     public async void Activate()
     {
         if (!CanActivateAbility()) return;
-
+        
         cts = new CancellationTokenSource();
         bool cancelled = false;
         try

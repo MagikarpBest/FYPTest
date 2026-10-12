@@ -25,7 +25,6 @@ public class PlayerMovement : MovementController
 
     protected override void Move()
     {
-        if (Mode != MovementMode.Normal) return;
         if (abilitySystem.HasTag("Block.Movement"))
         {
             StopMovement();

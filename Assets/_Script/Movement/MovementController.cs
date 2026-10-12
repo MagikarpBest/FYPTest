@@ -1,27 +1,22 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Threading;
+
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Animator))]
 public abstract class MovementController : MonoBehaviour
 {
     public enum MovementMode
     {
-        Disabled,
-        Normal,
+        Walking,
+        Falling,
         Override
     }
-
-
-    public enum MovementState
-    {
-        Walking,
-        Jumping,
-        Falling,
-        
-    }
-    public MovementMode Mode {get; private set; } = MovementMode.Normal;
-
+    
+    public MovementMode CurrentMode { get; private set; } = MovementMode.Walking;
+    public MovementMode PreviousMode { get; private set; } = MovementMode.Walking;
+    
     [SerializeField] protected float rotationSmoothTime = 0.1f;
     // [SerializeField] protected float rotationSpeed = 727f;
     [SerializeField] protected float groundCheckDistance = 0.5f;
@@ -42,8 +37,8 @@ public abstract class MovementController : MonoBehaviour
     protected AbilitySystem abilitySystem;
     
     protected Vector3 moveVelocity = Vector3.zero;
-    protected Vector2 horizontalMoveVelocity => new Vector2(moveVelocity.x, moveVelocity.z);
     protected Vector3 externalVelocity = Vector3.zero;
+    protected Vector2 horizontalMoveVelocity => new Vector2(moveVelocity.x, moveVelocity.z);
     
     protected bool requestJump;
     protected float jumpBufferTimer = 0f;
@@ -55,9 +50,16 @@ public abstract class MovementController : MonoBehaviour
     protected float rotationVelocity;
     private float currentYaw;
     
+    private CancellationTokenSource overrideCts;
+    
+    private bool wasGrounded;
     public bool IsGrounded { get; private set; } = true;
-    bool IsFalling => !IsGrounded && rb.linearVelocity.y <= 0f;
-  
+    
+    private void OnValidate()
+    {
+        cosMaxSlopeAngle = Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad);
+    }
+    
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -68,7 +70,7 @@ public abstract class MovementController : MonoBehaviour
         cosMaxSlopeAngle = Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad);
         abilitySystem = GetComponent<AbilitySystem>();
     }
-    
+
     private void Update()
     {
         if (Keyboard.current.gKey.wasPressedThisFrame)
@@ -81,49 +83,83 @@ public abstract class MovementController : MonoBehaviour
             ApplyForce(new Vector3(11, 20, 10));
         }
         
-        // if (IsWalking)
-        // {
-        //     abilitySystem.AddTagUnique("Movement.Walking");
-        // }
-        // else
-        // {
-        //     abilitySystem.RemoveTag("Movement.Walking");
-        // }
-        //
-        // if (IsGrounded)
-        // {
-        //     abilitySystem.RemoveTag("State.Airborne");
-        //     abilitySystem.AddTagUnique("State.Grounded");
-        //     
-        //     if (IsJumping && rb.linearVelocity.y < 0f)
-        //     { 
-        //         moveVelocity.y = 0f; 
-        //         IsJumping = false;
-        //     }
-        // }
-        // else
-        // {
-        //     abilitySystem.RemoveTag("State.Grounded");
-        //     abilitySystem.AddTagUnique("State.Airborne");
-        // }
-        //
-        // animator.SetBool("IsFalling", IsFalling);
-        
-        //bool isFalling !IsGrounded && 
+        if (Keyboard.current.fKey.wasPressedThisFrame)
+        { 
+            OverrideMovement(new Vector3(10, 20, 10), 3f);
+        }
     }
     
     private void FixedUpdate()
     {
         GroundCheck();
-        Move();
+        
+        switch (CurrentMode)
+        {
+            case MovementMode.Walking:
+                HandleWalkingState();
+                break;
+            case MovementMode.Falling:
+                HandleFallingState();
+                break;
+            //Swimming?
+            //Gliding?
+            //Crouch?
+        }
+        
         HandleRotation();
         HandleJump();
         HandleExternalVelocity();
         HandleGravity();
         ApplyVelocity();
     }
+    
+    private void HandleWalkingState()
+    {
+        if (abilitySystem.HasTag("Block.Movement"))
+        {
+            StopMovement();
+            return;
+        }
+        Move();
+        if (!IsGrounded) SetMovementMode(MovementMode.Falling);
+    }
 
+    private void HandleFallingState()
+    {
+        if (abilitySystem.HasTag("Block.Movement"))
+        {
+            StopMovement();
+            return;
+        }
+        Move();
+        
+        //!IsGrounded && rb.linearVelocity.y <= 0f;
+        if (IsGrounded) SetMovementMode(MovementMode.Walking);
+    }
+    
+    protected virtual void OnMovementModeChanged(MovementMode prev, MovementMode next)
+    {
+        //exit
+        switch (prev)
+        {
+        }
+        
+        //enter
+        switch (next)
+        {
+        }
+    }
+    
+    public void SetMovementMode(MovementMode mode)
+    {
+        if (mode == CurrentMode) return;
+        PreviousMode = CurrentMode;
+        CurrentMode = mode;
+        OnMovementModeChanged(PreviousMode, mode);
+    }
+    
     protected abstract void Move();
+    
     protected void ApplyVelocity()
     {
         Vector3 totalVelocity = SlopeCorrection(moveVelocity) + externalVelocity;
@@ -191,6 +227,21 @@ public abstract class MovementController : MonoBehaviour
         IsGrounded = 
             Physics.SphereCast(spherePos, groundCheckRadius, Vector3.down, out groundHit, groundCheckDistance, groundLayer, QueryTriggerInteraction.Ignore) 
             && Vector3.Dot(Vector3.up, groundHit.normal) >= cosMaxSlopeAngle;
+
+        //update tag
+        if (IsGrounded == wasGrounded) return;
+        wasGrounded = IsGrounded;
+        
+        if (IsGrounded)
+        {
+            abilitySystem.AddTagUnique("State.Grounded");
+            abilitySystem.RemoveTag("State.Airborne");
+        }
+        else
+        {
+            abilitySystem.AddTagUnique("State.Airborne");
+            abilitySystem.RemoveTag("State.Grounded");
+        }
     }
     
     protected void HandleExternalVelocity()
@@ -213,7 +264,7 @@ public abstract class MovementController : MonoBehaviour
         return Vector3.ProjectOnPlane(horizontalVel, groundHit.normal).normalized * horizontalVel.magnitude;
     }
     
-    protected virtual void HandleJump()
+    protected void HandleJump()
     {
         //jump buffer
         if (requestJump)
@@ -251,8 +302,7 @@ public abstract class MovementController : MonoBehaviour
     
     public void Jump()
     {
-        if (Mode != MovementMode.Normal) return;
-        if (abilitySystem.HasTag("Block.Jump")) return;
+        if (abilitySystem.HasTag("Block.Movement")) return;
         requestJump = true;
     }
     
@@ -269,31 +319,44 @@ public abstract class MovementController : MonoBehaviour
             moveVelocity.y = Mathf.Min(moveVelocity.y, force.y); //take the stronger downward
         }
     }
-
-    public void OverrideMovement(Vector3 movement)
+    
+    public async void OverrideMovement(Vector3 movement, float duration = -1)
     {
-        Mode = MovementMode.Override;
+        if (abilitySystem.HasTag("Block.Movement")) return;
+        
+        overrideCts?.Cancel(); //cancel previous if have
+        
+        var cts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+        overrideCts = cts;
+          
         moveVelocity = movement;
+        SetMovementMode(MovementMode.Override);
+
+        if (duration <= 0f) return; //indefinite until ended manually
+        
+        try
+        {
+            await Awaitable.WaitForSecondsAsync(duration, cts.Token);
+            SetMovementMode(MovementMode.Walking);
+        }
+        catch (OperationCanceledException)
+        {
+            
+        }
+        finally
+        {
+            if (overrideCts == cts) overrideCts = null; //if only one running
+            cts?.Dispose();
+        }
     }
 
     public void EndOverrideMovement()
     {
-        Mode = MovementMode.Normal;
-        StopMovement();
-    }
-
-    public void EnableMovement()
-    {
-        Mode = MovementMode.Normal;
+        overrideCts?.Cancel();    
+        SetMovementMode(MovementMode.Walking);
         StopMovement();
     }
     
-    public void DisableMovement()
-    {
-        Mode = MovementMode.Disabled;
-        StopMovement();
-    }
-
     public void StopMovement()
     {
         moveVelocity = Vector3.zero;

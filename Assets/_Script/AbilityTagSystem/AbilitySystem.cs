@@ -42,6 +42,10 @@ public class AbilitySystem : MonoBehaviour
     private void OnDisable()
     {
         tags.CountChanged -= HandleTagCountChanged;
+        foreach (Ability ability in abilities)
+        {
+            CancelAbility(ability);
+        }
     }
 
     private void OnDestroy() => CancelAllAbilities();

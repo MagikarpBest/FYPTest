@@ -4067,7 +4067,8 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 10
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 51937074751717293, guid: 22cbd1f49a393e44690370a0e56bfe63, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -4322,7 +4323,8 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 51937074751717293, guid: 22cbd1f49a393e44690370a0e56bfe63, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -5887,7 +5889,8 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 51937074751717293, guid: 22cbd1f49a393e44690370a0e56bfe63, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -7702,7 +7705,8 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 51937074751717293, guid: 22cbd1f49a393e44690370a0e56bfe63, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -12556,7 +12560,7 @@ Transform:
   m_GameObject: {fileID: 160169054854089261}
   serializedVersion: 2
   m_LocalRotation: {x: 0.26461777, y: 0.000000028739972, z: -0.000000007886224, w: 0.96435344}
-  m_LocalPosition: {x: -1.10869, y: 8.502749, z: 4.1651745}
+  m_LocalPosition: {x: -104.47, y: 9.47407, z: -23.712416}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12594,7 +12598,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 3000
+  far clip plane: 1000
   field of view: 60.000004
   orthographic: 0
   orthographic size: 5
@@ -12762,7 +12766,8 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 51937074751717293, guid: 22cbd1f49a393e44690370a0e56bfe63, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -12782,7 +12787,6 @@ SceneRoots:
   - {fileID: 2099497383}
   - {fileID: 1788996872}
   - {fileID: 4460266911226549042}
-  - {fileID: 9181874776836296798}
   - {fileID: 1848574325}
   - {fileID: 1828621115}
   - {fileID: 935432949}
@@ -12800,6 +12804,7 @@ SceneRoots:
   - {fileID: 977809731}
   - {fileID: 1724070147}
   - {fileID: 164892937}
+  - {fileID: 9181874776836296798}
   - {fileID: 867507360}
   - {fileID: 1057002118}
   - {fileID: 1284004143}
