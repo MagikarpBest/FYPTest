@@ -142,6 +142,7 @@ public class PlayerMovementRB : MonoBehaviour, ILaunchable
 
     public void Jump()
     {
+        if (!IsGrounded) return;
         Vector3 velocity = rigidBody.linearVelocity;
         velocity.y = Mathf.Sqrt(2f * (Physics.gravity.magnitude * gravityMultiply) * jumpHeight);
         rigidBody.linearVelocity = velocity;

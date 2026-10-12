@@ -23,16 +23,7 @@ public class PlayerMovement : MovementController
         input.OnJumpPressed -= Jump;
     }
 
-    private void FixedUpdate()
-    {
-        HandleGravity();
-        Move();
-        HandleRotation();
-        HandleExternalVelocity();
-        ApplyVelocity();
-    }
-
-    private void Move()
+    protected override void Move()
     {
         if (Mode != MovementMode.Normal) return;
         if (abilitySystem.HasTag("Block.Movement"))
