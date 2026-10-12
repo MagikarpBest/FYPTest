@@ -86,14 +86,14 @@ public abstract class MovementController : MonoBehaviour
             abilitySystem.AddTagUnique("State.Airborne");
         }
         
-        animator.SetBool("IsFalling", IsFalling);
+        //animator.SetBool("IsFalling", IsFalling);
     }
     
     protected virtual void ApplyVelocity()
     {
         rb.linearVelocity = SlopeCorrection(moveVelocity) + externalVelocity + gravity;
         animator.SetFloat("Speed",  Mathf.Clamp01(horizontalVelocity.magnitude / moveSpeed));
-        Debug.Log(Mathf.Clamp01(horizontalVelocity.magnitude / moveSpeed));
+        //Debug.Log(Mathf.Clamp01(horizontalVelocity.magnitude / moveSpeed));
     }
     
     protected virtual void HandleGravity()
