@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 
-public class NewPlayerTest : MonoBehaviour, ICharacter
+public class NewPlayerTest : MonoBehaviour
 {
     public Transform Transform => transform;
     public Collider Collider { get; private set; }
@@ -47,9 +47,6 @@ public class NewPlayerTest : MonoBehaviour, ICharacter
     {
         AbilitySystem.TryActivateAbilityWithTag("Ability.Attack");
     }
-
-
-    public PlayerActionRestrictions Restrictions { get; }
 
     public void DisableRagdoll()
     {
