@@ -20,14 +20,13 @@ MonoBehaviour:
     - name: State.Grounded
   activationBlockedTags:
     tags:
-    - name: 
+    - name: State.Performing.Ability
   cancelAbilitiesWithTag:
     tags: []
   blockAbilitiesWithTag:
     tags: []
   grantedTags:
     tags:
-    - name: Block.Jump
     - name: Block.Movement
   firstHitTime: 1
   secondHitDelay: 0.5

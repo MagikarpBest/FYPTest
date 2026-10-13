@@ -4,6 +4,9 @@ using UnityEngine;
 
 public abstract class AbilityDefinitionSO : ScriptableObject
 {
+    protected AbilitySystem ctx;
+    public void Init(AbilitySystem ctx) => this.ctx = ctx;
+    
     [SerializeField] private GameplayTagContainer abilityTags; //tags used to identity this ability
     [SerializeField] private GameplayTagContainer activationRequiredTags; 
     [SerializeField] private GameplayTagContainer activationBlockedTags;
@@ -18,9 +21,9 @@ public abstract class AbilityDefinitionSO : ScriptableObject
     public GameplayTagContainer BlockAbilitiesWithTag => blockAbilitiesWithTag;
     public GameplayTagContainer GrantedTags => grantedTags;
 
-    public virtual Awaitable OnActivate(AbilitySystem ctx, CancellationToken token) => Awaitable.NextFrameAsync(token);
-    public virtual void OnEnd(AbilitySystem ctx) {}
-    public virtual void OnCancel(AbilitySystem ctx) {}
-    public virtual void Cleanup(AbilitySystem ctx) {}
+    public virtual Awaitable OnActivate(CancellationToken token) => Awaitable.NextFrameAsync(token);
+    public virtual void OnEnd() {}
+    public virtual void OnCancel() {}
+    public virtual void Cleanup() {}
 
 }

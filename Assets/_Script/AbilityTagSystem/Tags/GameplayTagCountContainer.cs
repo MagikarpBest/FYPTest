@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class GameplayTagCountContainer
+public class GameplayTagCountContainer : ISerializationCallbackReceiver
 {
     private Dictionary<GameplayTag, int> counts = new Dictionary<GameplayTag, int>();
     [SerializeField] private GameplayTagContainer tags = new GameplayTagContainer(); 
@@ -44,6 +44,15 @@ public class GameplayTagCountContainer
         CountChanged?.Invoke(tag, newCount);
     }
     
+    public void RemoveAllCountsOfTag(GameplayTag tag)
+    {
+        if (!counts.ContainsKey(tag)) return;
+        
+        counts.Remove(tag);
+        tags.Remove(tag);
+        CountChanged?.Invoke(tag, 0);
+    }
+    
     public void Clear()
     {
         var removed = new List<GameplayTag>(counts.Keys); //snapshot before wiping
@@ -64,26 +73,31 @@ public class GameplayTagCountContainer
     public bool HasTag(string tag) => tags.HasTag(tag);
     public bool HasTagExact(string tag) => tags.HasTagExact(tag);
     
-    void OnValidate()
+    public void OnBeforeSerialize()
     {
-        //Drop counts for tags that are no longer in the set (removed in the inspector)
+    }
+    
+    public void OnAfterDeserialize()
+    {
+        //Drop counts for tags removed in the inspector
         var stale = new List<GameplayTag>();
         foreach (var kvp in counts)
         {
             if (!tags.HasTagExact(kvp.Key)) stale.Add(kvp.Key);
         }
-        
+    
         foreach (var tag in stale)
         {
             counts.Remove(tag);
         }
-
-        //Give a count of 1 to tags in the set that have no count (added in the inspector or restored after a recompile wiped the dictionary)
+    
+        //Give a count of 1 to tags added in the inspector
         foreach (var tag in tags.Tags)
         {
             if (tag.IsValid && !counts.ContainsKey(tag))
             {
                 counts[tag] = 1;
+                Debug.Log("Tag added from inspector " + tag.Name);
             }
         }
     }

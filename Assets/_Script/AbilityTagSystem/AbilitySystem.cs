@@ -4,15 +4,13 @@ using System.Collections.Generic;
 
 public class AbilitySystem : MonoBehaviour
 {
-    public ICharacter Character { get; private set; } 
-    public MovementController Movement { get; private set; }  
-    public Animator Animator { get; private set; }
-    public PlayerInputManager Input { get; private set; }
-        
+    public Character Character { get; private set; } 
+    
     [SerializeField] private GameplayTagCountContainer tags;
     [SerializeField] private List<AbilityDefinitionSO> startingAbilities = new List<AbilityDefinitionSO>();
     [SerializeField] private List<Ability> abilities = new List<Ability>();
 
+    
     public event Action<string> OnAnimationEvent;
     public event Action<GameplayTag, int> OnTagCountChanged;
     public event Action<Ability> OnAbilityGained;
@@ -23,10 +21,11 @@ public class AbilitySystem : MonoBehaviour
     
     private void Awake()
     {
-        Character = GetComponent<ICharacter>();
-        Movement = GetComponent<MovementController>();
-        Animator = GetComponent<Animator>();
-        Input = GetComponent<PlayerInputManager>(); //null for enemies just do null check passing input here is easier for some stuff
+        //use this for ref
+        //like in abilities call ctx.owner.input,
+        //ctx.owner.movement
+        //or if unique components do ctx.owner.TryGetComponent
+        Character = GetComponent<Character>();
         
         foreach (var def in startingAbilities)
         {
@@ -50,7 +49,7 @@ public class AbilitySystem : MonoBehaviour
 
     private void OnDestroy() => CancelAllAbilities();
     
-    private void NotifyAnimationEvent(string eventName) => OnAnimationEvent?.Invoke(eventName);
+    public void NotifyAnimationEvent(string tag) => OnAnimationEvent?.Invoke(tag);
     private void HandleTagCountChanged(GameplayTag tag, int newCount) => OnTagCountChanged?.Invoke(tag, newCount);
     public void NotifyAbilityActivated(Ability ability) => OnAbilityActivated?.Invoke(ability);
     public void NotifyAbilityCancelled(Ability ability) => OnAbilityCancelled?.Invoke(ability);
@@ -86,10 +85,12 @@ public class AbilitySystem : MonoBehaviour
         tags.Add(tag);
         return true;
     }
-
-    public bool AddTagUnique(string tag) => AddTagUnique(new GameplayTag(tag));
+    
+    public void RemoveAllCountsOfTag(GameplayTag tag) => tags.RemoveAllCountsOfTag(tag);
     
     //string overloads
+    public void RemoveAllCountsOfTag(string tag) => tags.RemoveAllCountsOfTag(new GameplayTag(tag));
+    public bool AddTagUnique(string tag) => AddTagUnique(new GameplayTag(tag));
     public int GetTagCount(string tag) => tags.GetTagCount(tag);
     public void AddTag(string tag) => tags.Add(tag);
     public void RemoveTag(string tag) => tags.Remove(tag);
@@ -143,8 +144,7 @@ public class AbilitySystem : MonoBehaviour
     public bool TryActivateAbility(Ability ability)
     {
         if (!CanActivateAbility(ability)) return false;
-
-
+        
         CancelAbilitiesWithTags(ability.Definition.CancelAbilitiesWithTag, except: ability);
         
         ability.Activate();

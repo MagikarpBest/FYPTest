@@ -19,9 +19,15 @@ MonoBehaviour:
   - State.Launched
   - State.Combat
   - State.Build
-  - State.Performing
+  - State.Performing.Ability
   - Ability.Attack
   - Status.Burning
   - Status.Stunned
   - Block.Movement
   - Block.Movement.Jump
+  - AnimationEvent.Start
+  - AnimationEvent.End
+  - AnimationEvent.ComboOpen
+  - AnimationEvent.ComboEnd
+  - AnimationEvent.Damage
+  - Socket.BombHold

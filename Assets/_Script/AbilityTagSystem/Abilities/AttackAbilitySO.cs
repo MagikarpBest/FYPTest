@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -7,29 +5,39 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Attack", menuName = "AbilitySystem/Abilities/Attack")]
 public class AttackAbilitySO : AbilityDefinitionSO
 {
-
     [SerializeField] private float firstHitTime = 1f;
     [SerializeField] private float secondHitDelay = 0.5f;
     [SerializeField] private float endDelay = 0.5f;
     [SerializeField] private float comboWindow = 1.0f;
+    
     [Header("Damage data")]
     [SerializeField] private float attackRange;
     [SerializeField] private DamageConfig damageConfig;
     [SerializeField] private LayerMask enemyLayerMask;
-
-    private AbilitySystem currentCtx;
+    
     private bool canQueueCombo;
     private bool comboQueued;
     private TaskCompletionSource<bool> attackFinished;
-
-
-    public override async Awaitable OnActivate(AbilitySystem ctx, CancellationToken token)
+    private PlayerInputManager input;
+    
+    public override async Awaitable OnActivate(CancellationToken token)
     {
-        currentCtx = ctx;
-        DebugDraw(currentCtx);
+        // if (ctx.Character.Sockets.TryGetSocket("Socket.BombHold", out Transform bombHold))
+        // {
+        //     Instantiate(object, bombHold);
+        // }
+        
+        DebugDraw();
 
-        currentCtx.Input.OnAttackPressed += QueueCombo;
-        currentCtx.OnAnimationEvent += OnAnimationEvent;
+        //if no input found just stop the ability
+        if (!ctx.Character.TryGetComponent<PlayerInputManager>(out input))
+        {
+            Debug.Log("No input component attack cancelled");
+            return;
+        }
+            
+        input.OnAttackPressed += QueueCombo;
+        ctx.OnAnimationEvent += OnAnimationEvent;
 
         int comboIndex = 1;
 
@@ -38,8 +46,9 @@ public class AttackAbilitySO : AbilityDefinitionSO
             // Combo logic
             comboQueued = false;
             attackFinished = new TaskCompletionSource<bool>();
-            currentCtx.Animator.SetTrigger($"AttackTrigger{comboIndex}");
-
+            ctx.Character.Animator.SetTrigger($"AttackTrigger{comboIndex}");
+            //ctx.Character.Movement.OverrideMovement(ctx.Character.transform.forward * 11f, 0.2f);
+            
             // Wait until animation says combo finished
             bool continueCombo = await WaitForComboResult(token);
 
@@ -57,6 +66,7 @@ public class AttackAbilitySO : AbilityDefinitionSO
         switch (eventName)
         {
             case "Damage":
+                ctx.Character.Movement.OverrideMovement(ctx.Character.transform.forward * 11f, 0.1f);
                 PerformDamageDetection();
                 break;
 
@@ -90,7 +100,7 @@ public class AttackAbilitySO : AbilityDefinitionSO
 
     private void PerformDamageDetection()
     {
-        Vector3 attackPosition = currentCtx.Character.Transform.position;
+        Vector3 attackPosition = ctx.Character.transform.position;
         Collider[] hits = Physics.OverlapSphere(
             attackPosition,
             attackRange,
@@ -124,9 +134,9 @@ public class AttackAbilitySO : AbilityDefinitionSO
     }
 
     //chatgpt circle line, ignore
-    public void DebugDraw(AbilitySystem ctx)
+    public void DebugDraw()
     {
-        Vector3 center = ctx.Character.Transform.position;
+        Vector3 center = ctx.Character.transform.position;
 
         int segments = 32;
 
@@ -151,17 +161,17 @@ public class AttackAbilitySO : AbilityDefinitionSO
         }
     }
 
-    public override void OnEnd(AbilitySystem ctx)
+    public override void OnEnd()
     {
         Debug.Log("Atk ended");
-        ctx.Input.OnAttackPressed -= QueueCombo;
+        input.OnAttackPressed -= QueueCombo;
         ctx.OnAnimationEvent -= OnAnimationEvent;
     }
 
-    public override void OnCancel(AbilitySystem ctx)
+    public override void OnCancel()
     {
         Debug.Log("Atk cancelled");
-        ctx.Input.OnAttackPressed -= QueueCombo;
+        input.OnAttackPressed -= QueueCombo;
         ctx.OnAnimationEvent -= OnAnimationEvent;
     }
 }

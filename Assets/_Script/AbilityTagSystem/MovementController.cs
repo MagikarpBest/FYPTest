@@ -39,6 +39,7 @@ public abstract class MovementController : MonoBehaviour
     protected Vector3 moveVelocity = Vector3.zero;
     protected Vector3 externalVelocity = Vector3.zero;
     protected Vector2 horizontalMoveVelocity => new Vector2(moveVelocity.x, moveVelocity.z);
+    protected Vector3 moveDir;
     
     protected bool requestJump;
     protected float jumpBufferTimer = 0f;
@@ -62,13 +63,20 @@ public abstract class MovementController : MonoBehaviour
     
     protected virtual void Awake()
     {
+        Application.targetFrameRate = 30;
+        
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         rb.useGravity = false;
         rb.freezeRotation = true;
-        currentYaw = targetYaw = rb.rotation.eulerAngles.y;
         cosMaxSlopeAngle = Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad);
         abilitySystem = GetComponent<AbilitySystem>();
+        currentYaw = targetYaw = rb.rotation.eulerAngles.y;
+    }
+
+    private void Start()
+    {
+        Application.targetFrameRate = 30;
     }
 
     private void Update()
@@ -87,11 +95,14 @@ public abstract class MovementController : MonoBehaviour
         { 
             OverrideMovement(new Vector3(10, 20, 10), 3f);
         }
+        
+        GroundCheck();
+        HandleRotation();
     }
     
     private void FixedUpdate()
     {
-        GroundCheck();
+        //GroundCheck();
         
         switch (CurrentMode)
         {
@@ -106,7 +117,7 @@ public abstract class MovementController : MonoBehaviour
             //Crouch?
         }
         
-        HandleRotation();
+        //HandleRotation();
         HandleJump();
         HandleExternalVelocity();
         HandleGravity();
@@ -165,7 +176,8 @@ public abstract class MovementController : MonoBehaviour
         Vector3 totalVelocity = SlopeCorrection(moveVelocity) + externalVelocity;
         
         rb.linearVelocity = totalVelocity;
-        
+
+        if (CurrentMode == MovementMode.Override) return;
         float speed = horizontalMoveVelocity.magnitude / moveSpeed;
 
         if (speed <= 0f)
@@ -200,13 +212,13 @@ public abstract class MovementController : MonoBehaviour
 
     protected void HandleRotation()
     { 
-        if (horizontalMoveVelocity.sqrMagnitude > 1e-4f)
+        if (moveDir.sqrMagnitude > 1e-4f)
         {
-            targetYaw = Mathf.Atan2(horizontalMoveVelocity.x, horizontalMoveVelocity.y) * Mathf.Rad2Deg;
+            targetYaw = Mathf.Atan2(moveDir.x, moveDir.z) * Mathf.Rad2Deg;
         }
 
         // Quaternion targetRotation = Quaternion.Euler(0f, targetYaw, 0f);
-        // rb.MoveRotation( Quaternion.RotateTowards(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime));
+        // rb.MoveRotation( Quaternion.RotateTowards(rb.rotation, targetRotation, 800f * Time.fixedDeltaTime));
         
         currentYaw = Mathf.SmoothDampAngle
         (
@@ -322,13 +334,12 @@ public abstract class MovementController : MonoBehaviour
     
     public async void OverrideMovement(Vector3 movement, float duration = -1)
     {
-        if (abilitySystem.HasTag("Block.Movement")) return;
-        
         overrideCts?.Cancel(); //cancel previous if have
         
         var cts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
         overrideCts = cts;
-          
+
+        moveDir = new Vector3(movement.x, 0f, movement.z).normalized;
         moveVelocity = movement;
         SetMovementMode(MovementMode.Override);
 
@@ -338,6 +349,7 @@ public abstract class MovementController : MonoBehaviour
         {
             await Awaitable.WaitForSecondsAsync(duration, cts.Token);
             SetMovementMode(MovementMode.Walking);
+            StopMovement();
         }
         catch (OperationCanceledException)
         {
@@ -359,6 +371,7 @@ public abstract class MovementController : MonoBehaviour
     
     public void StopMovement()
     {
+        moveDir = Vector3.zero;
         moveVelocity = Vector3.zero;
         animator.SetFloat("Speed", 0);
     }

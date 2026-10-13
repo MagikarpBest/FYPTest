@@ -30,7 +30,7 @@ public class EnemyIdleState : HSMState
 
     protected override void OnEnter()
     {
-        Debug.Log("enemy idle enter");
+        //Debug.Log("enemy idle enter");
         movement.StopMove();
     }
 

@@ -33,9 +33,19 @@ public class PlayerMovement : MovementController
 
         Vector3 inputDir = new Vector3(input.MoveInput.x, 0, input.MoveInput.y);
         float cameraYaw = mainCamera.transform.eulerAngles.y;
-        Vector3 moveDir = Quaternion.Euler(0f, cameraYaw, 0f) * inputDir; //rotates inputDir by cameraYaw
+        moveDir = Quaternion.Euler(0f, cameraYaw, 0f) * inputDir; //rotates inputDir by cameraYaw
         
-        moveVelocity.x = moveDir.x * moveSpeed;
-        moveVelocity.z = moveDir.z * moveSpeed;
+        float facingDot = Vector3.Dot(transform.forward, moveDir.normalized);
+        
+        if (horizontalMoveVelocity.sqrMagnitude < 1e-4f && facingDot <= 0.3f) //if not moving and not facing same dir as movedir
+        {
+            moveVelocity.x = 0f;
+            moveVelocity.z = 0f;
+        }
+        else
+        {
+            moveVelocity.x = moveDir.x * moveSpeed;
+            moveVelocity.z = moveDir.z * moveSpeed;
+        }
     }
 }

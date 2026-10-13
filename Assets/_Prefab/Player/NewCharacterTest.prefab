@@ -18790,14 +18790,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8612296963837039624}
-  - component: {fileID: 8784142143312756649}
   - component: {fileID: 8347671382151079491}
+  - component: {fileID: 8784142143312756649}
   - component: {fileID: 3438757549192975660}
   - component: {fileID: 4083649408212852200}
   - component: {fileID: 4885558520621461174}
   - component: {fileID: 3404327551700446285}
   - component: {fileID: 3939035399520647278}
   - component: {fileID: 2969674888745941692}
+  - component: {fileID: 3049098147030337408}
   m_Layer: 6
   m_Name: NewCharacterTest
   m_TagString: Player
@@ -18825,6 +18826,29 @@ Transform:
   - {fileID: 3104597835128221087}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &8347671382151079491
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5272517583869698497}
+  m_Material: {fileID: 13400000, guid: 24382e0ab0fd13a49bb59fcc33e8c0b1, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 1024
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2.95
+  m_Direction: 1
+  m_Center: {x: 0, y: 1.45, z: 0}
 --- !u!54 &8784142143312756649
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -18852,29 +18876,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 2
---- !u!136 &8347671382151079491
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5272517583869698497}
-  m_Material: {fileID: 13400000, guid: 24382e0ab0fd13a49bb59fcc33e8c0b1, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 1024
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2.95
-  m_Direction: 1
-  m_Center: {x: 0, y: 1.45, z: 0}
 --- !u!95 &3438757549192975660
 Animator:
   serializedVersion: 7
@@ -18933,7 +18934,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c98b6eb3fd66d134090f6cd81ed99eed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  rotationSpeed: 670
+  rotationSmoothTime: 0.1
   groundCheckDistance: 0.5
   groundCheckPosOffset: -0.5
   groundCheckRadius: 0.28
@@ -18945,7 +18946,9 @@ MonoBehaviour:
   gravityMultiplier: 2
   jumpHeight: 3
   externalVelocityDecay: 5
-  terminalVelocity: 53
+  maxFallSpeed: 53
+  jumpBufferTime: 0.15
+  coyoteTime: 0.15
 --- !u!114 &3939035399520647278
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18978,6 +18981,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SlashTest
   slash1: {fileID: 6366792767793062428}
   slash2: {fileID: 6178318002858212053}
+--- !u!114 &3049098147030337408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5272517583869698497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c143c3200c0cee4f8001c0464da81dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Sockets
+  entries: []
 --- !u!1 &5278290392165234558
 GameObject:
   m_ObjectHideFlags: 0

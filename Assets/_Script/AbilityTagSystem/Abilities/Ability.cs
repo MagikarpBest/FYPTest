@@ -12,7 +12,8 @@ public class Ability
 
     public Ability(AbilityDefinitionSO definition, AbilitySystem ctx)
     {
-        Definition = definition; 
+        Definition = UnityEngine.Object.Instantiate(definition); 
+        Definition.Init(ctx);
         this.ctx = ctx;
     }
     
@@ -24,7 +25,7 @@ public class Ability
     
     public async void Activate()
     {
-        if (!CanActivateAbility()) return;
+        //if (!CanActivateAbility()) return;
         
         cts = new CancellationTokenSource();
         bool cancelled = false;
@@ -32,20 +33,20 @@ public class Ability
         {
             ctx.AddTags(Definition.GrantedTags);  
             ctx.NotifyAbilityActivated(this);
-            await Definition.OnActivate(ctx, cts.Token); 
-            Definition.OnEnd(ctx);
+            await Definition.OnActivate(cts.Token); 
+            Definition.OnEnd();
         }
         catch (OperationCanceledException)
         {
             cancelled = true;
-            Definition.OnCancel(ctx);
+            Definition.OnCancel();
         }
         finally
         {
             cts.Dispose();
             cts = null;
             ctx.RemoveTags(Definition.GrantedTags);
-            Definition.Cleanup(ctx);
+            Definition.Cleanup();
             if (cancelled) ctx.NotifyAbilityCancelled(this);
             else ctx.NotifyAbilityFinished(this);
         }
