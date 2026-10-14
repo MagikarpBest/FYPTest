@@ -223,6 +223,10 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3404327551700446285, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+      propertyPath: maxSlopeAngle
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 3404327551700446285, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: jumpBufferTime
       value: 0.2
       objectReference: {fileID: 0}
@@ -254,13 +258,17 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8347671382151079491, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+      propertyPath: m_IncludeLayers.m_Bits
+      value: 1015
+      objectReference: {fileID: 0}
     - target: {fileID: 8612296963837039624, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.81
       objectReference: {fileID: 0}
     - target: {fileID: 8612296963837039624, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.23
+      value: 12.85
       objectReference: {fileID: 0}
     - target: {fileID: 8612296963837039624, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_LocalPosition.z

@@ -6,11 +6,11 @@ public class PlayerInputManager : MonoBehaviour
 {
     private InputSystem_Actions input;
     public event Action OnJumpPressed;
-    public event Action OnSkillPressed;
+    public event Action OnSkill1Pressed;
     public event Action OnSkill2Pressed;
     public event Action OnSkill3Pressed;
-    public event Action OnSkillCancelPressed;
-    public event Action OnAttackPressed;
+    public event Action OnSecondaryActionPressed;
+    public event Action OnPrimaryActionPressed;
     public event Action OnEscapePressed;
     public Vector2 MoveInput { get; private set; }
 
@@ -22,11 +22,11 @@ public class PlayerInputManager : MonoBehaviour
         input.Player.Move.performed += Move_Performed;
         input.Player.Move.canceled += Move_Canceled;
         input.Player.Jump.performed += Jump_Performed;
-        input.Player.Skill.performed += Skill_Performed;
+        input.Player.Skill1.performed += Skill1_Performed;
         input.Player.Skill2.performed += Skill2_Performed;
         input.Player.Skill3.performed += Skill3_Performed;
-        input.Player.Attack.performed += Attack_Performed;
-        input.Player.SkillCancel.performed += SkillCancel_Performed;
+        input.Player.PrimaryAction.performed += PrimaryAction_Performed;
+        input.Player.SecondaryAction.performed += SecondaryAction_Performed;
 
         input.Global.Escape.performed += Escape_Performed; // Handle Escape key for interrupting game interaction or opening the pause menu.
 
@@ -79,9 +79,9 @@ public class PlayerInputManager : MonoBehaviour
         OnJumpPressed?.Invoke();
     }
     
-    private void Skill_Performed(InputAction.CallbackContext obj)
+    private void Skill1_Performed(InputAction.CallbackContext obj)
     {
-        OnSkillPressed?.Invoke();
+        OnSkill1Pressed?.Invoke();
     }
     
     private void Skill2_Performed(InputAction.CallbackContext obj)
@@ -94,14 +94,14 @@ public class PlayerInputManager : MonoBehaviour
         OnSkill3Pressed?.Invoke();
     }
 
-    private void SkillCancel_Performed(InputAction.CallbackContext obj)
+    private void SecondaryAction_Performed(InputAction.CallbackContext obj)
     {
-        OnSkillCancelPressed?.Invoke();
+        OnSecondaryActionPressed?.Invoke();
     }
 
-    private void Attack_Performed(InputAction.CallbackContext obj)
+    private void PrimaryAction_Performed(InputAction.CallbackContext obj)
     {
-        OnAttackPressed?.Invoke();
+        OnPrimaryActionPressed?.Invoke();
     }
 
     private void Update()

@@ -36,7 +36,7 @@ public class AttackAbilitySO : AbilityDefinitionSO
             return;
         }
             
-        input.OnAttackPressed += QueueCombo;
+        input.OnPrimaryActionPressed += QueueCombo;
         ctx.OnAnimationEvent += OnAnimationEvent;
 
         int comboIndex = 1;
@@ -164,14 +164,14 @@ public class AttackAbilitySO : AbilityDefinitionSO
     public override void OnEnd()
     {
         Debug.Log("Atk ended");
-        input.OnAttackPressed -= QueueCombo;
+        input.OnPrimaryActionPressed -= QueueCombo;
         ctx.OnAnimationEvent -= OnAnimationEvent;
     }
 
     public override void OnCancel()
     {
         Debug.Log("Atk cancelled");
-        input.OnAttackPressed -= QueueCombo;
+        input.OnPrimaryActionPressed -= QueueCombo;
         ctx.OnAnimationEvent -= OnAnimationEvent;
     }
 }

@@ -82,8 +82,8 @@ public class PlayerSkillController : MonoBehaviour
         }
 
         _inputManager.OnSkill3Pressed += HandleSkillPressed;
-        _inputManager.OnAttackPressed += HandleAttackPressed;
-        _inputManager.OnSkillCancelPressed += CancelCurrentSkill;
+        _inputManager.OnPrimaryActionPressed += HandlePrimaryActionPressed;
+        _inputManager.OnSecondaryActionPressed += CancelCurrentSkill;
     }
 
     private void UnbindInputEvents()
@@ -92,8 +92,8 @@ public class PlayerSkillController : MonoBehaviour
             return;
 
         _inputManager.OnSkill3Pressed -= HandleSkillPressed;
-        _inputManager.OnAttackPressed -= HandleAttackPressed;
-        _inputManager.OnSkillCancelPressed -= CancelCurrentSkill;
+        _inputManager.OnPrimaryActionPressed -= HandlePrimaryActionPressed;
+        _inputManager.OnSecondaryActionPressed -= CancelCurrentSkill;
     }
 
     private void HandleSkillPressed()
@@ -113,7 +113,7 @@ public class PlayerSkillController : MonoBehaviour
         SelectSkill(activeSkill);
     }
 
-    private void HandleAttackPressed()
+    private void HandlePrimaryActionPressed()
     {
         ConfirmSkill();
     }

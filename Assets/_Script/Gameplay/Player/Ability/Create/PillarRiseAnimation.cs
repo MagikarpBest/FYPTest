@@ -8,7 +8,6 @@ public class PillarRiseAnimation : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float riseDuration = 1f;
     [SerializeField] private float pillarHeight = 4.5f;
-    [SerializeField] private LayerMask groundLayer;
     private float existDuration = 3f;
 
     private Vector3 startPosition;
@@ -21,7 +20,23 @@ public class PillarRiseAnimation : MonoBehaviour
     public event Action OnPillarFalling;
 
 
-
+    private void Start()
+    {
+        startPosition = rigidBody.position;
+    
+        rigidBody.rotation =
+            Quaternion.FromToRotation(
+                Vector3.up,
+                transform.up
+            );
+    
+        targetPosition =
+            startPosition + transform.up * pillarHeight;
+    
+        initialized = true;
+    
+        Rise();
+    }
 
     public void SetSpawnSurface(Vector3 surfacePoint, Vector3 normal)
     {

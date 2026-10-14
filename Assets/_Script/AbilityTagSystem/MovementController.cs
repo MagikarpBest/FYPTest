@@ -96,13 +96,15 @@ public abstract class MovementController : MonoBehaviour
             OverrideMovement(new Vector3(10, 20, 10), 3f);
         }
         
-        GroundCheck();
+        
         HandleRotation();
+
+        Debug.Log(moveVelocity.y);
     }
     
     private void FixedUpdate()
     {
-        //GroundCheck();
+        GroundCheck();
         
         switch (CurrentMode)
         {
@@ -118,10 +120,10 @@ public abstract class MovementController : MonoBehaviour
         }
         
         //HandleRotation();
-        HandleJump();
+        HandleJump(); 
         HandleExternalVelocity();
         HandleGravity();
-        ApplyVelocity();
+        ApplyVelocity(); 
     }
     
     private void HandleWalkingState()
@@ -290,7 +292,7 @@ public abstract class MovementController : MonoBehaviour
         }
         
         //coyote
-        if (rb.linearVelocity.y > 0f)
+        if (moveVelocity.y > 0f)
         {
             coyoteTimer = 0f;
         }

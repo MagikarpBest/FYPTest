@@ -23,7 +23,7 @@ public class PlayerAttack : MonoBehaviour
     {
         animator = playerAnimator;
         inputManager = InputManager;
-        inputManager.OnAttackPressed += RequestAttack;
+        inputManager.OnPrimaryActionPressed += RequestPrimaryAction;
         Debug.Log("PlayerAttack Init");
 
     }
@@ -45,7 +45,7 @@ public class PlayerAttack : MonoBehaviour
     }
     
 
-    public void RequestAttack()
+    public void RequestPrimaryAction()
     {    Debug.Log("PlayerAttack request");
 
         if (!IsAttacking)

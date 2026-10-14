@@ -41,13 +41,11 @@ public class AbilitySystem : MonoBehaviour
     private void OnDisable()
     {
         tags.CountChanged -= HandleTagCountChanged;
-        foreach (Ability ability in abilities)
+        foreach (Ability ability in abilities.ToArray())
         {
             CancelAbility(ability);
         }
     }
-
-    private void OnDestroy() => CancelAllAbilities();
     
     public void NotifyAnimationEvent(string tag) => OnAnimationEvent?.Invoke(tag);
     private void HandleTagCountChanged(GameplayTag tag, int newCount) => OnTagCountChanged?.Invoke(tag, newCount);

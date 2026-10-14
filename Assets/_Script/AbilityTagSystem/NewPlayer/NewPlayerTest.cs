@@ -13,17 +13,23 @@ public class NewPlayerTest : Character
 
     private void OnEnable()
     {
-        Input.OnAttackPressed += HandleAttack;
+        Input.OnPrimaryActionPressed += HandlePrimaryAction;
+        Input.OnSkill1Pressed += HandleSkill1;
     }
 
     private void OnDisable()
     {
-        Input.OnAttackPressed -= HandleAttack;
+        Input.OnPrimaryActionPressed -= HandlePrimaryAction;
     }
 
-    void HandleAttack()
+    private void HandlePrimaryAction()
     {
         AbilitySystem.TryActivateAbilityWithTag("Ability.Attack");
+    }
+
+    private void HandleSkill1()
+    {
+        AbilitySystem.TryActivateAbilityWithTag("Ability.Build");
     }
     
 }

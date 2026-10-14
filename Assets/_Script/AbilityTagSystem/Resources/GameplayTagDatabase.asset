@@ -21,13 +21,11 @@ MonoBehaviour:
   - State.Build
   - State.Performing.Ability
   - Ability.Attack
+  - Ability.Build
   - Status.Burning
   - Status.Stunned
   - Block.Movement
   - Block.Movement.Jump
-  - AnimationEvent.Start
-  - AnimationEvent.End
-  - AnimationEvent.ComboOpen
-  - AnimationEvent.ComboEnd
-  - AnimationEvent.Damage
-  - Socket.BombHold
+  - Socket.Overhead
+  - Socket.LeftHand
+  - Socket.RightHand

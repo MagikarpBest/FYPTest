@@ -26,7 +26,7 @@ public class Ability
     public async void Activate()
     {
         //if (!CanActivateAbility()) return;
-        
+        ctx.AddTag("State.Performing.Ability");
         cts = new CancellationTokenSource();
         bool cancelled = false;
         try
@@ -45,6 +45,7 @@ public class Ability
         {
             cts.Dispose();
             cts = null;
+            ctx.RemoveTag("State.Performing.Ability");
             ctx.RemoveTags(Definition.GrantedTags);
             Definition.Cleanup();
             if (cancelled) ctx.NotifyAbilityCancelled(this);
