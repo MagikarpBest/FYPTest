@@ -9,11 +9,7 @@ namespace HUD
         [SerializeField]
         private Image _icon;
 
-        [SerializeField]
-        private GameObject _selectedIndicator;
 
-        [SerializeField]
-        private TMP_Text _skillNameText;
         public AbilityDisplayDataSO Ability { get; private set; }
 
 
@@ -38,13 +34,7 @@ namespace HUD
                 return;
             }
             _icon.sprite = ability.Icon;
-            _skillNameText.text = ability.AbilityName;
         }
 
-        public void SetSelected(bool selected)
-        {
-            _selectedIndicator.SetActive(selected);
-
-        }
     }
 }

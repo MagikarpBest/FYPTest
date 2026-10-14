@@ -17,22 +17,16 @@ namespace HUD
         private readonly HUDView _view;
         private readonly PlayerStats _model;
         private readonly PlayerSkillController _abilityController;
+        private readonly AbilitySystem _abilitySystem;
 
-        public HUDPresenter(HUDView view, PlayerStats  model,PlayerSkillController skillController)
+        public HUDPresenter(HUDView view, PlayerStats model, PlayerSkillController skillController,AbilitySystem abilitySystem)
         {
             _view = view;
             _model = model;
             _abilityController = skillController;
-        private readonly HUDView _view;
-        private readonly PlayerStats _model;
-        private readonly PlayerSkillController _playerSkillController;
-
-        public HUDPresenter(HUDView view, PlayerStats model, PlayerSkillController skillController)
-        {
-            _view = view;
-            _model = model;
-            _playerSkillController = skillController;
+            _abilitySystem = abilitySystem;
         }
+
 
         /// <summary>
         /// Call once whenever the active HudModel changes (e.g. from a PlayerModelProvider callback).
@@ -47,7 +41,12 @@ namespace HUD
             _abilityController.OnActiveAbilityChanged  += RefreshActiveAbility;
             _abilityController.OnAbilitySlotChanged  += RefreshAbilitySlot;
 
-            _playerSkillController.OnSkillActivationChanged += HandleSkillActivationChanged;
+            if (_abilitySystem != null)
+            {
+                _abilitySystem.OnAbilityActivated += _ => HandleSkillActivationChanged(true);
+                _abilitySystem.OnAbilityFinished += _ => HandleSkillActivationChanged(false);
+                _abilitySystem.OnAbilityCancelled += _ => HandleSkillActivationChanged(false);
+            }
 
             RefreshHealth(_model.CurrentHealth, _model.MaxHealth);
             RefreshMana(_model.CurrentMana, _model.MaxMana);
@@ -64,9 +63,12 @@ namespace HUD
                 _model.OnManaChanged -= RefreshMana;                
             }
             
-            if (_playerSkillController != null)
+            if (_abilitySystem != null)
             {
-                _playerSkillController.OnSkillActivationChanged -= HandleSkillActivationChanged;
+                // Fix: Correct syntax for event subtraction
+                _abilitySystem.OnAbilityActivated -= _ => HandleSkillActivationChanged(true);
+                _abilitySystem.OnAbilityFinished -= _ => HandleSkillActivationChanged(false);
+                _abilitySystem.OnAbilityCancelled -= _ => HandleSkillActivationChanged(false);
             }
         }
 

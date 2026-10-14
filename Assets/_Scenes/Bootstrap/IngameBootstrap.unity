@@ -159,9 +159,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8aafce6ecaeaa7645981bfaccc3e43a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InGameBootstrapper
-  _playerStats: {fileID: 1369378387}
+  _playerStats: {fileID: 173935596}
   _hudView: {fileID: 2031095858}
-  _skillController: {fileID: 1873300532}
+  _skillController: {fileID: 173935595}
+  _abilitySystem: {fileID: 173935599}
   _pauseMenuScreen: {fileID: 6113829}
 --- !u!4 &130685918
 Transform:
@@ -186,9 +187,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 666478130584739745, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2483150994350136094, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063689782107260898, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3104597835128221087, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_LocalScale.x
@@ -226,9 +235,13 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6178318002858212053, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6366792767793062428, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8612296963837039624, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -273,8 +286,61 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5272517583869698497, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 173935596}
+    - targetCorrespondingSourceObject: {fileID: 5272517583869698497, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 173935595}
   m_SourcePrefab: {fileID: 100100000, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+--- !u!1 &173935594 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5272517583869698497, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+  m_PrefabInstance: {fileID: 173935593}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &173935595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173935594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9600d97c73b2aa041b6f5c0b0e7ffda9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSkillController
+  _activeAbility: {fileID: 0}
+  _abilitySlots:
+  - {fileID: 11400000, guid: 03bf9276f5a164a4aa4082c409d28493, type: 2}
+--- !u!114 &173935596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173935594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a4d9f40c1e26c498019813c7b50754, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  _maxHealth: 5
+  _invincibilityDuration: 1
+  _maxMana: 5
+  _startingCurrency: 0
+--- !u!114 &173935599 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3939035399520647278, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+  m_PrefabInstance: {fileID: 173935593}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173935594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c849c7a31a2bd140a426ef6c26a911e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AbilitySystem
 --- !u!1 &261027759
 GameObject:
   m_ObjectHideFlags: 0
@@ -1475,17 +1541,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1369378387 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4312036143297442790, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
-  m_PrefabInstance: {fileID: 5098699589358167010}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1501725120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21a4d9f40c1e26c498019813c7b50754, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerStatus
 --- !u!1 &1397139263
 GameObject:
   m_ObjectHideFlags: 0
@@ -1896,17 +1951,6 @@ MonoBehaviour:
   m_Spacing: {x: 16, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
---- !u!114 &1873300532 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2480989323331949965, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
-  m_PrefabInstance: {fileID: 5098699589358167010}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1501725120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9600d97c73b2aa041b6f5c0b0e7ffda9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerSkillController
 --- !u!1 &1876234682
 GameObject:
   m_ObjectHideFlags: 0
@@ -2147,8 +2191,8 @@ MonoBehaviour:
   _reorderDuration: 0.25
   _reorderEase: 9
   _canvasGroup: {fileID: 2031095857}
-  _skillSelectCanvasGroup: {fileID: 1898210524}
-  _skillActiveCanvasGroup: {fileID: 1399895332}
+  _skillSelectCanvasGroup: {fileID: 0}
+  _skillActiveCanvasGroup: {fileID: 0}
 --- !u!114 &2031095859
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ public class InGameBootstrapper : MonoBehaviour
     [SerializeField] private PlayerStats _playerStats;
     [SerializeField] private HUDView _hudView;
     [SerializeField] private PlayerSkillController _skillController;
+    [SerializeField] private AbilitySystem _abilitySystem;
     [SerializeField] private PauseMenuScreenUI _pauseMenuScreen;
     private HUDPresenter _hudPresenter;
     private PlayerInputManager _playerInputManager;
@@ -43,7 +44,7 @@ public class InGameBootstrapper : MonoBehaviour
             return;
         }
 
-        _hudPresenter = new HUDPresenter(_hudView, _playerStats, _skillController);
+        _hudPresenter = new HUDPresenter(_hudView, _playerStats, _skillController,_abilitySystem);
         _hudPresenter.Initialize();
         _hudPresenter.Show(true);
     }

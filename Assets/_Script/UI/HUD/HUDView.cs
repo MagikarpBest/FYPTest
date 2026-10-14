@@ -99,16 +99,15 @@ namespace HUD
 
         public void SetActiveAbility(AbilityDisplayDataSO skill)
         {
-            int newActive = _skillSlots.FindIndex(s => s.Skill == skill);
+            int newActive = _skillSlots.FindIndex(s => s.Ability == skill);
             if (newActive < 0) return;
 
-            bool animate = _activeIndex >= 0 && newActive != _activeIndex; // no animation on first set
+            bool animate = _activeIndex >= 0 && newActive != _activeIndex;
             _activeIndex = newActive;
 
             for (int i = 0; i < _skillSlots.Count; i++)
             {
-                _skillSlots[i].SetSelected(_skillSlots[i].Ability == skill);
-                // _skillSlots[i].SetSelected(i == _activeIndex);
+                // _skillSlots[i].SetSelected(_skillSlots[i].Ability == skill);
             }
 
             ArrangeSkillSlots(animate);

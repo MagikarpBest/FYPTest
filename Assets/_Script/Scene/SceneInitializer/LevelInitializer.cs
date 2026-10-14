@@ -15,7 +15,7 @@ public class LevelInitializer : SceneInitializer
     {
         yield return null;
 
-        Player player = FindAnyObjectByType<Player>();
+        NewPlayerTest player = FindAnyObjectByType<NewPlayerTest>();
 
         if (player == null || _playerInitialLocation == null)
         {
