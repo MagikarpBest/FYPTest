@@ -14,13 +14,15 @@ namespace HUD
     /// </summary>
     public class HUDPresenter : IDisposable
     {
-        private readonly IHUDView _view;
-        private readonly IPlayerStats _model;
+        private readonly HUDView _view;
+        private readonly PlayerStats _model;
+        private readonly PlayerSkillController _playerSkillController;
 
-        public HUDPresenter(IHUDView view, IPlayerStats model)
+        public HUDPresenter(HUDView view, PlayerStats model, PlayerSkillController skillController)
         {
             _view = view;
             _model = model;
+            _playerSkillController = skillController;
         }
 
         /// <summary>
@@ -37,19 +39,32 @@ namespace HUD
             _model.OnActiveSkillChanged += RefreshActiveSkill;
             _model.OnSkillSlotChanged += RefreshSkillSlot;
 
+            _playerSkillController.OnSkillActivationChanged += HandleSkillActivationChanged;
+
             RefreshHealth(_model.CurrentHealth, _model.MaxHealth);
             RefreshMana(_model.CurrentMana, _model.MaxMana);
             RefreshAllSkills();
             RefreshActiveSkill(_model.ActiveSkill);
+            HandleSkillActivationChanged(_playerSkillController.IsSkillActivationActive);
         }
 
         public void Unbind()
         {
-            if (_model == null)
-                return;
+            if (_model != null)
+            {
+                _model.OnHealthChanged -= RefreshHealth;
+                _model.OnManaChanged -= RefreshMana;                
+            }
+            
+            if (_playerSkillController != null)
+            {
+                _playerSkillController.OnSkillActivationChanged -= HandleSkillActivationChanged;
+            }
+        }
 
-            _model.OnHealthChanged -= RefreshHealth;
-            _model.OnManaChanged -= RefreshMana;
+        private void HandleSkillActivationChanged(bool isActive)
+        {
+            _view.SetSkillActivationState(isActive);
         }
         
         public void Dispose()
@@ -79,7 +94,7 @@ namespace HUD
         private void RefreshHealth(float currentHealth, float maxHealth)
         {
             if (_model == null) return;
-            _view.SetHealth(currentHealth, maxHealth);
+            _view.SetHealth(currentHealth, maxHealth, false);
         }
 
         private void RefreshMana(float currentMana, float maxMana)

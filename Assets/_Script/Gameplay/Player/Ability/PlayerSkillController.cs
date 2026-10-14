@@ -54,6 +54,8 @@ public class PlayerSkillController : MonoBehaviour
     private IPlayerSkillHandler _activeHandler;
 
     public bool IsSkillUsable { get; private set; } = true;
+    public bool IsSkillActivationActive { get; private set; }
+    public event Action<bool> OnSkillActivationChanged;
 
     private void Awake()
     {
@@ -85,7 +87,7 @@ public class PlayerSkillController : MonoBehaviour
             Debug.LogWarning($"{nameof(PlayerSkillController)}: " + $"{nameof(PlayerInputManager)} not found.", this);
             return;
         }
-
+        
         _inputManager.OnSkill3Pressed += HandleSkillPressed;
         _inputManager.OnAttackPressed += HandleAttackPressed;
         _inputManager.OnSkillCancelPressed += CancelCurrentSkill;
@@ -113,7 +115,7 @@ public class PlayerSkillController : MonoBehaviour
         PlayerSkill activeSkill = _playerStats.ActiveSkill;
         if (activeSkill == null) return;
 
-        if (_playerStats.CheckMana(activeSkill.ManaCost) == false) return;
+        // if (_playerStats.CheckMana(activeSkill.ManaCost) == false) return; // TODO: remove mana system entirely when housekeeping after playtest; Mana system no longer use
         
         SelectSkill(activeSkill);
     }
@@ -138,7 +140,8 @@ public class PlayerSkillController : MonoBehaviour
             return;
         _modeController.ChangeMode(_modeController.Ability);
         _activeHandler.Begin(_context);
-        Debug.Log("SelectSkill Success");
+        
+        SetSkillActivationState(true);
     }
 
     public void ConfirmSkill()
@@ -165,16 +168,15 @@ public class PlayerSkillController : MonoBehaviour
         _activeHandler?.Cancel();
         _activeHandler = null;
         _cachedSkill = null;
+        SetSkillActivationState(false);
         _modeController.ChangeMode(_modeController.Normal);
     }
 
     private IEnumerator FinishSkill()
     {
-        _playerStats.ConsumeMana(_cachedSkill.ManaCost);
-        _activeHandler?.Cancel();
-        _activeHandler = null;
-        _cachedSkill = null;
+        // _playerStats.ConsumeMana(_cachedSkill.ManaCost);
         
+        CancelCurrentSkill();
         // Delay 0.5 so left click doesnt trigger attack at same frame
         yield return new WaitForSeconds(0.2f);
         _modeController.ChangeMode(_modeController.Normal);
@@ -194,6 +196,15 @@ public class PlayerSkillController : MonoBehaviour
         {
             CancelCurrentSkill();
         }
+    }
+
+    private void SetSkillActivationState(bool isActive)
+    {
+        if (IsSkillActivationActive == isActive)
+            return;
+
+        IsSkillActivationActive = isActive;
+        OnSkillActivationChanged?.Invoke(isActive);
     }
 
     private void RegisterSummonedObject(ISummonedObject summonedObject)
