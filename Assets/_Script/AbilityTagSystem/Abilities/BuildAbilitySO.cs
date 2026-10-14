@@ -1,4 +1,3 @@
-using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -25,7 +24,7 @@ public class BuildAbilitySO : AbilityDefinitionSO
 
     public async override Awaitable OnActivate(CancellationToken token)
     {
-        if (!ctx.Character.TryGetComponent<PlayerInputManager>(out input))  return;
+        if (!ctx.Character.TryGetComponent<PlayerInputManager>(out input)) return;
         if (pillarPrefab == null || pillarPreviewPrefab == null) return;
         
         buildFinishedTcs = new TaskCompletionSource<bool>();

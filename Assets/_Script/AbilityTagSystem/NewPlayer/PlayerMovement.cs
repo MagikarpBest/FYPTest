@@ -25,12 +25,6 @@ public class PlayerMovement : MovementController
 
     protected override void Move()
     {
-        if (abilitySystem.HasTag("Block.Movement"))
-        {
-            StopMovement();
-            return;
-        }
-
         Vector3 inputDir = new Vector3(input.MoveInput.x, 0, input.MoveInput.y);
         float cameraYaw = mainCamera.transform.eulerAngles.y;
         moveDir = Quaternion.Euler(0f, cameraYaw, 0f) * inputDir; //rotates inputDir by cameraYaw

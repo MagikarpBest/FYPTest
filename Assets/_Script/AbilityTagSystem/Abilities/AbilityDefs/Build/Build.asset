@@ -28,12 +28,12 @@ MonoBehaviour:
     tags:
     - name: State.Build
   range: 20
-  maxBuildAngle: 45
+  maxBuildAngle: 90
   pillarPrefab: {fileID: 3735636886572184386, guid: a5bade558e610de4bb63893b05f02f5a, type: 3}
   pillarPreviewPrefab: {fileID: 3735636886572184386, guid: 3f0d2ab6949eb9542b24ad7c4f2ff5f4, type: 3}
   buildLayer:
     serializedVersion: 2
-    m_Bits: 385
+    m_Bits: 384
   excludeLayer:
     serializedVersion: 2
     m_Bits: 0
