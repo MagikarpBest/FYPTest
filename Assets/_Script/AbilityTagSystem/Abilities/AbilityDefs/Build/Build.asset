@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20772322c1323f24aa27dbcae68af81a, type: 3}
   m_Name: Build
   m_EditorClassIdentifier: Assembly-CSharp::BuildAbilitySO
+  displayData: {fileID: 11400000, guid: 03bf9276f5a164a4aa4082c409d28493, type: 2}
   abilityTags:
     tags:
     - name: Ability.Build

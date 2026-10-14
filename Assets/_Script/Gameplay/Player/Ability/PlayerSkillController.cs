@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum SkillConfirmResult
@@ -9,71 +10,54 @@ public enum SkillConfirmResult
     Fail = -1
 }
 
-/// <summary>
-/// Packed {CharacterTransform, SkillHoldPoint, Camera} reference sent from PlayerSkillController.cs
-/// </summary>
-public class PlayerSkillContext
-{
-    public Transform CharacterTransform { get; }
-    public Transform SkillHoldPoint { get; }
-    public Camera Camera { get; }
-    public LineRenderer AimLineRenderer { get; }
-
-    public PlayerSkillContext(
-        Transform characterTransform,
-        Transform skillHoldPoint,
-        Camera camera,
-        LineRenderer aimLineRenderer)
-    {
-        CharacterTransform = characterTransform;
-        SkillHoldPoint = skillHoldPoint;
-        Camera = camera;
-        AimLineRenderer = aimLineRenderer;
-    }
-}
-
 [RequireComponent(typeof(PlayerStats))]
 public class PlayerSkillController : MonoBehaviour
 {
-    private PlayerStats _playerStats;
+    private AbilitySystem _abilitySystem;
     private PlayerInputManager _inputManager;
+    private PlayerStats _playerStats;
 
-    [Header("PlayerSkillContext")]
-    [SerializeField] private Transform _characterTransform;
-    [SerializeField] private Transform _skillHoldPoint;
-    [SerializeField] private LineRenderer _aimLineRenderer;
+    [Header("Abilities")]
+    [SerializeField] private AbilityDisplayDataSO _activeAbility;
+    [SerializeField] private List<AbilityDisplayDataSO> _abilitySlots = new();
 
-    private PlayerModeController _modeController;
-    private PlayerSkillContext _context;
-    private PlayerSkill _cachedSkill;
-    private IPlayerSkillHandler _activeHandler;
+    // Interface implementations (matching what the HUDPresenter expects)
+    public AbilityDisplayDataSO ActiveDisplayData => _activeAbility;
 
-    public bool IsSkillUsable { get; private set; } = true;
+    public AbilityDisplayDataSO ActiveAbility => _activeAbility != null
+        ? _activeAbility
+        : null;
+
+    public AbilityDisplayDataSO GetSkill(int index) => (index >= 0 && index < _abilitySlots.Count)
+        ? _abilitySlots[index]
+        : null;
+
+    public int AbilitySlotCount => _abilitySlots.Count;
+    public event Action<AbilityDisplayDataSO> OnActiveAbilityChanged;
+    public event Action<int, AbilityDisplayDataSO> OnAbilitySlotChanged;
 
     private void Awake()
     {
+        _abilitySystem = GetComponent<AbilitySystem>();
         _playerStats = GetComponent<PlayerStats>();
-        _modeController = GetComponent<PlayerModeController>();
-        _context = new PlayerSkillContext(_characterTransform, _skillHoldPoint, Camera.main, _aimLineRenderer);
+        _inputManager = FindFirstObjectByType<PlayerInputManager>();
+
+        if (_abilitySlots.Count > 0 && _activeAbility == null)
+        {
+            _activeAbility = _abilitySlots[0];
+        }
     }
 
     private void Start()
     {
-        FindInputManager();
-        BindInputEvents();
+        // add ability from inspector to AbilitySystem
+        foreach (var displayData in _abilitySlots)
+        {
+            _abilitySystem.GiveAbility(displayData.Ability);
+        }
     }
 
-    private void OnDisable()
-    {
-        UnbindInputEvents();
-    }
-
-    private void FindInputManager()
-    {
-        _inputManager = FindFirstObjectByType<PlayerInputManager>();
-    }
-
-    private void BindInputEvents()
+    private void OnEnable()
     {
         if (_inputManager == null)
         {
@@ -81,109 +65,69 @@ public class PlayerSkillController : MonoBehaviour
             return;
         }
 
-        _inputManager.OnSkill3Pressed += HandleSkillPressed;
-        _inputManager.OnPrimaryActionPressed += HandlePrimaryActionPressed;
-        _inputManager.OnSecondaryActionPressed += CancelCurrentSkill;
+        _inputManager.OnSkill3Pressed += HandleActivatePressed;
+
+        _inputManager.OnSkillSwitchLeftPressed += () => TrySwitchAbility(-1);
+        _inputManager.OnSkillSwitchRightPressed += () => TrySwitchAbility(1);
     }
 
-    private void UnbindInputEvents()
+    private void OnDisable()
     {
         if (_inputManager == null)
             return;
 
-        _inputManager.OnSkill3Pressed -= HandleSkillPressed;
-        _inputManager.OnPrimaryActionPressed -= HandlePrimaryActionPressed;
-        _inputManager.OnSecondaryActionPressed -= CancelCurrentSkill;
+        _inputManager.OnSkill3Pressed -= HandleActivatePressed;
     }
 
-    private void HandleSkillPressed()
+    private void HandleActivatePressed()
     {
-        //if (_modeController.CurrentMode.Restrictions.HasFlag(PlayerActionRestrictions.RestrictSkill)) return;
-        if (!IsSkillUsable)
-        {
-            Debug.Log("Skill not usable");
-            return;
-        }
-        if (_playerStats == null) return;
-        PlayerSkill activeSkill = _playerStats.ActiveSkill;
-        if (activeSkill == null) return;
+        if (_activeAbility == null) return;
 
-        if (_playerStats.CheckMana(activeSkill.ManaCost) == false) return;
-        
-        SelectSkill(activeSkill);
+        // todo restriction check before activate
+        if (_playerStats != null && !_playerStats.CheckMana(_activeAbility.ManaCost)) return;
+
+        _playerStats.ConsumeMana(_activeAbility.ManaCost);
+
+        // activate ability via tag
+        _abilitySystem.TryActivateAbilityWithTag(_activeAbility.Ability.AbilityTags.Tags[0]);
     }
 
-    private void HandlePrimaryActionPressed()
+    public void TrySwitchAbility(int direction)
     {
-        ConfirmSkill();
-    }
-
-    public void SelectSkill(PlayerSkill skill)
-    {
-        if (skill == null)
-            return;
-
-        CancelCurrentSkill();
-
-        _cachedSkill = skill;
-
-        _activeHandler = skill.Handler;
-
-        if (_activeHandler == null)
-            return;
-        _modeController.ChangeMode(_modeController.Ability);
-        _activeHandler.Begin(_context);
-        Debug.Log("SelectSkill Success");
-    }
-
-    public void ConfirmSkill()
-    {
-        if (_activeHandler == null) return;
-
-        SkillConfirmResult result = _activeHandler.Confirm();
-        if (result == SkillConfirmResult.Finish) StartCoroutine(FinishSkill());
-
-    }
-
-    private void Update()
-    {
-        
-        _activeHandler?.Update();
-    }
-
-    private void CancelCurrentSkill()
-    {
-        _activeHandler?.Cancel();
-        _activeHandler = null;
-        _cachedSkill = null;
-        _modeController.ChangeMode(_modeController.Normal);
-    }
-
-    private IEnumerator FinishSkill()
-    {
-        _playerStats.ConsumeMana(_cachedSkill.ManaCost);
-        _activeHandler?.Cancel();
-        _activeHandler = null;
-        _cachedSkill = null;
-        
-        // Delay 0.5 so left click doesnt trigger attack at same frame
-        yield return new WaitForSeconds(0.2f);
-        _modeController.ChangeMode(_modeController.Normal);
-    }
-    
-    // state machine related stuff
-    public void SetSkillUsable(bool value)
-    {
-        if (IsSkillUsable == value)
+        if (_abilitySlots.Count <= 1)
         {
             return;
         }
+        int currentIndex = _abilitySlots.IndexOf(_activeAbility);
+        int nextIndex = (currentIndex + direction + _abilitySlots.Count) % _abilitySlots.Count;
+        _activeAbility = _abilitySlots[nextIndex];
 
-        IsSkillUsable = value;
-
-        if (!value && _activeHandler != null)
-        {
-            CancelCurrentSkill();
-        }
+        OnActiveAbilityChanged?.Invoke(_activeAbility);
     }
+
+    /// <summary>
+    /// Adds a skill to the player's available slots and registers it with the AbilitySystem.
+    /// </summary>
+    /// for future scene grants ability if certain progression is reached
+    public void GrantAbility(AbilityDisplayDataSO newAbilityGranted)
+    {
+        if (newAbilityGranted == null || _abilitySlots.Contains(newAbilityGranted))
+        {
+            return;
+        }
+        _abilitySlots.Add(newAbilityGranted);
+
+        // Set as active if its the only one in slot
+        if (_activeAbility == null)
+        {
+            _activeAbility = newAbilityGranted;
+        }
+
+        int newIndex = _abilitySlots.Count - 1;
+        _abilitySystem.GiveAbility(newAbilityGranted.Ability);
+        OnAbilitySlotChanged?.Invoke(newIndex, newAbilityGranted);
+        OnActiveAbilityChanged?.Invoke(_activeAbility);
+    }
+
+
 }

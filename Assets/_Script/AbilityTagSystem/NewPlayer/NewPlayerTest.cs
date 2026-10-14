@@ -8,13 +8,12 @@ public class NewPlayerTest : Character
     {
         base.Awake();
         Input = GetComponent<PlayerInputManager>();
-
     }
 
     private void OnEnable()
     {
         Input.OnPrimaryActionPressed += HandlePrimaryAction;
-        Input.OnSkill1Pressed += HandleSkill1;
+        //Input.OnSkillSwitchLeftPressed += HandleSkill1;
     }
 
     private void OnDisable()
@@ -29,6 +28,7 @@ public class NewPlayerTest : Character
 
     private void HandleSkill1()
     {
+        Debug.Log("Q pressed");
         AbilitySystem.TryActivateAbilityWithTag("Ability.Build");
     }
     
