@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerSkill_Rock
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerSkill
   SkillName: Rock
-  Icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  Icon: {fileID: 21300000, guid: b8ad60c3748212b409805dc08d262c98, type: 3}
   ManaCost: 1
   Restrictions: 1
   _handler:
