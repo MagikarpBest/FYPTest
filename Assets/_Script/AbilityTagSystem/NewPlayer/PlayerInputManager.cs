@@ -6,8 +6,8 @@ public class PlayerInputManager : MonoBehaviour
 {
     private InputSystem_Actions input;
     public event Action OnJumpPressed;
-    public event Action OnSkillSwitchLeftPressed;
-    public event Action OnSkillSwitchRightPressed;
+    public event Action OnSkill1Pressed;
+    public event Action OnSkill2Pressed;
     public event Action OnSkill3Pressed;
     public event Action OnSecondaryActionPressed;
     public event Action OnPrimaryActionPressed;
@@ -22,8 +22,8 @@ public class PlayerInputManager : MonoBehaviour
         input.Player.Move.performed += Move_Performed;
         input.Player.Move.canceled += Move_Canceled;
         input.Player.Jump.performed += Jump_Performed;
-        input.Player.SkillSwitchLeft.performed += SkillSwitchLeft_Performed;
-        input.Player.SkillSwitchRight.performed += SkillSwitchRight_Performed;
+        input.Player.Skill1.performed += Skill1_Performed;
+        input.Player.Skill2.performed += Skill2_Performed;
         input.Player.Skill3.performed += Skill3_Performed;
         input.Player.PrimaryAction.performed += PrimaryAction_Performed;
         input.Player.SecondaryAction.performed += SecondaryAction_Performed;
@@ -79,14 +79,14 @@ public class PlayerInputManager : MonoBehaviour
         OnJumpPressed?.Invoke();
     }
     
-    private void SkillSwitchLeft_Performed(InputAction.CallbackContext obj)
+    private void Skill1_Performed(InputAction.CallbackContext obj)
     {
-        OnSkillSwitchLeftPressed?.Invoke();
+        OnSkill1Pressed?.Invoke();
     }
     
-    private void SkillSwitchRight_Performed(InputAction.CallbackContext obj)
+    private void Skill2_Performed(InputAction.CallbackContext obj)
     {
-        OnSkillSwitchRightPressed?.Invoke();
+        OnSkill2Pressed?.Invoke();
     }
 
     private void Skill3_Performed(InputAction.CallbackContext obj)

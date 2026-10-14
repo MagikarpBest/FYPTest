@@ -79,7 +79,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SkillSwitchLeft",
+                    "name": "Skill1",
                     "type": "Button",
                     "id": "1dff9dfe-2941-4d36-9c8e-6055e22b7bf4",
                     "expectedControlType": "",
@@ -88,7 +88,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SkillSwitchRight",
+                    "name": "Skill2",
                     "type": "Button",
                     "id": "e710eec6-9396-4bd1-9b47-16b43faecab8",
                     "expectedControlType": "",
@@ -517,7 +517,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SkillSwitchLeft",
+                    "action": "Skill1",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -528,7 +528,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SkillSwitchRight",
+                    "action": "Skill2",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

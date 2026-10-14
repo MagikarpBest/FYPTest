@@ -165,7 +165,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""SkillSwitchLeft"",
+                    ""name"": ""Skill1"",
                     ""type"": ""Button"",
                     ""id"": ""1dff9dfe-2941-4d36-9c8e-6055e22b7bf4"",
                     ""expectedControlType"": """",
@@ -174,7 +174,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""SkillSwitchRight"",
+                    ""name"": ""Skill2"",
                     ""type"": ""Button"",
                     ""id"": ""e710eec6-9396-4bd1-9b47-16b43faecab8"",
                     ""expectedControlType"": """",
@@ -603,7 +603,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SkillSwitchLeft"",
+                    ""action"": ""Skill1"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -614,7 +614,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SkillSwitchRight"",
+                    ""action"": ""Skill2"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1260,8 +1260,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Previous = m_Player.FindAction("Previous", throwIfNotFound: true);
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
-        m_Player_SkillSwitchLeft = m_Player.FindAction("SkillSwitchLeft", throwIfNotFound: true);
-        m_Player_SkillSwitchRight = m_Player.FindAction("SkillSwitchRight", throwIfNotFound: true);
+        m_Player_Skill1 = m_Player.FindAction("Skill1", throwIfNotFound: true);
+        m_Player_Skill2 = m_Player.FindAction("Skill2", throwIfNotFound: true);
         m_Player_Skill3 = m_Player.FindAction("Skill3", throwIfNotFound: true);
         m_Player_PrimaryAction = m_Player.FindAction("PrimaryAction", throwIfNotFound: true);
         m_Player_SecondaryAction = m_Player.FindAction("SecondaryAction", throwIfNotFound: true);
@@ -1370,8 +1370,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Previous;
     private readonly InputAction m_Player_Next;
     private readonly InputAction m_Player_Sprint;
-    private readonly InputAction m_Player_SkillSwitchLeft;
-    private readonly InputAction m_Player_SkillSwitchRight;
+    private readonly InputAction m_Player_Skill1;
+    private readonly InputAction m_Player_Skill2;
     private readonly InputAction m_Player_Skill3;
     private readonly InputAction m_Player_PrimaryAction;
     private readonly InputAction m_Player_SecondaryAction;
@@ -1419,13 +1419,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         /// <summary>
-        /// Provides access to the underlying input action "Player/SkillSwitchLeft".
+        /// Provides access to the underlying input action "Player/Skill1".
         /// </summary>
-        public InputAction @SkillSwitchLeft => m_Wrapper.m_Player_SkillSwitchLeft;
+        public InputAction @Skill1 => m_Wrapper.m_Player_Skill1;
         /// <summary>
-        /// Provides access to the underlying input action "Player/SkillSwitchRight".
+        /// Provides access to the underlying input action "Player/Skill2".
         /// </summary>
-        public InputAction @SkillSwitchRight => m_Wrapper.m_Player_SkillSwitchRight;
+        public InputAction @Skill2 => m_Wrapper.m_Player_Skill2;
         /// <summary>
         /// Provides access to the underlying input action "Player/Skill3".
         /// </summary>
@@ -1488,12 +1488,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
-            @SkillSwitchLeft.started += instance.OnSkillSwitchLeft;
-            @SkillSwitchLeft.performed += instance.OnSkillSwitchLeft;
-            @SkillSwitchLeft.canceled += instance.OnSkillSwitchLeft;
-            @SkillSwitchRight.started += instance.OnSkillSwitchRight;
-            @SkillSwitchRight.performed += instance.OnSkillSwitchRight;
-            @SkillSwitchRight.canceled += instance.OnSkillSwitchRight;
+            @Skill1.started += instance.OnSkill1;
+            @Skill1.performed += instance.OnSkill1;
+            @Skill1.canceled += instance.OnSkill1;
+            @Skill2.started += instance.OnSkill2;
+            @Skill2.performed += instance.OnSkill2;
+            @Skill2.canceled += instance.OnSkill2;
             @Skill3.started += instance.OnSkill3;
             @Skill3.performed += instance.OnSkill3;
             @Skill3.canceled += instance.OnSkill3;
@@ -1538,12 +1538,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
-            @SkillSwitchLeft.started -= instance.OnSkillSwitchLeft;
-            @SkillSwitchLeft.performed -= instance.OnSkillSwitchLeft;
-            @SkillSwitchLeft.canceled -= instance.OnSkillSwitchLeft;
-            @SkillSwitchRight.started -= instance.OnSkillSwitchRight;
-            @SkillSwitchRight.performed -= instance.OnSkillSwitchRight;
-            @SkillSwitchRight.canceled -= instance.OnSkillSwitchRight;
+            @Skill1.started -= instance.OnSkill1;
+            @Skill1.performed -= instance.OnSkill1;
+            @Skill1.canceled -= instance.OnSkill1;
+            @Skill2.started -= instance.OnSkill2;
+            @Skill2.performed -= instance.OnSkill2;
+            @Skill2.canceled -= instance.OnSkill2;
             @Skill3.started -= instance.OnSkill3;
             @Skill3.performed -= instance.OnSkill3;
             @Skill3.canceled -= instance.OnSkill3;
@@ -2006,19 +2006,19 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSprint(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "SkillSwitchLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Skill1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSkillSwitchLeft(InputAction.CallbackContext context);
+        void OnSkill1(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "SkillSwitchRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Skill2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSkillSwitchRight(InputAction.CallbackContext context);
+        void OnSkill2(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Skill3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

@@ -164,8 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8aafce6ecaeaa7645981bfaccc3e43a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InGameBootstrapper
-  playerStats: {fileID: 2109168541}
-  skillController: {fileID: 2109168540}
+  playerStats: {fileID: 1369378387}
   _hudView: {fileID: 2031095858}
   _pauseMenuScreen: {fileID: 6113829}
 --- !u!4 &130685918
@@ -193,7 +192,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2483150994350136094, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3049098147030337408, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: entries.Array.size
@@ -207,10 +206,6 @@ PrefabInstance:
       propertyPath: entries.Array.data[0].transform
       value: 
       objectReference: {fileID: 1866700685}
-    - target: {fileID: 3063689782107260898, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3104597835128221087, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -235,18 +230,6 @@ PrefabInstance:
       propertyPath: jumpBufferTime
       value: 0.2
       objectReference: {fileID: 0}
-    - target: {fileID: 3939035399520647278, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
-      propertyPath: startingAbilities.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3939035399520647278, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
-      propertyPath: 'startingAbilities.Array.data[0]'
-      value: 
-      objectReference: {fileID: 11400000, guid: aa99bec5cb3058d4890776a00a0eb36d, type: 2}
-    - target: {fileID: 3939035399520647278, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
-      propertyPath: 'startingAbilities.Array.data[1]'
-      value: 
-      objectReference: {fileID: 11400000, guid: c08d84948dbda2941b2cfd2d9c915676, type: 2}
     - target: {fileID: 4436363703702408240, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.7000003
@@ -271,13 +254,9 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6178318002858212053, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6366792767793062428, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8347671382151079491, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_IncludeLayers.m_Bits
@@ -329,19 +308,8 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8612296963837039624, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1235783230}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5272517583869698497, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2109168541}
-    - targetCorrespondingSourceObject: {fileID: 5272517583869698497, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2109168540}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
---- !u!1 &173935594 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5272517583869698497, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
-  m_PrefabInstance: {fileID: 173935593}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &315477808
 GameObject:
   m_ObjectHideFlags: 0
@@ -1056,6 +1024,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1369378387 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4312036143297442790, guid: e20a14eb0135aa84fa1c7f1429398cc4, type: 3}
+  m_PrefabInstance: {fileID: 5098699589358167010}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1501725120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21a4d9f40c1e26c498019813c7b50754, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStatus
 --- !u!1 &1397139263
 GameObject:
   m_ObjectHideFlags: 0
@@ -1659,37 +1638,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8612296963837039624, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
   m_PrefabInstance: {fileID: 173935593}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2109168540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 173935594}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9600d97c73b2aa041b6f5c0b0e7ffda9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerSkillController
-  _activeAbility: {fileID: 0}
-  _abilitySlots:
-  - {fileID: 11400000, guid: 03bf9276f5a164a4aa4082c409d28493, type: 2}
---- !u!114 &2109168541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 173935594}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21a4d9f40c1e26c498019813c7b50754, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  _maxHealth: 5
-  _invincibilityDuration: 1
-  _maxMana: 5
-  _startingCurrency: 0
 --- !u!1001 &5098699589358167010
 PrefabInstance:
   m_ObjectHideFlags: 0

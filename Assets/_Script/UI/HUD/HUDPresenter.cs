@@ -15,14 +15,12 @@ namespace HUD
     public class HUDPresenter : IDisposable
     {
         private readonly IHUDView _view;
-        private readonly PlayerStats _model;
-        private readonly PlayerSkillController _abilityController;
+        private readonly IPlayerStats _model;
 
-        public HUDPresenter(IHUDView view, PlayerStats  model,PlayerSkillController skillController)
+        public HUDPresenter(IHUDView view, IPlayerStats model)
         {
             _view = view;
             _model = model;
-            _abilityController = skillController;
         }
 
         /// <summary>
@@ -32,16 +30,17 @@ namespace HUD
         {
             Unbind();
 
+            _view.OnSkillSwitchInput += HandleSkillSwitchInput;
             
             _model.OnHealthChanged += RefreshHealth;
             _model.OnManaChanged += RefreshMana;
-            _abilityController.OnActiveAbilityChanged  += RefreshActiveAbility;
-            _abilityController.OnAbilitySlotChanged  += RefreshAbilitySlot;
+            _model.OnActiveSkillChanged += RefreshActiveSkill;
+            _model.OnSkillSlotChanged += RefreshSkillSlot;
 
             RefreshHealth(_model.CurrentHealth, _model.MaxHealth);
             RefreshMana(_model.CurrentMana, _model.MaxMana);
-            RefreshAllAbility();
-            RefreshActiveAbility(_abilityController.ActiveAbility);
+            RefreshAllSkills();
+            RefreshActiveSkill(_model.ActiveSkill);
         }
 
         public void Unbind()
@@ -62,6 +61,20 @@ namespace HUD
         // HudVisibilityController from earlier); View decides HOW it looks.
         public void Show(bool instant = false) => _view.Show(instant);
         public void Hide(bool instant = false) => _view.Hide(instant);
+
+        private void HandleSkillSwitchInput(int direction)
+        {
+            bool switched = _model.TrySwitchSkill(direction);
+
+            if (switched)
+            {
+                _view.PlaySkillSwitchPressed();
+            }
+            else
+            {
+                _view.PlaySkillSwitchFailed();
+            }
+        }
         
         private void RefreshHealth(float currentHealth, float maxHealth)
         {
@@ -75,24 +88,23 @@ namespace HUD
             _view.SetMana(currentMana, maxMana);
         }
 
-        // ABILITY SECTION
-        private void RefreshActiveAbility(AbilityDisplayDataSO  skill)
+        private void RefreshActiveSkill(PlayerSkill skill)
         {
-            _view.SetActiveAbility(skill);
+            _view.SetActiveSkill(skill);
         }
 
-        private void RefreshAbilitySlot(
+        private void RefreshSkillSlot(
             int slotIndex,
-            AbilityDisplayDataSO  skill)
+            PlayerSkill skill)
         {
-            _view.SetAbility(slotIndex, skill);
+            _view.SetSkill(slotIndex, skill);
         }
 
-        private void RefreshAllAbility()
+        private void RefreshAllSkills()
         {
-            for (int i = 0; i < _abilityController.AbilitySlotCount; i++)
+            for (int i = 0; i < _model.SkillSlotCount; i++)
             {
-                _view.SetAbility(i, _abilityController.GetSkill(i));
+                _view.SetSkill(i, _model.GetSkill(i));
             }
         }
     }

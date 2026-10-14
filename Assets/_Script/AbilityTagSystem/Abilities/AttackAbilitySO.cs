@@ -5,25 +5,28 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Attack", menuName = "AbilitySystem/Abilities/Attack")]
 public class AttackAbilitySO : AbilityDefinitionSO
 {
-    [SerializeField] private GameObject[] slashVFX;
+    [SerializeField] private float firstHitTime = 1f;
+    [SerializeField] private float secondHitDelay = 0.5f;
+    [SerializeField] private float endDelay = 0.5f;
+    [SerializeField] private float comboWindow = 1.0f;
+    
     [Header("Damage data")]
     [SerializeField] private float attackRange;
     [SerializeField] private DamageConfig damageConfig;
     [SerializeField] private LayerMask enemyLayerMask;
-
-    private int comboIndex;
+    
     private bool canQueueCombo;
     private bool comboQueued;
     private TaskCompletionSource<bool> attackFinished;
     private PlayerInputManager input;
-
+    
     public override async Awaitable OnActivate(CancellationToken token)
     {
         // if (ctx.Character.Sockets.TryGetSocket("Socket.BombHold", out Transform bombHold))
         // {
         //     Instantiate(object, bombHold);
         // }
-
+        
         DebugDraw();
 
         //if no input found just stop the ability
@@ -32,23 +35,20 @@ public class AttackAbilitySO : AbilityDefinitionSO
             Debug.Log("No input component attack cancelled");
             return;
         }
-
+            
         input.OnPrimaryActionPressed += QueueCombo;
         ctx.OnAnimationEvent += OnAnimationEvent;
 
-        comboIndex = 1;
+        int comboIndex = 1;
 
-        while (comboIndex <= 4)
+        while (comboIndex <= 3)
         {
             // Combo logic
             comboQueued = false;
-            canQueueCombo = false;
-
             attackFinished = new TaskCompletionSource<bool>();
-
             ctx.Character.Animator.SetTrigger($"AttackTrigger{comboIndex}");
-
-
+            //ctx.Character.Movement.OverrideMovement(ctx.Character.transform.forward * 11f, 0.2f);
+            
             // Wait until animation says combo finished
             bool continueCombo = await WaitForComboResult(token);
 
@@ -67,7 +67,6 @@ public class AttackAbilitySO : AbilityDefinitionSO
         {
             case "Damage":
                 ctx.Character.Movement.OverrideMovement(ctx.Character.transform.forward * 11f, 0.1f);
-                Instantiate(slashVFX[comboIndex - 1],ctx.Character.transform);
                 PerformDamageDetection();
                 break;
 
@@ -81,15 +80,10 @@ public class AttackAbilitySO : AbilityDefinitionSO
                 Debug.Log("Combo window Close");
                 break;
 
-            // if combo queue is early do the combo early to feels smooth
-            case "ComboNext":
-                attackFinished?.TrySetResult(comboQueued);
-                break;
-
-            // if combo queue late, still execute it after attack finish but slower
             case "Finished":
-                attackFinished?.TrySetResult(comboQueued);
                 Debug.Log("Attack finish");
+                attackFinished?.TrySetResult(comboQueued);
+
                 break;
         }
     }

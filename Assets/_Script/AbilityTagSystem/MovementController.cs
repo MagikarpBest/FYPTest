@@ -63,6 +63,7 @@ public abstract class MovementController : MonoBehaviour
     
     protected virtual void Awake()
     {
+        Application.targetFrameRate = 30;
         
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
@@ -75,6 +76,7 @@ public abstract class MovementController : MonoBehaviour
 
     private void Start()
     {
+        Application.targetFrameRate = 30;
     }
 
     private void Update()
@@ -89,15 +91,15 @@ public abstract class MovementController : MonoBehaviour
             ApplyForce(new Vector3(11, 20, 10));
         }
         
-        // if (Keyboard.current.fKey.wasPressedThisFrame)
-        // { 
-        //     OverrideMovement(new Vector3(10, 20, 10), 3f);
-        // }
+        if (Keyboard.current.fKey.wasPressedThisFrame)
+        { 
+            OverrideMovement(new Vector3(10, 20, 10), 3f);
+        }
         
         
         HandleRotation();
 
-        //Debug.Log(moveVelocity.y);
+        Debug.Log(moveVelocity.y);
     }
     
     private void FixedUpdate()

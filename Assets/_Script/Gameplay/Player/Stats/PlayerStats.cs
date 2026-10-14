@@ -28,15 +28,31 @@ public class PlayerStats : MonoBehaviour, IPlayerStats , IDamageable
     public float MaxMana => _maxMana;
 
     // Currency
+
     [Header("Currency")]
     [SerializeField]
     private int _startingCurrency = 0;
 
     public int Currency { get; private set; }
-    
+
+    // Active skill
+
+    [Header("Skills")]
+    [SerializeField]
+    private PlayerSkill _activeSkill;
+
+    public PlayerSkill ActiveSkill => _activeSkill;
+
+    [SerializeField]
+    private List<PlayerSkill> _skillSlots = new();
+
+    public int SkillSlotCount => _skillSlots.Count;
+
     public event Action<float, float> OnHealthChanged;
     public event Action<float, float> OnManaChanged;
     public event Action<int> OnCurrencyChanged;
+    public event Action<PlayerSkill> OnActiveSkillChanged;
+    public event Action<int, PlayerSkill> OnSkillSlotChanged;
 
     private PlayerRewardCollector _rewardCollector;
 
@@ -45,6 +61,7 @@ public class PlayerStats : MonoBehaviour, IPlayerStats , IDamageable
         CurrentHealth = Mathf.Max(0, _maxHealth);
         CurrentMana = Mathf.Max(0f, _maxMana);
         Currency = Mathf.Max(0, _startingCurrency);
+        if (_skillSlots.Count > 0) _activeSkill = _skillSlots.First();
 
         _rewardCollector = new PlayerRewardCollector(this); // instant create and subscribe to death events(static) to any entities.
     }
@@ -143,6 +160,70 @@ public class PlayerStats : MonoBehaviour, IPlayerStats , IDamageable
         return true;
     }
 
-   
+    // Active skill
+
+    public void SetActiveSkill(PlayerSkill skill)
+    {
+        if (ActiveSkill == skill)
+            return;
+
+        _activeSkill = skill;
+        OnActiveSkillChanged?.Invoke(ActiveSkill);
+    }
+
+    // Skill slots
+
+    public PlayerSkill GetSkill(int slotIndex)
+    {
+        if (!IsValidSlot(slotIndex))
+            return null;
+
+        return _skillSlots[slotIndex];
+    }
+
+    public void SetSkill(int slotIndex, PlayerSkill skill)
+    {
+        if (!IsValidSlot(slotIndex))
+            return;
+
+        _skillSlots[slotIndex] = skill;
+        OnSkillSlotChanged?.Invoke(slotIndex, skill);
+    }
+
+    public bool TrySwitchSkill(int direction)
+    {
+        if (direction == 0 || _skillSlots.Count <= 1)
+            return false;
+
+        int currentIndex = _skillSlots.IndexOf(ActiveSkill);
+
+        if (currentIndex < 0)
+            return false;
+
+        int nextIndex = currentIndex + direction;
+
+        if (nextIndex < 0)
+        {
+            nextIndex = _skillSlots.Count - 1;
+        }
+        else if (nextIndex >= _skillSlots.Count)
+        {
+            nextIndex = 0;
+        }
+
+        PlayerSkill nextSkill = _skillSlots[nextIndex];
+
+        if (nextSkill == null)
+            return false;
+
+        SetActiveSkill(nextSkill);
+
+        return true;
+    }
+
+    private bool IsValidSlot(int slotIndex)
+    {
+        return slotIndex >= 0 && slotIndex < _skillSlots.Count;
+    }
 }
 

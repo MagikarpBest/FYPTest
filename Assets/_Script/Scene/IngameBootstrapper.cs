@@ -4,31 +4,16 @@ using UnityEngine;
 public class InGameBootstrapper : MonoBehaviour
 {
     [SerializeField] private PlayerStats playerStats;
-    [SerializeField] private PlayerSkillController skillController;
     [SerializeField] private HUDView _hudView;
     [SerializeField] private PauseMenuScreenUI _pauseMenuScreen;
     private HUDPresenter _hudPresenter;
     private PlayerInputManager _playerInputManager;
-    
-    
-    private void OnEnable()
-    {
-        _playerInputManager = FindFirstObjectByType<PlayerInputManager>();
-        BindInputEvents();
-    }
-     private void BindInputEvents()
-    {
-        if (_playerInputManager == null)
-        {
-            return;
-        }
 
-        _playerInputManager.OnEscapePressed -= HandleEscapePressed;
-        _playerInputManager.OnEscapePressed += HandleEscapePressed;
-    }
     private void Start()
     {
         InitializeHUD();
+        _playerInputManager = FindFirstObjectByType<PlayerInputManager>();
+        BindInputEvents();
         GameplayTagDatabase.Init(Resources.Load<GameplayTagDatabaseSO>("GameplayTagDatabase"));
     }
     
@@ -43,14 +28,14 @@ public class InGameBootstrapper : MonoBehaviour
             return;
         }
 
-        _hudPresenter = new HUDPresenter(_hudView, playerStats,skillController);
+        _hudPresenter = new HUDPresenter(_hudView, playerStats);
         _hudPresenter.Initialize();
         _hudPresenter.Show(true);
     }
 
     private void HandleEscapePressed()
     {
-        if (_pauseMenuScreen == null)   
+        if (_pauseMenuScreen == null)
         {
             Debug.LogWarning($"{nameof(InGameBootstrapper)}: Pause menu screen is not assigned.");
             return;
@@ -61,7 +46,22 @@ public class InGameBootstrapper : MonoBehaviour
             GameScreenManager.Push(_pauseMenuScreen);
         }
     }
-    
+
+    private void OnEnable()
+    {
+        BindInputEvents();
+    }
+
+    private void BindInputEvents()
+    {
+        if (_playerInputManager == null)
+        {
+            return;
+        }
+
+        _playerInputManager.OnEscapePressed -= HandleEscapePressed;
+        _playerInputManager.OnEscapePressed += HandleEscapePressed;
+    }
 
     private void OnDisable()
     {

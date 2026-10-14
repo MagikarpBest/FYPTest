@@ -28,10 +28,10 @@ MonoBehaviour:
   grantedTags:
     tags:
     - name: Block.Movement
-  slashVFX:
-  - {fileID: 128444062992091252, guid: 68d43cd796c9405408f1f697c23f3a16, type: 3}
-  - {fileID: 9197307553799296351, guid: fe146c628120d3b4b8eaf498153cbf9b, type: 3}
-  - {fileID: 128444062992091252, guid: 68d43cd796c9405408f1f697c23f3a16, type: 3}
+  firstHitTime: 1
+  secondHitDelay: 0.5
+  endDelay: 0.5
+  comboWindow: 1
   attackRange: 5
   damageConfig:
     Damage: 1
