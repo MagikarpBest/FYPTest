@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerSkill_Pillar
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerSkill
   SkillName: Pillar
-  Icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  Icon: {fileID: 21300000, guid: 7138f54edb59cef4a87f14f634409d87, type: 3}
   ManaCost: 1
   Restrictions: 1
   _handler:

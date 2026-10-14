@@ -16,19 +16,20 @@ namespace HUD
         private TMP_Text _skillNameText;
         public AbilityDisplayDataSO Ability { get; private set; }
 
+
         public void SetAbility(AbilityDisplayDataSO ability)
         {
+
             Ability = ability;
 
             bool hasSkill = ability != null;
 
+
             _icon.enabled = hasSkill;
-            _skillNameText.gameObject.SetActive(hasSkill);
 
             if (!hasSkill)
             {
                 _icon.sprite = null;
-                _skillNameText.text = string.Empty;
                 return;
             }
 
@@ -43,6 +44,7 @@ namespace HUD
         public void SetSelected(bool selected)
         {
             _selectedIndicator.SetActive(selected);
+
         }
     }
 }

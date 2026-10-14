@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class InGameBootstrapper : MonoBehaviour
 {
-    [SerializeField] private PlayerStats playerStats;
-    [SerializeField] private PlayerSkillController skillController;
+    [SerializeField] private PlayerStats _playerStats;
     [SerializeField] private HUDView _hudView;
+    [SerializeField] private PlayerSkillController _skillController;
     [SerializeField] private PauseMenuScreenUI _pauseMenuScreen;
     private HUDPresenter _hudPresenter;
     private PlayerInputManager _playerInputManager;
@@ -37,13 +37,13 @@ public class InGameBootstrapper : MonoBehaviour
     /// </summary>
     private void InitializeHUD()
     {
-        if (_hudView == null || playerStats == null)
+        if (_hudView == null || _playerStats == null || _skillController == null)
         {
             Debug.LogError($"{nameof(InGameBootstrapper)}: InitializeHUD has no reference to assign.", this);
             return;
         }
 
-        _hudPresenter = new HUDPresenter(_hudView, playerStats,skillController);
+        _hudPresenter = new HUDPresenter(_hudView, _playerStats, _skillController);
         _hudPresenter.Initialize();
         _hudPresenter.Show(true);
     }

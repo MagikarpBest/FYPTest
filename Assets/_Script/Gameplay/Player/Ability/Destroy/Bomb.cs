@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(SphereCollider))]
-public class Bomb : MonoBehaviour
+public class Bomb : MonoBehaviour, ISummonedObject
 {
     [Header("Reference")]
     private Rigidbody rb;
@@ -13,6 +13,7 @@ public class Bomb : MonoBehaviour
     [SerializeField] private float explosionRadius = 5f;
     [SerializeField] private float explosionForce = 5f;
     private bool _hasExploded;
+    public event Action<ISummonedObject> OnRemoved;
 
     private void Awake()
     {
@@ -92,6 +93,16 @@ public class Bomb : MonoBehaviour
         }
         Destroy(gameObject);
         Debug.Log("Bomb exploded");
+    }
+
+    public void Despawn()
+    {
+        Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        OnRemoved?.Invoke(this);
     }
 
     private void OnDrawGizmos()
