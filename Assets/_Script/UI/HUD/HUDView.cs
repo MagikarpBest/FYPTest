@@ -32,7 +32,6 @@ namespace HUD
 
         private readonly List<GameIcons.HeartIcon> _hearts = new();
         private readonly List<HUDSkillSlot> _skillSlots = new();
-        public event Action<int> OnSkillSwitchInput;
 
         private void Awake()
         {
@@ -52,27 +51,7 @@ namespace HUD
             _canvasGroup.interactable = false;
             _canvasGroup.blocksRaycasts = false;
         }
-
-        private void Update()
-        {
-            HandleSkillSwitchInput();
-        }
-
-        private void HandleSkillSwitchInput()
-        {
-            if (Keyboard.current == null)
-                return;
-
-            if (Keyboard.current.qKey.wasPressedThisFrame)
-            {
-                OnSkillSwitchInput?.Invoke(-1);
-            }
-
-            if (Keyboard.current.rKey.wasPressedThisFrame)
-            {
-                OnSkillSwitchInput?.Invoke(1);
-            }
-        }
+        
 
         public void SetHealth(float current, float max)
         {
@@ -92,17 +71,17 @@ namespace HUD
             _manaCountText.text = $"Mana: {Mathf.FloorToInt(current)}/{Mathf.FloorToInt(max)}";
         }
 
-        public void SetSkill(int slotIndex, PlayerSkill skill)
+        public void SetAbility(int slotIndex, AbilityDisplayDataSO skill)
         {
             EnsureSkillSlotCount(slotIndex + 1);
-            _skillSlots[slotIndex].SetSkill(skill);
+            _skillSlots[slotIndex].SetAbility(skill);
         }
 
-        public void SetActiveSkill(PlayerSkill skill)
+        public void SetActiveAbility(AbilityDisplayDataSO skill)
         {
             for (int i = 0; i < _skillSlots.Count; i++)
             {
-                _skillSlots[i].SetSelected(_skillSlots[i].Skill == skill);
+                _skillSlots[i].SetSelected(_skillSlots[i].Ability == skill);
             }
         }
 

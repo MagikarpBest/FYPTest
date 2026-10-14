@@ -14,13 +14,13 @@ namespace HUD
 
         [SerializeField]
         private TMP_Text _skillNameText;
-        public PlayerSkill Skill { get; private set; }
+        public AbilityDisplayDataSO Ability { get; private set; }
 
-        public void SetSkill(PlayerSkill skill)
+        public void SetAbility(AbilityDisplayDataSO ability)
         {
-            Skill = skill;
+            Ability = ability;
 
-            bool hasSkill = skill != null;
+            bool hasSkill = ability != null;
 
             _icon.enabled = hasSkill;
             _skillNameText.gameObject.SetActive(hasSkill);
@@ -32,8 +32,12 @@ namespace HUD
                 return;
             }
 
-            _icon.sprite = skill.Icon;
-            _skillNameText.text = skill.SkillName;
+            if (ability == null)
+            {
+                return;
+            }
+            _icon.sprite = ability.Icon;
+            _skillNameText.text = ability.AbilityName;
         }
 
         public void SetSelected(bool selected)
