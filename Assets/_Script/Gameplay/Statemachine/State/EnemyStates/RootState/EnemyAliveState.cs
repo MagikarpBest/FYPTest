@@ -2,29 +2,60 @@ using UnityEngine;
 
 public class EnemyAliveState : State
 {
-    private EnemyStats _stats;
-    private Enemy enemy;
-    
-    public EnemyAliveState(HierarchicalStateMachine stateMachine, Enemy enemy, State parent,
-        ICharacterStateFactory factory) : base(stateMachine, enemy, parent, factory)
+    private EnemyStats stats;
+    private EnemyCombatReaction combatReaction;
+    private Enemy character;
+
+    public EnemyAliveState(HierarchicalStateMachine stateMachine, Enemy character, State parent,
+        ICharacterStateFactory factory) : base(stateMachine, character, parent, factory)
     {
-        _stats = enemy.Stats;
-        this.enemy = enemy;
+        stats = character.Stats;
+        combatReaction = character.CombatReaction;
+        this.character = character;
     }
 
     protected override State GetInitialState() => Factory.Grounded;
 
     protected override State GetTransition()
     {
-        if (_stats.CurrentHealth <= 0)
+        if (eventRequestedTransition != null)
         {
-            return Factory.Dead;
+            return eventRequestedTransition;
         }
+
         return null;
     }
-    
+
+    private void HandleReaction(EnemyReactionType reactionType)
+    {
+        switch (reactionType)
+        {
+            case EnemyReactionType.Hit:
+                EventRequestTransition(Factory.Hit);
+                break;
+
+            case EnemyReactionType.Launch:
+                EventRequestTransition(Factory.Launch);
+                break;
+
+            case EnemyReactionType.Dead:
+                EventRequestTransition(Factory.Dead);
+                break;
+
+            case EnemyReactionType.None:
+                EventRequestTransition(Factory.Grounded);
+                break;
+        }
+    }
+
     protected override void OnEnter()
     {
-        enemy.DisableRagdoll();
+        character.DisableRagdoll();
+        combatReaction.OnReactionRequested += HandleReaction;
+    }
+
+    protected override void OnExit()
+    {
+        combatReaction.OnReactionRequested -= HandleReaction;
     }
 }

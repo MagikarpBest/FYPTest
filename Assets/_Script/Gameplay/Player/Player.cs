@@ -16,6 +16,7 @@ public class Player : MonoBehaviour, ICharacter
     [SerializeField] private Transform model;
     private Transform cameraTransform;
     
+    public Transform Transform { get; }
     public Collider Collider { get; private set; }
     public Rigidbody Rigidbody { get; private set; }
     public Animator Animator { get; private set; }
@@ -54,11 +55,11 @@ public class Player : MonoBehaviour, ICharacter
         ModeController = GetComponent<PlayerModeController>();
 
         Movement.Init(Rigidbody, model, cameraTransform, Animator);
-        AttackSystem.Init(Animator);
+        AttackSystem.Init(Animator,Input);
         
         stateMachine = GetComponent<HierarchicalStateMachine>();
         PlayerStateFactory factory = new PlayerStateFactory(stateMachine, this);
-
+        
         stateMachine.Init(factory.Alive);
         
         renderer = GetComponent<SkinnedMeshRenderer>();

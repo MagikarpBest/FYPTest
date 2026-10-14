@@ -7,6 +7,7 @@ public class PlayerStateFactory : ICharacterStateFactory
     public State Idle { get; private set; }
     public State Run { get; private set; }
 
+    public State Hit => null;
     public State Airborne { get; private set; }
     public State Jump { get; private set; }
     public State Fall { get; private set; }

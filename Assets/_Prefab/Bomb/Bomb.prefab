@@ -153,6 +153,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e514a928c047f4543865435fd6e5825f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bomb
-  rb: {fileID: 304092597822084607}
   explosionRadius: 5
-  explosionForce: 30
+  explosionForce: 5

@@ -19,13 +19,13 @@ public class AttackState : State
     protected override void OnEnter()
     {
         skill.SetSkillUsable(false);
-        input.OnAttackPressed += HandleAttack;
+        //input.OnAttackPressed += HandleAttack;
     }
 
     protected override void OnExit()
     {
         skill.SetSkillUsable(true);
-        input.OnAttackPressed -= HandleAttack;
+        //input.OnAttackPressed -= HandleAttack;
     }
     private void HandleAttack()
     {

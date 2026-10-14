@@ -48,7 +48,7 @@ public abstract class State
         //clear child
         if (ActiveChild != null)
         {
-            //ActiveChild.Exit();
+            ActiveChild.Exit();
             ActiveChild = null;
         }
 
@@ -62,10 +62,18 @@ public abstract class State
     {
         //check for transitions
         State transitionState = GetTransition();
+        
+        // A transition request does not always mean a real state change.
+        // Example: parent state requests its current active child (Grounded -> Idle while already Idle).
+        // If the transition is ignored, continue ticking instead of returning,
+        // otherwise the active child will stop receiving Tick updates.
+        // ^ai fixes
         if (transitionState != null)
         {
             eventRequestedTransition = null;
-            StateMachine?.ChangeState(this, transitionState);
+            bool changed = StateMachine.ChangeState(this, transitionState);
+            
+            if(changed)
             return;
         }
 
