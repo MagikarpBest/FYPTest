@@ -21,17 +21,14 @@ public class BombSkillHandler : IPlayerSkillHandler
     public void Begin(PlayerSkillContext context)
     {
         _context = context;
-        if (_bombPrefab == null)
-            return;
-        if (_context.SkillHoldPoint == null)
-            return;
 
+        if (_bombPrefab == null || _context.SkillHoldPoint == null)
+            return;
 
         _activeBomb = UnityEngine.Object.Instantiate(
             _bombPrefab,
             _context.SkillHoldPoint.position,
-            _context.SkillHoldPoint.rotation
-        );
+            _context.SkillHoldPoint.rotation);
         _activeBomb.Hold(_context.SkillHoldPoint);
         _activeBomb.Init(_explosionRadius, _explosionForce);
     }
@@ -44,10 +41,10 @@ public class BombSkillHandler : IPlayerSkillHandler
         // TODO: Update bomb aiming / direction.
     }
 
-
-
-    public SkillConfirmResult Confirm()
+    public SkillConfirmResult Confirm(out ISummonedObject summonedObject)
     {
+        summonedObject = null;
+
         if (_activeBomb == null)
             return SkillConfirmResult.Fail;
 
@@ -55,9 +52,9 @@ public class BombSkillHandler : IPlayerSkillHandler
         if (throwDirection.sqrMagnitude <= 0.0001f)
             return SkillConfirmResult.Fail;
 
-        RotateCharacterToAim(throwDirection);
+        PlayerSkillHandlerHelper.RotateCharacterToAim(_context, throwDirection);
 
-
+        summonedObject = _activeBomb.GetComponent<ISummonedObject>();
         _activeBomb.Throw(throwDirection, _throwForce, _upwardForce, _explodeDelay);
         _activeBomb = null;
 
@@ -66,31 +63,8 @@ public class BombSkillHandler : IPlayerSkillHandler
 
     public void Cancel()
     {
-        if (_activeBomb == null)
-            return;
-
-        UnityEngine.Object.Destroy(_activeBomb.gameObject);
-
-        _activeBomb = null;
+        PlayerSkillHandlerHelper.DestroyAndClear(ref _activeBomb);
     }
 
     #endregion
-
-    private void RotateCharacterToAim(Vector3 aimDirection)
-    {
-        if (_context.CharacterTransform == null)
-            return;
-
-        // Only rotate the character horizontally.
-        Vector3 flatDirection = new Vector3(aimDirection.x, 0f, aimDirection.z);
-
-        if (flatDirection.sqrMagnitude <= 0.0001f)
-            return;
-
-        _context.CharacterTransform.rotation =
-            Quaternion.LookRotation(
-                flatDirection.normalized,
-                Vector3.up
-            );
-    }
 }

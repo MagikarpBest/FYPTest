@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum SkillConfirmResult
@@ -43,12 +44,18 @@ public class PlayerSkillController : MonoBehaviour
     [SerializeField] private Transform _skillHoldPoint;
     [SerializeField] private LineRenderer _aimLineRenderer;
 
+    [Header("Skill Limitation")]
+    [SerializeField] private int _maximumActiveObject = 3;
+    private readonly LinkedList<ISummonedObject> _summonedObjects = new();
+
     private PlayerModeController _modeController;
     private PlayerSkillContext _context;
     private PlayerSkill _cachedSkill;
     private IPlayerSkillHandler _activeHandler;
 
     public bool IsSkillUsable { get; private set; } = true;
+    public bool IsSkillActivationActive { get; private set; }
+    public event Action<bool> OnSkillActivationChanged;
 
     private void Awake()
     {
@@ -80,7 +87,7 @@ public class PlayerSkillController : MonoBehaviour
             Debug.LogWarning($"{nameof(PlayerSkillController)}: " + $"{nameof(PlayerInputManager)} not found.", this);
             return;
         }
-
+        
         _inputManager.OnSkill3Pressed += HandleSkillPressed;
         _inputManager.OnPrimaryActionPressed += HandlePrimaryActionPressed;
         _inputManager.OnSecondaryActionPressed += CancelCurrentSkill;
@@ -108,7 +115,7 @@ public class PlayerSkillController : MonoBehaviour
         PlayerSkill activeSkill = _playerStats.ActiveSkill;
         if (activeSkill == null) return;
 
-        if (_playerStats.CheckMana(activeSkill.ManaCost) == false) return;
+        // if (_playerStats.CheckMana(activeSkill.ManaCost) == false) return; // TODO: remove mana system entirely when housekeeping after playtest; Mana system no longer use
         
         SelectSkill(activeSkill);
     }
@@ -133,16 +140,21 @@ public class PlayerSkillController : MonoBehaviour
             return;
         _modeController.ChangeMode(_modeController.Ability);
         _activeHandler.Begin(_context);
-        Debug.Log("SelectSkill Success");
+        
+        SetSkillActivationState(true);
     }
 
     public void ConfirmSkill()
     {
         if (_activeHandler == null) return;
 
-        SkillConfirmResult result = _activeHandler.Confirm();
-        if (result == SkillConfirmResult.Finish) StartCoroutine(FinishSkill());
-
+        SkillConfirmResult result = _activeHandler.Confirm(out ISummonedObject obj);
+        
+        if (result == SkillConfirmResult.Finish)
+        {
+            if (obj != null) RegisterSummonedObject(obj);
+            StartCoroutine(FinishSkill());
+        }
     }
 
     private void Update()
@@ -156,16 +168,15 @@ public class PlayerSkillController : MonoBehaviour
         _activeHandler?.Cancel();
         _activeHandler = null;
         _cachedSkill = null;
+        SetSkillActivationState(false);
         _modeController.ChangeMode(_modeController.Normal);
     }
 
     private IEnumerator FinishSkill()
     {
-        _playerStats.ConsumeMana(_cachedSkill.ManaCost);
-        _activeHandler?.Cancel();
-        _activeHandler = null;
-        _cachedSkill = null;
+        // _playerStats.ConsumeMana(_cachedSkill.ManaCost);
         
+        CancelCurrentSkill();
         // Delay 0.5 so left click doesnt trigger attack at same frame
         yield return new WaitForSeconds(0.2f);
         _modeController.ChangeMode(_modeController.Normal);
@@ -185,5 +196,52 @@ public class PlayerSkillController : MonoBehaviour
         {
             CancelCurrentSkill();
         }
+    }
+
+    private void SetSkillActivationState(bool isActive)
+    {
+        if (IsSkillActivationActive == isActive)
+            return;
+
+        IsSkillActivationActive = isActive;
+        OnSkillActivationChanged?.Invoke(isActive);
+    }
+
+    private void RegisterSummonedObject(ISummonedObject summonedObject)
+    {
+        if (summonedObject == null || _summonedObjects.Contains(summonedObject))
+            return;
+
+        _summonedObjects.AddLast(summonedObject);
+        summonedObject.OnRemoved += HandleSummonedRemove;
+
+        while (_summonedObjects.Count > _maximumActiveObject)
+        {
+            ISummonedObject oldestObject = _summonedObjects.First.Value;
+            UnregisterSummonedObject(oldestObject);
+            oldestObject.Despawn();
+        }
+    }
+    
+    public void UnregisterSummonedObject(ISummonedObject summonedObject)
+    {
+        if (summonedObject == null)
+            return;
+
+        summonedObject.OnRemoved -= HandleSummonedRemove;
+        _summonedObjects.Remove(summonedObject);
+    }
+
+    private void HandleSummonedRemove(ISummonedObject summonedObject)
+    {
+        UnregisterSummonedObject(summonedObject);
+    }
+
+    private void OnDestroy()
+    {
+        foreach (ISummonedObject obj in _summonedObjects)
+            obj.OnRemoved -= HandleSummonedRemove;
+
+        _summonedObjects.Clear();
     }
 }

@@ -22,17 +22,15 @@ public class PillarSkillHandler : IPlayerSkillHandler
         if (_pillarPreviewPrefab == null)
             return;
 
-        Vector3 previewPosition = GetSpawnPosition();
-
         _pillarPreview = UnityEngine.Object.Instantiate(
             _pillarPreviewPrefab,
-            previewPosition,
+            GetSpawnPosition(),
             Quaternion.identity);
     }
 
     public void Update()
     {
-        DrawCameraRay();
+        PlayerSkillHandlerHelper.DrawCameraRay(_context);
 
         if (_pillarPreview == null)
             return;
@@ -44,51 +42,44 @@ public class PillarSkillHandler : IPlayerSkillHandler
         }
 
         _pillarPreview.SetActive(true);
-
-        Quaternion previewRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
-        _pillarPreview.transform.SetPositionAndRotation(hit.point, previewRotation);
+        _pillarPreview.transform.SetPositionAndRotation(
+            hit.point,
+            Quaternion.FromToRotation(Vector3.up, hit.normal));
     }
 
     // TODO: Check whether the position is available to build.
-    public SkillConfirmResult Confirm()
+    public SkillConfirmResult Confirm(out ISummonedObject summonedObject)
     {
-        if (_pillarPreview == null ||
-            _pillarPrefab == null)
-        {
+        summonedObject = null;
+        if (_pillarPreview == null || _pillarPrefab == null)
             return SkillConfirmResult.Fail;
-        }
 
         if (!TryGetTarget(out RaycastHit hit))
             return SkillConfirmResult.Fail;
 
         Vector3 spawnPosition = hit.point - hit.normal * _buriedDepth;
-
         Quaternion spawnRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
         GameObject pillarObject = UnityEngine.Object.Instantiate(_pillarPrefab, spawnPosition, spawnRotation);
 
+        summonedObject = pillarObject.GetComponent<ISummonedObject>();
         PillarRiseAnimation pillar = pillarObject.GetComponent<PillarRiseAnimation>();
-
         if (pillar != null)
-        {
             pillar.SetSpawnSurface(hit.point, hit.normal);
-        }
 
-        DestroyPreview();
+        PlayerSkillHandlerHelper.DestroyAndClear(ref _pillarPreview);
 
         return SkillConfirmResult.Finish;
     }
 
     public void Cancel()
     {
-        DestroyPreview();
+        PlayerSkillHandlerHelper.DestroyAndClear(ref _pillarPreview);
     }
 
     private Vector3 GetSpawnPosition()
     {
         if (TryGetTarget(out RaycastHit hit))
-        {
             return hit.point - hit.normal * _buriedDepth;
-        }
 
         return _context.CharacterTransform != null
             ? _context.CharacterTransform.position
@@ -97,52 +88,11 @@ public class PillarSkillHandler : IPlayerSkillHandler
 
     private bool TryGetTarget(out RaycastHit hit)
     {
-        hit = default;
-
-        if (_context == null || _context.Camera == null || _context.CharacterTransform == null)
-        {
+        if (!PlayerSkillHandlerHelper.TryRaycastFromCamera(_context, PlayerSkillHandlerHelper.DefaultAimDistance, _summonLayer, out hit))
             return false;
-        }
 
-        Ray ray = _context.Camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-
-        if (!Physics.Raycast(ray, out hit, 100f, _summonLayer))
-        {
-            return false;
-        }
-
-        float distance = Vector3.Distance(_context.CharacterTransform.position, hit.point);
-
-        if (distance > _range) return false;
-        return true;
+        return PlayerSkillHandlerHelper.IsWithinRange(_context, hit.point, _range);
     }
 
-    private void DestroyPreview()
-    {
-        if (_pillarPreview == null)
-            return;
-
-        UnityEngine.Object.Destroy(_pillarPreview);
-        _pillarPreview = null;
-    }
-
-    private void DrawCameraRay()
-    {
-        if (_context?.AimLineRenderer == null || _context.Camera == null)
-        {
-            return;
-        }
-
-        LineRenderer aimLineRenderer = _context.AimLineRenderer;
-
-        Ray ray = _context.Camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-
-        aimLineRenderer.positionCount = 2;
-
-        aimLineRenderer.SetPosition(0, ray.origin);
-        aimLineRenderer.SetPosition(1, ray.origin + ray.direction * 100f);
-    }
-    
     // state restriction test, change to manageable by scriptable object
-
 }
