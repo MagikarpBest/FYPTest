@@ -12,6 +12,7 @@ public class Bomb : MonoBehaviour
 
     [SerializeField] private float explosionRadius = 5f;
     [SerializeField] private float explosionForce = 5f;
+    [SerializeField] private float launchAngle = 5f;
     private bool _hasExploded;
 
     private void Awake()
@@ -20,10 +21,11 @@ public class Bomb : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    public void Init(float explosionRadius, float explosionForce)
+    public void Init(float explosionRadius, float explosionForce, float launchAngle = 0f)
     {
         this.explosionRadius = explosionRadius;
         this.explosionForce = explosionForce;
+        this.launchAngle = launchAngle;
     }
     public void Hold(Transform bombHoldPoint)
     {
@@ -76,8 +78,13 @@ public class Bomb : MonoBehaviour
 
             if (launchable != null)
             {
-                Vector3 direction = (col.transform.position - transform.position).normalized;
-                launchable.Launch(direction * explosionForce);
+                Vector3 flat = col.transform.position - transform.position;
+                flat.y = 0f;
+                flat = flat.normalized;
+
+                float rad = launchAngle * Mathf.Deg2Rad;
+                Vector3 direction = flat * Mathf.Cos(rad) + Vector3.up * Mathf.Sin(rad);
+                launchable.Launch(explosionForce * direction);
             }
             else if (targetRb != null)
             {

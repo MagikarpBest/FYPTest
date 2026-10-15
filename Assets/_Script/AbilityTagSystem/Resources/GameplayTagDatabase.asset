@@ -22,6 +22,7 @@ MonoBehaviour:
   - State.Performing.Ability
   - Ability.Attack
   - Ability.Build
+  - Ability.Bomb
   - Status.Burning
   - Status.Stunned
   - Block.Movement

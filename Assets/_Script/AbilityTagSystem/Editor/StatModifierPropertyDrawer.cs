@@ -13,18 +13,20 @@ public class StatModifierPropertyDrawer : PropertyDrawer
         var operation = property.FindPropertyRelative("Operation");
         var floatMagnitude = property.FindPropertyRelative("FloatMagnitude");
         var tagMagnitude = property.FindPropertyRelative("TagMagnitude");
+        
+        float line = EditorGUIUtility.singleLineHeight;
+        float spacing = EditorGUIUtility.standardVerticalSpacing;
 
-        // position.height = EditorGUIUtility.singleLineHeight;
-
+        position.height = line;
         EditorGUI.PropertyField(position, statType);
-        //position.y += EditorGUIUtility.singleLineHeight + 2;
 
-        EditorGUI.PropertyField(position, magnitudeType);
-        //position.y += EditorGUIUtility.singleLineHeight + 2;
-
+        position.y += line + spacing;
         EditorGUI.PropertyField(position, operation);
-        //position.y += EditorGUIUtility.singleLineHeight + 2;
-
+        
+        position.y += line + spacing;
+        EditorGUI.PropertyField(position, magnitudeType);
+        
+        position.y += line + spacing;
         if (magnitudeType.enumValueIndex == (int)StatModifier.ModifierMagnitudeType.Float)
         {
             EditorGUI.PropertyField(position, floatMagnitude);
@@ -37,10 +39,11 @@ public class StatModifierPropertyDrawer : PropertyDrawer
         EditorGUI.EndProperty();
     }
 
-    // public override float GetPropertyHeight(
-    //     SerializedProperty property,
-    //     GUIContent label)
-    // {
-    //     return (EditorGUIUtility.singleLineHeight + 2) * 4;
-    // }
+    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    {
+        float line = EditorGUIUtility.singleLineHeight;
+        float spacing = EditorGUIUtility.standardVerticalSpacing;
+        float elementSpacing = 8f;
+        return (line * 4) + (spacing * 3) + elementSpacing;
+    }
 }

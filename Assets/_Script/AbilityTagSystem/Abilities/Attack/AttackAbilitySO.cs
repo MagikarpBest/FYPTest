@@ -5,12 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Attack", menuName = "AbilitySystem/Abilities/Attack")]
 public class AttackAbilitySO : AbilityDefinitionSO
 {
-    [SerializeField] private float firstHitTime = 1f;
-    [SerializeField] private float secondHitDelay = 0.5f;
-    [SerializeField] private float endDelay = 0.5f;
-    [SerializeField] private float comboWindow = 1.0f;
-    
-    [Header("Damage data")]
     [SerializeField] private float attackRange;
     [SerializeField] private DamageConfig damageConfig;
     [SerializeField] private LayerMask enemyLayerMask;
@@ -22,10 +16,6 @@ public class AttackAbilitySO : AbilityDefinitionSO
     
     public override async Awaitable OnActivate(CancellationToken token)
     {
-        // if (ctx.Character.Sockets.TryGetSocket("Socket.BombHold", out Transform bombHold))
-        // {
-        //     Instantiate(object, bombHold);
-        // }
         
         DebugDraw();
 

@@ -6,8 +6,8 @@ public class StatModifier
 {
     public enum StatModifierOperation
     {
-        Add,
-        Subtract,
+        AddBase,
+        AddFinal,
         Multiply,
         Override
     }

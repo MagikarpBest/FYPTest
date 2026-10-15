@@ -67871,15 +67871,22 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.9166667
+    functionName: NotifyAnimationEvent
+    data: Damage
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.9166667
     functionName: AnimationCallSlash2
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.9166667
+  - time: 1.1
     functionName: NotifyAnimationEvent
-    data: Damage
+    data: ComboClosed
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
@@ -67887,13 +67894,6 @@ AnimationClip:
   - time: 2.0333333
     functionName: NotifyAnimationEvent
     data: Finished
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 2.0333333
-    functionName: NotifyAnimationEvent
-    data: ComboClose
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

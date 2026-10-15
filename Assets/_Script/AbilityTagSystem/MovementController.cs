@@ -83,7 +83,7 @@ public abstract class MovementController : MonoBehaviour
             OverrideMovement(new Vector3(10, 20, 10), 3f);
         }
         
-        HandleRotation();
+        HandleMoveRotation();
     }
     
     private void FixedUpdate()
@@ -120,6 +120,8 @@ public abstract class MovementController : MonoBehaviour
     [SerializeField] private float animSpeedChangeRate = 10f;
     protected void UpdateAnimatons()
     {
+        if (overrideMovement) return;
+        
         animator.SetBool("IsGrounded", IsGrounded);
         animator.SetBool("IsWalking", IsWalking);
         animator.SetFloat("InAirTime", inAirTime);
@@ -182,7 +184,7 @@ public abstract class MovementController : MonoBehaviour
         }
     }
 
-    protected void HandleRotation()
+    protected void HandleMoveRotation()
     { 
         if (moveDir.sqrMagnitude > 1e-4f)
         {
@@ -192,8 +194,7 @@ public abstract class MovementController : MonoBehaviour
         // Quaternion targetRotation = Quaternion.Euler(0f, targetYaw, 0f);
         // rb.MoveRotation( Quaternion.RotateTowards(rb.rotation, targetRotation, 800f * Time.fixedDeltaTime));
         
-        currentYaw = Mathf.SmoothDampAngle
-        (
+        currentYaw = Mathf.SmoothDampAngle(
             currentYaw,
             targetYaw,
             ref rotationVelocity,
@@ -201,8 +202,13 @@ public abstract class MovementController : MonoBehaviour
             Mathf.Infinity,
             Time.fixedDeltaTime
         );
-        
+
         rb.MoveRotation(Quaternion.Euler(0f, currentYaw, 0f));
+    }
+    
+    public void RotateTowards(float yawDegree)
+    {
+        targetYaw = yawDegree;
     }
     
     protected void GroundCheck()

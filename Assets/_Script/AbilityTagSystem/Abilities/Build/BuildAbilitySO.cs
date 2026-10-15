@@ -12,7 +12,8 @@ public class BuildAbilitySO : AbilityDefinitionSO
     [SerializeField] private GameObject pillarPrefab;
     [SerializeField] private GameObject pillarPreviewPrefab;
     [SerializeField] private LayerMask buildLayer;
-    [SerializeField] private LayerMask excludeLayer; 
+    [SerializeField] private LayerMask excludeLayer;
+    [SerializeField] private float pillarHeight = 4.9647f;
     
     private PlayerInputManager input;
     private TaskCompletionSource<bool> buildFinishedTcs;
@@ -58,6 +59,8 @@ public class BuildAbilitySO : AbilityDefinitionSO
             }
             else
             {
+                hit = default;
+                validPos = false;
                 pillarPreview.SetActive(false);
             }
             
@@ -71,7 +74,7 @@ public class BuildAbilitySO : AbilityDefinitionSO
     {
         if (hit.collider != null && validPos)
         {
-            Vector3 pos = hit.point - hit.normal * 4.9647f;
+            Vector3 pos = hit.point - hit.normal * pillarHeight;
             Quaternion rot = Quaternion.FromToRotation(Vector3.up, hit.normal);
             Instantiate(pillarPrefab, pos , rot);
             buildFinishedTcs.TrySetResult(true);
