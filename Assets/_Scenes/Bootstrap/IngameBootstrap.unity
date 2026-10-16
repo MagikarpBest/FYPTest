@@ -211,6 +211,14 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3939035399520647278, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+      propertyPath: startingAbilities.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3939035399520647278, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
+      propertyPath: 'startingAbilities.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: c08d84948dbda2941b2cfd2d9c915676, type: 2}
     - target: {fileID: 4436363703702408240, guid: 3fbfbd877769b054ebf457a1789200b9, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.7000003

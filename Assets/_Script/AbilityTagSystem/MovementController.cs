@@ -68,21 +68,21 @@ public abstract class MovementController : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current.gKey.wasPressedThisFrame)
-        {
-            ApplyForce(new Vector3(20, 20, 20));
-        }
-
-        if (Keyboard.current.bKey.wasPressedThisFrame)
-        {
-            ApplyForce(new Vector3(11, 20, 10));
-        }
-        
-        if (Keyboard.current.fKey.wasPressedThisFrame)
-        { 
-            OverrideMovement(new Vector3(10, 20, 10), 3f);
-        }
-        
+        // if (Keyboard.current.gKey.wasPressedThisFrame)
+        // {
+        //     ApplyForce(new Vector3(20, 20, 20));
+        // }
+        //
+        // if (Keyboard.current.bKey.wasPressedThisFrame)
+        // {
+        //     ApplyForce(new Vector3(11, 20, 10));
+        // }
+        //
+        // if (Keyboard.current.fKey.wasPressedThisFrame)
+        // { 
+        //     OverrideMovement(new Vector3(10, 20, 10), 3f);
+        // }
+        //
         HandleMoveRotation();
     }
     
