@@ -18,8 +18,9 @@ GameObject:
   - component: {fileID: 6627930846477673684}
   - component: {fileID: 6211738648243291875}
   - component: {fileID: 1086482805445020356}
-  - component: {fileID: 2529706611399307442}
   - component: {fileID: 6340859883278463331}
+  - component: {fileID: 7617924933715103231}
+  - component: {fileID: 8982982217692200989}
   m_Layer: 10
   m_Name: OldEnemy
   m_TagString: Untagged
@@ -216,19 +217,6 @@ MonoBehaviour:
   playerLayerMask:
     serializedVersion: 2
     m_Bits: 64
---- !u!114 &2529706611399307442
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 396907225012107327}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4475712a42f41f48a061e08b034c1f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HierarchicalStateMachine
-  isDebug: 1
 --- !u!114 &6340859883278463331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,6 +232,30 @@ MonoBehaviour:
   armorPartsRoot: {fileID: 1344654904642798278}
   facePartsRoot: {fileID: 1344654902825415744}
   showHelmet: 1
+--- !u!114 &7617924933715103231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 396907225012107327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5005686474c346c45951b282c08a1ff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDamageReceiver
+--- !u!114 &8982982217692200989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 396907225012107327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8aaebd1478257748b12bc382a4e1881, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyCombatReaction
 --- !u!1001 &8700653789958516096
 PrefabInstance:
   m_ObjectHideFlags: 0

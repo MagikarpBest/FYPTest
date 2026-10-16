@@ -9,7 +9,6 @@ public class AbilitySystem : MonoBehaviour
     [SerializeField] private GameplayTagCountContainer tags;
     [SerializeField] private List<AbilityDefinitionSO> startingAbilities = new List<AbilityDefinitionSO>();
     [SerializeField] private List<Ability> abilities = new List<Ability>();
-
     
     public event Action<string> OnAnimationEvent;
     public event Action<GameplayTag, int> OnTagCountChanged;
@@ -46,8 +45,13 @@ public class AbilitySystem : MonoBehaviour
             CancelAbility(ability);
         }
     }
-    
-    public void NotifyAnimationEvent(string tag) => OnAnimationEvent?.Invoke(tag);
+
+    public void NotifyAnimationEvent(string tag)
+    {
+        Debug.Log("Animation event: " + tag);
+        OnAnimationEvent?.Invoke(tag);
+    }
+
     private void HandleTagCountChanged(GameplayTag tag, int newCount) => OnTagCountChanged?.Invoke(tag, newCount);
     public void NotifyAbilityActivated(Ability ability) => OnAbilityActivated?.Invoke(ability);
     public void NotifyAbilityCancelled(Ability ability) => OnAbilityCancelled?.Invoke(ability);
@@ -128,7 +132,7 @@ public class AbilitySystem : MonoBehaviour
     {
         foreach (Ability ability in abilities)
         {
-            if (!ability.IsRunning) continue;
+            if (!ability.IsActive) continue;
             if (abilityTags.HasAny(ability.Definition.BlockAbilitiesWithTag)) return true;
         }
         return false;
@@ -170,7 +174,7 @@ public class AbilitySystem : MonoBehaviour
     {
         foreach (Ability ability in abilities)
         {
-            if (ability == except || !ability.IsRunning) continue;
+            if (ability == except || !ability.IsActive) continue;
 
             if (ability.Definition.AbilityTags.HasTag(tag))
             {
@@ -200,6 +204,7 @@ public class AbilitySystem : MonoBehaviour
     #endregion
 
     #region Effects
+    
 
     #endregion
 }

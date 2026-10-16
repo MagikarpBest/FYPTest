@@ -8,7 +8,7 @@ public class Ability
     public readonly AbilityDefinitionSO Definition;
     private AbilitySystem ctx;
     private CancellationTokenSource cts;
-    public bool IsRunning => cts != null;
+    public bool IsActive => cts != null;
 
     public Ability(AbilityDefinitionSO definition, AbilitySystem ctx)
     {
@@ -18,7 +18,7 @@ public class Ability
     }
     
     public bool CanActivateAbility() => 
-        !IsRunning 
+        !IsActive 
         && ctx.HasAllTags(Definition.ActivationRequiredTags)
         && !ctx.HasAnyTags(Definition.ActivationBlockedTags)
         && !ctx.AreAbilityTagsBlocked(Definition.AbilityTags);
