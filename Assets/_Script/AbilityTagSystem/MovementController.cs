@@ -75,9 +75,9 @@ public abstract class MovementController : MonoBehaviour
         //
         // if (Keyboard.current.bKey.wasPressedThisFrame)
         // {
-        //     ApplyForce(new Vector3(11, 20, 10));
+        //     ApplyForce(new Vector3(0, 20,40));
         // }
-        //
+        
         // if (Keyboard.current.fKey.wasPressedThisFrame)
         // { 
         //     OverrideMovement(new Vector3(10, 20, 10), 3f);
