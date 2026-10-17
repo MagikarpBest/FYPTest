@@ -9,10 +9,7 @@ public class SlashTest : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Z))
-        {
-            StartCoroutine(AnimationCallSlash1());
-        }
+
     }
 
     private IEnumerator AnimationCallSlash1()

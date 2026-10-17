@@ -115,7 +115,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AOStrength: 0.376
+    - _AOStrength: 1
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
@@ -135,7 +135,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _MetallicStrength: 1
+    - _MetallicStrength: 0
     - _NormalStrength: 2
     - _OcclusionStrength: 1
     - _Parallax: 0.005
