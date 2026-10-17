@@ -27,7 +27,7 @@ public class StatModifierPropertyDrawer : PropertyDrawer
         EditorGUI.PropertyField(position, magnitudeType);
         
         position.y += line + spacing;
-        if (magnitudeType.enumValueIndex == (int)StatModifier.ModifierMagnitudeType.Float)
+        if (magnitudeType.enumValueIndex == (int)ModifierMagnitudeType.Float)
         {
             EditorGUI.PropertyField(position, floatMagnitude);
         }

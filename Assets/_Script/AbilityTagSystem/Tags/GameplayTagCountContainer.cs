@@ -10,7 +10,7 @@ public class GameplayTagCountContainer : ISerializationCallbackReceiver
     
     public int Count => tags.Count;
     
-    public event Action<GameplayTag, int> CountChanged;
+    public event Action<GameplayTag, int> OnCountChanged;
     
     public int GetTagCount(GameplayTag tag) => counts.TryGetValue(tag, out int c) ? c : 0;
 
@@ -22,7 +22,7 @@ public class GameplayTagCountContainer : ISerializationCallbackReceiver
         counts[tag] = newCount;
         tags.Add(tag); //already prevents dupes
         
-        CountChanged?.Invoke(tag, newCount);
+        OnCountChanged?.Invoke(tag, newCount);
     }
 
     public void Remove(GameplayTag tag)
@@ -41,7 +41,7 @@ public class GameplayTagCountContainer : ISerializationCallbackReceiver
             counts[tag] = newCount;
         }
         
-        CountChanged?.Invoke(tag, newCount);
+        OnCountChanged?.Invoke(tag, newCount);
     }
     
     public void RemoveAllCountsOfTag(GameplayTag tag)
@@ -50,7 +50,7 @@ public class GameplayTagCountContainer : ISerializationCallbackReceiver
         
         counts.Remove(tag);
         tags.Remove(tag);
-        CountChanged?.Invoke(tag, 0);
+        OnCountChanged?.Invoke(tag, 0);
     }
     
     public void Clear()
@@ -59,7 +59,7 @@ public class GameplayTagCountContainer : ISerializationCallbackReceiver
         counts.Clear();
         tags.Clear();
 
-        foreach (var tag in removed) CountChanged?.Invoke(tag, 0);
+        foreach (var tag in removed) OnCountChanged?.Invoke(tag, 0);
     }
     
     public bool HasTag(GameplayTag tag) => tags.HasTag(tag);

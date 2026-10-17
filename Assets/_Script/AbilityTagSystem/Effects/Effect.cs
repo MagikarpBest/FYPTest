@@ -1,6 +1,8 @@
+using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 using UnityEngine;
 
-public class Effect : MonoBehaviour
+public class Effect 
 {
     public readonly EffectDefinitionSO Definition;
 
@@ -9,32 +11,73 @@ public class Effect : MonoBehaviour
     public float durationTimer;
     public float periodTimer;
 
-
-    public void OnApply()
+    private Stats stats;
+    
+    public Effect(EffectDefinitionSO definition, Stats stats)
     {
-        IsActive = true;
+        Definition = definition;
+        this.stats = stats;
+        IsActive = false;
+
+        if (Definition.Lifetime == EffectLifetime.Instant)
+        {
+            stats.TryApplyModifiers(definition.StatModifiers);
+            return;
+        }
+        
         durationTimer = Definition.Duration;
         periodTimer = Definition.ApplyOnFirstTickOfPeriod ? Definition.Period : 0f;
+
+        //modifiers only work if no periodic
+        if (definition.Period <= 0f)
+        {
+            foreach (StatModifier modifier in Definition.StatModifiers)
+            {
+                stats.AddModifier(modifier);
+            }
+        }
+        
+        IsActive = true;
     }
-    
+
     public void Tick(float deltaTime)
     {
-        //tick timers
-        periodTimer += deltaTime;
-        durationTimer -= deltaTime;
+        if (!IsActive) return;
         
         //period
-        if (periodTimer >= Definition.Period)
+        if (Definition.Period > 0f)
         {
-            periodTimer -= Definition.Period; //reset timer 
-            //apply modifiers
+            periodTimer += deltaTime;
+            while (periodTimer >= Definition.Period)
+            {
+                periodTimer -= Definition.Period;
+                stats.TryApplyModifiers(Definition.StatModifiers);
+            }
         }
-    
+
         //duration
-        if (durationTimer <= 0)
+        if (Definition.Lifetime == EffectLifetime.Duration)
         {
-            //mark for removal
-            IsActive = false;
+            durationTimer -= deltaTime;
+            if (durationTimer <= 0)
+            {
+                End();
+            }
         }
+    }
+
+    public void End()
+    {
+        if (!IsActive) return;
+        
+        if (Definition.Lifetime != EffectLifetime.Instant && Definition.Period <= 0f)
+        {
+            foreach (StatModifier modifier in Definition.StatModifiers)
+            {
+                stats.RemoveModifier(modifier);
+            }
+        }
+        
+        IsActive = false;
     }
 }

@@ -8,7 +8,13 @@ public class AbilitySystem : MonoBehaviour
     
     [SerializeField] private GameplayTagCountContainer tags;
     [SerializeField] private List<AbilityDefinitionSO> startingAbilities = new List<AbilityDefinitionSO>();
-    [SerializeField] private List<Ability> abilities = new List<Ability>();
+    [SerializeField] private BaseStatsSO baseStats;
+    
+    private List<Ability> abilities = new List<Ability>();
+    private Stats stats;
+    private List<Effect> effects = new List<Effect>();
+    
+    public Stats Stats => stats;
     
     public event Action<string> OnAnimationEvent;
     public event Action<GameplayTag, int> OnTagCountChanged;
@@ -17,6 +23,7 @@ public class AbilitySystem : MonoBehaviour
     public event Action<Ability> OnAbilityActivated;
     public event Action<Ability> OnAbilityFinished;     
     public event Action<Ability> OnAbilityCancelled; 
+    public event Action<StatType, float> OnStatsChanged;
     
     private void Awake()
     {
@@ -30,16 +37,19 @@ public class AbilitySystem : MonoBehaviour
         {
             GiveAbility(def);
         }
+
+        stats = new Stats(baseStats);
     }
     
     private void OnEnable()
     {
-        tags.CountChanged += HandleTagCountChanged;
+        tags.OnCountChanged += HandleTagCountChanged;
+        stats.OnStatsChange += HandleStatsChanged;
     }
 
     private void OnDisable()
     {
-        tags.CountChanged -= HandleTagCountChanged;
+        tags.OnCountChanged -= HandleTagCountChanged;
         foreach (Ability ability in abilities.ToArray())
         {
             CancelAbility(ability);
@@ -56,6 +66,7 @@ public class AbilitySystem : MonoBehaviour
     public void NotifyAbilityActivated(Ability ability) => OnAbilityActivated?.Invoke(ability);
     public void NotifyAbilityCancelled(Ability ability) => OnAbilityCancelled?.Invoke(ability);
     public void NotifyAbilityFinished(Ability ability) => OnAbilityFinished?.Invoke(ability);
+    public void HandleStatsChanged(StatType statType, float value) => OnStatsChanged?.Invoke(statType, value);
     
     #region GameplayTags
     public int GetTagCount(GameplayTag tag) => tags.GetTagCount(tag);
@@ -204,7 +215,16 @@ public class AbilitySystem : MonoBehaviour
     #endregion
 
     #region Effects
+
+    public void AddEffect(EffectDefinitionSO effectDef)
+    {
+        
+    }
     
+    public void AddEffect(GameplayTag tag)
+    {
+        
+    }
 
     #endregion
 }
